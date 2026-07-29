@@ -1,0 +1,6 @@
+.zcode/
+*.tmp
+__pycache__/
+.venv/
+node_modules/
+.env
