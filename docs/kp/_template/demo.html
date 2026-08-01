@@ -627,26 +627,33 @@
 
   .modal {
  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -46%);
- z-index: 100; width: min(560px, calc(100vw - 32px));
+ z-index: 100; width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 48px);
  background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
  box-shadow: 0 24px 60px rgba(24,24,27,0.2);
  opacity: 0; pointer-events: none; transition: all 0.3s var(--ease);
+ display: flex; flex-direction: column;
   }
   .modal.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%); }
-  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .modal-head .m-title { font-weight: 800; font-size: 1rem; }
   .modal-close { border: none; background: none; cursor: pointer; font-family: var(--mono); font-size: 1rem; color: var(--ink-faint); padding: 4px 8px; border-radius: 6px; }
   .modal-close:hover { background: var(--bg-3); color: var(--ink); }
-  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-body { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; overflow-y: auto; }
+  .modal-body .field-wrap.full { grid-column: 1 / -1; }
+  .modal-hint { grid-column: 1 / -1; font-size: 0.8rem; color: var(--ink-mute); line-height: 1.4; margin: -4px 0 0; }
 
   .field-wrap { display: flex; flex-direction: column; gap: 6px; }
   .field-wrap label { font-size: 0.78rem; font-weight: 600; color: var(--ink-mute); }
-  .field-wrap input, .field-wrap select {
+  .field-wrap input, .field-wrap select, .field-wrap textarea {
  border: 1px solid var(--border-2); border-radius: 8px; padding: 10px 12px;
- font-family: var(--font); font-size: 0.9rem; background: var(--bg); color: var(--ink); outline: none;
+ font-family: var(--font); font-size: 0.9rem; background: var(--bg); color: var(--ink); outline: none; width: 100%;
   }
-  .field-wrap input:focus, .field-wrap select:focus { border-color: var(--terra); background: var(--bg-2); }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); }
+  .field-wrap textarea { min-height: 72px; resize: vertical; }
+  .field-wrap input:focus, .field-wrap select:focus, .field-wrap textarea:focus { border-color: var(--terra); background: var(--bg-2); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+  @media (max-width: 560px) {
+    .modal-body { grid-template-columns: 1fr; }
+  }
 
   /* ═════════════ TOAST ═════════════ */
   .toast {
@@ -1706,6 +1713,7 @@
  <option value="status_pay">Статус, затем оплата</option>
  <option value="shop_status">Точка, затем статус</option>
  </select>
+ <button type="button" class="btn terra" data-action="newOrder" id="btnNewOrder">+ Новый заказ</button>
  </div>
  <div id="ordersListWrap" class="on">
  <table class="so-list">
@@ -2255,42 +2263,77 @@
 <div class="modal" id="orderModal">
   <div class="modal-head">
  <span class="m-title">Новый заказ</span>
- <button class="modal-close" data-action="closeModal">✕</button>
+ <button class="modal-close" data-action="closeModal" aria-label="Закрыть">✕</button>
   </div>
   <div class="modal-body">
+ <p class="modal-hint">Ручной заказ мимо маркетплейса: телефон, чат, постоянный клиент. После создания появится в списке и на канбане.</p>
  <div class="field-wrap">
- <label>Клиент</label>
- <input id="mClient" placeholder="Имя и фамилия" value="Ирина">
+ <label for="mClient">Клиент *</label>
+ <input id="mClient" placeholder="Имя и фамилия" value="">
  </div>
  <div class="field-wrap">
- <label>Канал</label>
+ <label for="mPhone">Телефон</label>
+ <input id="mPhone" type="tel" placeholder="+7 900 000-00-00" value="">
+ </div>
+ <div class="field-wrap">
+ <label for="mChannel">Канал / источник *</label>
  <select id="mChannel">
  <option value="wa">WhatsApp</option>
  <option value="tg">Telegram</option>
  <option value="max">MAX</option>
+ <option value="phone">Телефон</option>
+ <option value="walk">Витрина / пришёл в магазин</option>
  <option value="fw">Маркетплейс</option>
  </select>
  </div>
  <div class="field-wrap">
- <label>Состав</label>
- <input id="mItem" placeholder="Например: букет пионов, 15 шт." value="Букет пионов, 15 шт.">
- </div>
- <div class="field-wrap">
- <label>Сумма, ₽</label>
- <input id="mPrice" type="number" value="3200">
- </div>
- <div class="field-wrap">
- <label>Магазин</label>
+ <label for="mShop">Точка выполнения *</label>
  <select id="mShop">
  <option value="Мира 14">Мира 14</option>
  <option value="Ленина 92">Ленина 92</option>
  <option value="Рижская 8">Рижская 8</option>
  </select>
  </div>
+ <div class="field-wrap full">
+ <label for="mItem">Состав заказа *</label>
+ <input id="mItem" placeholder="Например: букет пионов, 15 шт. + открытка" value="">
+ </div>
+ <div class="field-wrap">
+ <label for="mPrice">Сумма, ₽ *</label>
+ <input id="mPrice" type="number" min="0" step="50" placeholder="3200" value="">
+ </div>
+ <div class="field-wrap">
+ <label for="mPay">Оплата</label>
+ <select id="mPay">
+ <option value="pending">Ожидает</option>
+ <option value="paid">Оплачен</option>
+ <option value="cod">При получении</option>
+ </select>
+ </div>
+ <div class="field-wrap">
+ <label for="mDelivery">Доставка</label>
+ <select id="mDelivery">
+ <option value="courier">Курьер</option>
+ <option value="pickup">Самовывоз</option>
+ <option value="marketplace">Курьер маркетплейса</option>
+ </select>
+ </div>
+ <div class="field-wrap">
+ <label for="mWhen">Когда</label>
+ <input id="mWhen" type="text" placeholder="сегодня 15:00 / ASAP" value="">
+ </div>
+ <div class="field-wrap full">
+ <label for="mAddress">Адрес доставки</label>
+ <input id="mAddress" placeholder="Улица, дом, подъезд, этаж" value="">
+ </div>
+ <div class="field-wrap full">
+ <label for="mNote">Комментарий / текст открытки</label>
+ <textarea id="mNote" placeholder="Пожелания клиента, текст на открытке…"></textarea>
+ </div>
   </div>
   <div class="modal-actions">
- <button class="btn ghost" data-action="closeModal">Отмена</button>
- <button class="btn terra" data-action="saveOrder">Создать заказ</button>
+ <button type="button" class="btn ghost" data-action="closeModal">Отмена</button>
+ <button type="button" class="btn terra" data-action="saveOrder">Создать заказ</button>
   </div>
 </div>
 
@@ -2327,7 +2370,7 @@
  new: 'Новый', accepted: 'Принят', assembled: 'Собран',
  delivering: 'В доставке', done: 'Доставлен'
   };
-  var CH_NAMES = { wa: 'WhatsApp', tg: 'Telegram', max: 'MAX', fw: 'Маркетплейс' };
+  var CH_NAMES = { wa: 'WhatsApp', tg: 'Telegram', max: 'MAX', fw: 'Маркетплейс', phone: 'Телефон', walk: 'Витрина' };
   var SHOP_N = { 'Мира 14': 1, 'Ленина 92': 2, 'Рижская 8': 3 };
 
   var PAY_NAMES = { paid: 'Оплачен', pending: 'Ожидает', cod: 'При получении' };
@@ -3018,33 +3061,128 @@
   }
 
   /* ────────────────────────── NEW ORDER MODAL ────────────────────────── */
-  function openModal() {
- state.simPaused = true;
- $('#scrim').classList.add('show');
- $('#orderModal').classList.add('show');
- setTimeout(function () { $('#mClient').focus(); }, 200);
+  var DELIVERY_NAMES = {
+    courier: 'Курьер',
+    pickup: 'Самовывоз',
+    marketplace: 'Курьер маркетплейса'
+  };
+
+  function openModal(prefills) {
+    prefills = prefills || {};
+    state.simPaused = true;
+    var shopEl = $('#mShop');
+    if (shopEl) {
+      var shopDef = state.shop && state.shop !== '*' ? state.shop : 'Мира 14';
+      if (!prefills.shop) shopEl.value = shopDef;
+    }
+    if ($('#mClient')) $('#mClient').value = prefills.client || '';
+    if ($('#mPhone')) $('#mPhone').value = prefills.phone || '';
+    if ($('#mChannel') && prefills.channel) $('#mChannel').value = prefills.channel;
+    if ($('#mItem')) $('#mItem').value = prefills.item || '';
+    if ($('#mPrice')) $('#mPrice').value = prefills.price != null ? prefills.price : '';
+    if ($('#mPay')) $('#mPay').value = prefills.pay || 'pending';
+    if ($('#mDelivery')) $('#mDelivery').value = prefills.delivery || 'courier';
+    if ($('#mWhen')) $('#mWhen').value = prefills.when || '';
+    if ($('#mAddress')) $('#mAddress').value = prefills.address || '';
+    if ($('#mNote')) $('#mNote').value = prefills.note || '';
+    if (prefills.shop && shopEl) shopEl.value = prefills.shop;
+    $('#scrim').classList.add('show');
+    $('#orderModal').classList.add('show');
+    setTimeout(function () {
+      var el = $('#mClient');
+      if (el) el.focus();
+    }, 200);
   }
   function closeModal() {
- $('#scrim').classList.remove('show');
- $('#orderModal').classList.remove('show');
- state.simPaused = false;
+    $('#scrim').classList.remove('show');
+    $('#orderModal').classList.remove('show');
+    state.simPaused = false;
   }
 
   function saveOrder() {
- var client = $('#mClient').value.trim() || 'Клиент';
- var channel = $('#mChannel').value;
- var item = $('#mItem').value.trim() || 'Букет';
- var price = Math.max(100, parseInt($('#mPrice').value, 10) || 1000);
- var shop = $('#mShop').value;
+    var client = ($('#mClient') && $('#mClient').value.trim()) || '';
+    var phone = ($('#mPhone') && $('#mPhone').value.trim()) || '';
+    var channel = ($('#mChannel') && $('#mChannel').value) || 'wa';
+    var item = ($('#mItem') && $('#mItem').value.trim()) || '';
+    var priceRaw = $('#mPrice') && $('#mPrice').value;
+    var price = parseInt(priceRaw, 10);
+    var shop = ($('#mShop') && $('#mShop').value) || 'Мира 14';
+    var pay = ($('#mPay') && $('#mPay').value) || 'pending';
+    var delivery = ($('#mDelivery') && $('#mDelivery').value) || 'courier';
+    var when = ($('#mWhen') && $('#mWhen').value.trim()) || '';
+    var address = ($('#mAddress') && $('#mAddress').value.trim()) || '';
+    var note = ($('#mNote') && $('#mNote').value.trim()) || '';
 
- var prefix = { wa: 'WA', tg: 'TG', max: 'MX', fw: 'FW' }[channel];
- var id = prefix + '-' + state.nextOrder++;
- state.orders.unshift({ id: id, name: item, price: price, channel: channel, status: 'new', shop: shop, pay: channel === 'fw' ? 'paid' : 'pending', history: [{ t: Date.now(), text: 'Создан вручную' }] });
+    if (!client) {
+      toast('Укажите имя клиента');
+      if ($('#mClient')) $('#mClient').focus();
+      return;
+    }
+    if (!item) {
+      toast('Укажите состав заказа');
+      if ($('#mItem')) $('#mItem').focus();
+      return;
+    }
+    if (!priceRaw || isNaN(price) || price < 0) {
+      toast('Укажите сумму');
+      if ($('#mPrice')) $('#mPrice').focus();
+      return;
+    }
+    if (delivery !== 'pickup' && !address) {
+      // soft warn — allow empty for demo flexibility, but nudge
+      address = 'уточнить у клиента';
+    }
 
- renderAllKanban();
- closeModal();
- log('Новый заказ: <b>' + esc(item) + '</b> · ' + esc(client) + ' · ' + CH_NAMES[channel], 'ok');
- toast('Заказ создан');
+    var prefix = { wa: 'WA', tg: 'TG', max: 'MX', fw: 'FW', phone: 'PH', walk: 'SH' }[channel] || 'OR';
+    var id = prefix + '-' + state.nextOrder++;
+    var hist = [{ t: Date.now(), text: 'Создан вручную · ' + client + (phone ? ' · ' + phone : '') }];
+    if (when) hist.push({ t: Date.now(), text: 'К сроку: ' + when });
+    if (note) hist.push({ t: Date.now(), text: 'Комментарий: ' + note });
+
+    state.orders.unshift({
+      id: id,
+      name: item,
+      client: client,
+      phone: phone,
+      price: price,
+      channel: channel,
+      status: 'new',
+      shop: shop,
+      pay: pay,
+      delivery: delivery,
+      when: when,
+      address: address,
+      note: note,
+      history: hist
+    });
+
+    // soft-add client if phone present and not in list
+    if (phone && typeof clients !== 'undefined') {
+      var exists = clients.some(function (c) { return (c.phone || '').replace(/\D/g, '') === phone.replace(/\D/g, ''); });
+      if (!exists) {
+        clients.unshift({
+          id: 'c' + Date.now(),
+          name: client,
+          phone: phone,
+          channel: channel === 'phone' || channel === 'walk' ? 'wa' : channel,
+          shop: shop,
+          email: '',
+          tags: ['новый']
+        });
+      }
+    }
+
+    renderAllKanban();
+    if (typeof renderClients === 'function' && state.view === 'clients') renderClients();
+    closeModal();
+    if (typeof log === 'function') {
+      log('Новый заказ: <b>' + esc(item) + '</b> · ' + esc(client) + ' · ' + (CH_NAMES[channel] || channel), 'ok');
+    }
+    toast('Заказ ' + id + ' создан');
+    if (state.view !== 'orders') switchView('orders');
+    if (typeof openOrderDrawer === 'function') {
+      setTimeout(function () { openOrderDrawer(id); }, 120);
+    }
   }
 
   /* ────────────────────────── NAVIGATION ────────────────────────── */
@@ -3858,14 +3996,27 @@
  { k: 'Доставка', on: ['delivering','done'].indexOf(o.status) >= 0, done: o.status === 'done' }
  ];
  var hist = (o.history || []).slice().reverse();
+ var row = function (k, v) {
+   if (v == null || v === '') return '';
+   return '<div style="font-size:0.86rem;color:var(--ink-dim);margin-bottom:8px"><b>' + k + ':</b> ' + v + '</div>';
+ };
  $('#odBody').innerHTML =
  '<div class="doc-chain">' + chain.map(function (c) {
  return '<span class="' + (c.done ? 'done' : (c.on ? 'on' : '')) + '">' + c.k + '</span>';
  }).join('') + '</div>' +
- '<div style="font-size:0.86rem;color:var(--ink-dim);margin-bottom:8px"><b>Сумма:</b> ' + fmtPrice(o.price) + '</div>' +
- '<div style="font-size:0.86rem;color:var(--ink-dim);margin-bottom:8px"><b>Статус:</b> ' + NAMES[o.status] + '</div>' +
- '<div style="font-size:0.86rem;color:var(--ink-dim);margin-bottom:12px"><b>Оплата:</b> ' + (PAY_NAMES[pay] || pay) + '</div>' +
- '<div style="font-weight:800;font-size:0.84rem;margin-bottom:6px">Лента заказа</div>' +
+ row('Состав', esc(o.name)) +
+ row('Клиент', esc(o.client || '—')) +
+ row('Телефон', esc(o.phone || '—')) +
+ row('Сумма', fmtPrice(o.price)) +
+ row('Статус', NAMES[o.status]) +
+ row('Оплата', PAY_NAMES[pay] || pay) +
+ row('Канал', CH_NAMES[o.channel] || o.channel) +
+ row('Точка', esc(o.shop)) +
+ row('Доставка', DELIVERY_NAMES[o.delivery] || o.delivery || '—') +
+ row('Когда', esc(o.when || '—')) +
+ row('Адрес', esc(o.address || '—')) +
+ row('Комментарий', esc(o.note || '')) +
+ '<div style="font-weight:800;font-size:0.84rem;margin:12px 0 6px">Лента заказа</div>' +
  '<div class="stream">' + (hist.length ? hist.map(function (h) {
  return '<div class="ev">' + esc(h.text) + '<time>' + new Date(h.t || Date.now()).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) + '</time></div>';
  }).join('') : '<div class="ev">Пока нет событий</div>') + '</div>';
@@ -4423,11 +4574,12 @@
  };
  var bo = $('#btnClientOrder');
  if (bo) bo.onclick = function () {
- openModal();
- var mc = $('#mClient'); if (mc) mc.value = c.name;
- var ms = $('#mShop'); if (ms) ms.value = c.shop;
- var ch = $('#mChannel');
- if (ch) ch.value = c.channel === 'fw' ? 'fw' : c.channel;
+ openModal({
+   client: c.name,
+   phone: c.phone || '',
+   shop: c.shop,
+   channel: c.channel === 'fw' ? 'fw' : (c.channel || 'wa')
+ });
  };
   }
 
