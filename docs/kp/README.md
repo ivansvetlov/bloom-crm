@@ -6,7 +6,7 @@
 docs/kp/
   index.json          ← реестр всех КП (читает хаб на главной)
   _template/          ← чистый шаблон (не править «под клиента»)
-  flowwow/            ← пример: первое КП
+  flowwow/            ← первое КП (slug клиента, не бренд!)
   {slug}/             ← следующий клиент
     client.json
     index.html        ← точка входа (КП)
@@ -15,17 +15,18 @@ docs/kp/
     …
 ```
 
-## Ссылки
+## Боевой домен
 
-| Что | URL (GitHub Pages) |
+**`https://crmbloom.ru`** — см. [docs/DOMAIN.md](../DOMAIN.md).
+
+| Что | URL |
 |---|---|
-| Хаб | `https://ivansvetlov.github.io/flowwow-crm/` |
-| КП flowwow | `…/kp/flowwow/` |
-| Демо | `…/kp/flowwow/demo.html` |
-| Опросник | `…/kp/flowwow/questions.html` |
+| Хаб | `https://crmbloom.ru/` |
+| КП | `https://crmbloom.ru/kp/flowwow/` |
+| Демо | `https://crmbloom.ru/kp/flowwow/demo.html` |
+| Опросник | `https://crmbloom.ru/kp/flowwow/questions.html` |
 
-На Timeweb после деплоя: `https://flowww.webtm.ru/kp/flowwow/`  
-(файлы класть в `public_html` **сайта flowww.webtm.ru**, с сохранением папки `kp/`).
+Бэкап (GitHub Pages): `https://ivansvetlov.github.io/flowwow-crm/kp/flowwow/`
 
 ## Новое КП за 1 минуту
 
@@ -48,13 +49,13 @@ docs/kp/
 2. **Не правьте `_template` «под одного клиента»** — правки шаблона только общие; кастом — в `kp/{slug}/`.
 3. Статус в `client.json` / `index.json`: `draft` | `active` | `archived`.
 4. Имя папки = **slug** латиницей, коротко: `roza-spb`, `cvetochny-mir`.
+5. В **домене и бренде** не используем слово flowwow — только в slug КП, если клиент на Flowwow.
 
 ## Деплой на Timeweb (в WebConsole)
 
 ```bash
-# путь сайта flowww.webtm.ru (уточните find'ом, если другой)
-WEB="$HOME/flowww.webtm.ru/public_html"
-# или: WEB=$(find ~ -maxdepth 4 -type d -path '*flowww*' -name public_html | head -1)
+WEB="$HOME/crmbloom.ru/public_html"
+# или: find ~ -maxdepth 4 -type d -name public_html
 
 cd /tmp
 rm -rf flowwow-crm-master crm.zip
@@ -62,9 +63,9 @@ curl -fsSL -o crm.zip https://github.com/ivansvetlov/flowwow-crm/archive/refs/he
 unzip -qo crm.zip
 mkdir -p "$WEB/kp"
 cp -f flowwow-crm-master/docs/index.html "$WEB/"
-cp -rf flowwow-crm-master/docs/kp/* "$WEB/kp/"
+cp -rf flowwow-crm-master/docs/kp/. "$WEB/kp/"
 chmod -R a+rX "$WEB/kp" "$WEB/index.html"
-echo "OK https://flowww.webtm.ru/  и  https://flowww.webtm.ru/kp/flowwow/"
+echo "OK https://crmbloom.ru/  и  https://crmbloom.ru/kp/flowwow/"
 ```
 
-**Важно:** не копировать «первый попавшийся» `public_html` — только папка **flowww.webtm.ru**.
+**Важно:** копировать в `public_html` сайта **crmbloom.ru**, не в чужой домен аккаунта.

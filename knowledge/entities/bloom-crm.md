@@ -39,5 +39,7 @@ confidence: high
 | `docs/test-dynamic.html` | 12 недель внедрения |
 
 ## Домены
-- Клиентский (ТЗ): `flowww.webtm.ru`
-- Pre-sales host: GitHub Pages `ivansvetlov.github.io/flowwow-crm`
+- **Боевой бренд:** `crmbloom.ru` (хаб + `/kp/{slug}/`)
+- Песочница (legacy): `flowww.webtm.ru`
+- Бэкап: GitHub Pages `ivansvetlov.github.io/flowwow-crm`
+- В бренде/домене нет слова flowwow; slug КП может быть `flowwow` (контекст клиента)

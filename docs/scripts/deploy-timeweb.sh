@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Запускать в WebConsole Timeweb на vh* (под вашим cs*).
-# Кладёт хаб + все КП в public_html сайта flowww.webtm.ru
+# Кладёт хаб + все КП в public_html сайта crmbloom.ru
 set -euo pipefail
 
 WEB="${1:-}"
 if [[ -z "$WEB" ]]; then
-  WEB=$(find "$HOME" -maxdepth 4 -type d -path '*flowww*' -name public_html 2>/dev/null | head -1 || true)
+  WEB=$(find "$HOME" -maxdepth 4 -type d \( -path '*crmbloom*' -o -path '*crm_bloom*' \) -name public_html 2>/dev/null | head -1 || true)
 fi
 if [[ -z "$WEB" || ! -d "$WEB" ]]; then
-  echo "Не нашли public_html для flowww. Передайте путь:"
-  echo "  bash deploy-timeweb.sh /home/c/USER/flowww.webtm.ru/public_html"
+  echo "Не нашли public_html для crmbloom.ru. Передайте путь:"
+  echo "  bash deploy-timeweb.sh /home/c/USER/crmbloom.ru/public_html"
   echo "Доступные public_html:"
   find "$HOME" -maxdepth 4 -type d -name public_html 2>/dev/null || true
   exit 1
@@ -37,5 +37,5 @@ echo "=== hub ==="
 ls -la "$WEB/index.html"
 echo "=== kp ==="
 ls -la "$WEB/kp"
-echo "OK: https://flowww.webtm.ru/"
-echo "OK: https://flowww.webtm.ru/kp/flowwow/"
+echo "OK: https://crmbloom.ru/"
+echo "OK: https://crmbloom.ru/kp/flowwow/"
