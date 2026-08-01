@@ -957,17 +957,18 @@
  padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--bg);
   }
   .so-list th.sortable {
- cursor: pointer; user-select: none; white-space: nowrap;
- transition: color 0.12s;
+ user-select: none; white-space: nowrap;
   }
-  .so-list th.sortable:hover { color: var(--terra); }
-  .so-list th.sortable .sort-ind {
- display: inline-block; min-width: 0.9em; font-size: 0.68rem; margin-left: 3px;
- color: var(--ink-faint); font-weight: 800; opacity: 0.45;
+  .so-list th .th-label {
+ display: inline-flex; align-items: center; gap: 4px;
   }
-  .so-list th.sortable:hover .sort-ind { opacity: 0.75; }
-  .so-list th.sortable.on { color: var(--terra); }
-  .so-list th.sortable.on .sort-ind { color: var(--terra); opacity: 1; }
+  .so-list th .sort-btn {
+ border: 0; background: transparent; padding: 0 2px; margin: 0;
+ cursor: pointer; font-family: inherit; font-size: 0.72rem; font-weight: 800;
+ color: var(--ink-faint); line-height: 1; border-radius: 4px;
+  }
+  .so-list th .sort-btn:hover { color: var(--terra); background: var(--terra-soft); }
+  .so-list th .sort-btn.on { color: var(--terra); }
   .so-list td {
  padding: 11px 12px; border-bottom: 1px solid var(--border);
  font-size: 0.86rem; color: var(--ink-dim); vertical-align: middle;
@@ -980,7 +981,12 @@
   .so-list .item { font-weight: 700; color: var(--ink); }
   .so-list .meta { font-size: 0.72rem; color: var(--ink-mute); }
   .so-list .price { font-weight: 800; color: var(--terra); white-space: nowrap; }
-  .so-axes { display: flex; flex-wrap: wrap; gap: 4px; }
+  .so-status {
+ font-size: 0.84rem; color: var(--ink-dim); line-height: 1.35;
+  }
+  .so-status .pay {
+ font-size: 0.76rem; color: var(--ink-mute); margin-top: 2px;
+  }
   .axis {
  font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 999px;
  background: var(--bg-3); color: var(--ink-mute);
@@ -1683,25 +1689,17 @@
  <button type="button" class="on" data-oview="list">Список</button>
  </div>
  <input type="search" id="ordersSearch" class="grow" placeholder="№ заказа, товар, точка…" autocomplete="off" />
- <select id="ordersStatusFilter">
- <option value="*">Все статусы</option>
- <option value="new">Новый</option>
- <option value="accepted">Принят</option>
- <option value="assembled">Собран</option>
- <option value="delivering">В доставке</option>
- <option value="done">Доставлен</option>
- </select>
  <button type="button" class="btn terra" data-action="newOrder" id="btnNewOrder">+ Новый заказ</button>
  </div>
  <div id="ordersListWrap" class="on">
  <table class="so-list">
  <thead>
  <tr>
- <th class="sortable" data-orders-sort="id" title="Сортировать по номеру">№ <span class="sort-ind" data-sort-ind="id"></span></th>
- <th class="sortable" data-orders-sort="name" title="Сортировать по названию">Товар / заказ <span class="sort-ind" data-sort-ind="name"></span></th>
- <th class="sortable" data-orders-sort="shop" title="Клик: точка А→Я / Я→А">Точка <span class="sort-ind" data-sort-ind="shop"></span></th>
- <th class="sortable" data-orders-sort="status" title="Клик: статус · ещё раз — оплата · ещё — оба">Статус / оплата <span class="sort-ind" data-sort-ind="status"></span></th>
- <th class="sortable" data-orders-sort="price" title="Сортировать по сумме">Сумма <span class="sort-ind" data-sort-ind="price"></span></th>
+ <th class="sortable" data-orders-sort="id"><span class="th-label">№ <button type="button" class="sort-btn" data-sort-btn="id" title="Сортировать">↕</button></span></th>
+ <th class="sortable" data-orders-sort="name"><span class="th-label">Товар / заказ <button type="button" class="sort-btn" data-sort-btn="name" title="Сортировать">↕</button></span></th>
+ <th class="sortable" data-orders-sort="shop"><span class="th-label">Точка <button type="button" class="sort-btn" data-sort-btn="shop" title="Сортировать">↕</button></span></th>
+ <th class="sortable" data-orders-sort="status"><span class="th-label">Статус / оплата <button type="button" class="sort-btn" data-sort-btn="status" title="Сортировать">↕</button></span></th>
+ <th class="sortable" data-orders-sort="price"><span class="th-label">Сумма <button type="button" class="sort-btn" data-sort-btn="price" title="Сортировать">↕</button></span></th>
  </tr>
  </thead>
  <tbody id="ordersListBody"></tbody>
@@ -2420,7 +2418,6 @@
   var ordersView = 'list';
   var nomView = 'table';
   var ordersSearch = '';
-  var ordersStatusFilter = '*';
   var ordersSort = 'default';
   var ordersSortDir = 'asc';
   var nomSearch = '';
@@ -2827,28 +2824,38 @@
   }
 
   function updateOrdersSortUI() {
-    $$('#ordersListWrap th.sortable').forEach(function (th) {
-      var key = th.getAttribute('data-orders-sort');
+    $$('#ordersListWrap .sort-btn').forEach(function (btn) {
+      var key = btn.getAttribute('data-sort-btn');
       var active = false;
-      if (key === 'shop') active = ordersSort === 'shop';
-      else if (key === 'status') active = ordersSort === 'status' || ordersSort === 'pay' || ordersSort === 'status_pay';
-      else active = ordersSort === key;
-      th.classList.toggle('on', active);
-      var ind = th.querySelector('.sort-ind');
-      if (!ind) return;
+      if (key === 'status') {
+        active = ordersSort === 'status' || ordersSort === 'pay' || ordersSort === 'status_pay';
+      } else {
+        active = ordersSort === key;
+      }
+      btn.classList.toggle('on', active);
       if (!active) {
-        ind.textContent = '↕';
+        btn.textContent = '↕';
+        btn.title = 'Сортировать';
         return;
       }
-      if (ordersSort === 'status') ind.textContent = ordersSortDir === 'desc' ? '⚙↓' : '⚙↑';
-      else if (ordersSort === 'pay') ind.textContent = ordersSortDir === 'desc' ? '₽↓' : '₽↑';
-      else if (ordersSort === 'status_pay') ind.textContent = '⚙₽';
-      else ind.textContent = ordersSortDir === 'desc' ? '↓' : '↑';
+      if (ordersSort === 'status') {
+        btn.textContent = ordersSortDir === 'desc' ? '↓' : '↑';
+        btn.title = 'По статусу';
+      } else if (ordersSort === 'pay') {
+        btn.textContent = ordersSortDir === 'desc' ? '↓' : '↑';
+        btn.title = 'По оплате';
+      } else if (ordersSort === 'status_pay') {
+        btn.textContent = '↕';
+        btn.title = 'Статус, затем оплата';
+      } else {
+        btn.textContent = ordersSortDir === 'desc' ? '↓' : '↑';
+        btn.title = ordersSortDir === 'desc' ? 'По убыванию' : 'По возрастанию';
+      }
     });
   }
 
   function cycleOrdersSort(key) {
-    // Status column cycles: status → pay → status_pay → off
+    // Status column: status asc/desc → pay asc/desc → status_pay → off
     if (key === 'status') {
       if (ordersSort === 'status' && ordersSortDir === 'asc') {
         ordersSortDir = 'desc';
@@ -2887,9 +2894,8 @@
  if (!body) return;
  var q = (ordersSearch || '').toLowerCase();
  var list = shopFilter(state.orders).filter(function (o) {
- if (ordersStatusFilter !== '*' && o.status !== ordersStatusFilter) return false;
  if (!q) return true;
- return (o.id + ' ' + o.name + ' ' + o.shop + ' ' + (CH_NAMES[o.channel] || '')).toLowerCase().indexOf(q) >= 0;
+ return (o.id + ' ' + o.name + ' ' + o.shop + ' ' + (CH_NAMES[o.channel] || '') + ' ' + fulfillmentAxis(o.status) + ' ' + (PAY_NAMES[orderPayKey(o)] || '')).toLowerCase().indexOf(q) >= 0;
  });
  list = sortOrdersList(list);
  updateOrdersSortUI();
@@ -2900,11 +2906,8 @@
  '<td class="id">' + esc(o.id) + '</td>' +
  '<td><div class="item">' + esc(o.name) + '</div><div class="meta">' + esc(CH_NAMES[o.channel] || o.channel) + '</div></td>' +
  '<td>' + esc(o.shop) + '</td>' +
- '<td><div class="so-axes">' +
- '<span class="axis ff-' + o.status + '" title="Статус">⚙ ' + fulfillmentAxis(o.status) + '</span>' +
- '<span class="axis pay-' + pay + '" title="Оплата">₽ ' + (PAY_NAMES[pay] || pay) + '</span>' +
- '<span class="axis ch-' + o.channel + '">' + (CH_NAMES[o.channel] || o.channel) + '</span>' +
- '</div></td>' +
+ '<td><div class="so-status">' + esc(fulfillmentAxis(o.status)) +
+ '<div class="pay">' + esc(PAY_NAMES[pay] || pay) + '</div></div></td>' +
  '<td class="price">' + fmtPrice(o.price) + '</td></tr>';
  }).join('') || '<tr><td colspan="5" style="padding:16px;color:var(--ink-faint)">Нет заказов</td></tr>';
   }
@@ -4050,13 +4053,13 @@
  });
  var os = $('#ordersSearch');
  if (os) os.addEventListener('input', function () { ordersSearch = this.value; renderOrdersList(); });
- var of = $('#ordersStatusFilter');
- if (of) of.addEventListener('change', function () { ordersStatusFilter = this.value; renderOrdersList(); });
  var olh = document.querySelector('#ordersListWrap thead');
  if (olh) olh.addEventListener('click', function (e) {
-   var th = e.target.closest('th[data-orders-sort]');
-   if (!th) return;
-   cycleOrdersSort(th.getAttribute('data-orders-sort'));
+   var btn = e.target.closest('[data-sort-btn]');
+   if (!btn) return;
+   e.preventDefault();
+   e.stopPropagation();
+   cycleOrdersSort(btn.getAttribute('data-sort-btn'));
    renderOrdersList();
  });
  var olb = $('#ordersListBody');
