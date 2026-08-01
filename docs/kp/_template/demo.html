@@ -958,13 +958,16 @@
   }
   .so-list th.sortable {
  cursor: pointer; user-select: none; white-space: nowrap;
+ transition: color 0.12s;
   }
   .so-list th.sortable:hover { color: var(--terra); }
   .so-list th.sortable .sort-ind {
- font-size: 0.62rem; margin-left: 4px; color: var(--ink-faint); font-weight: 800;
+ display: inline-block; min-width: 0.9em; font-size: 0.68rem; margin-left: 3px;
+ color: var(--ink-faint); font-weight: 800; opacity: 0.45;
   }
+  .so-list th.sortable:hover .sort-ind { opacity: 0.75; }
   .so-list th.sortable.on { color: var(--terra); }
-  .so-list th.sortable.on .sort-ind { color: var(--terra); }
+  .so-list th.sortable.on .sort-ind { color: var(--terra); opacity: 1; }
   .so-list td {
  padding: 11px 12px; border-bottom: 1px solid var(--border);
  font-size: 0.86rem; color: var(--ink-dim); vertical-align: middle;
@@ -1704,26 +1707,17 @@
  <option value="delivering">В доставке</option>
  <option value="done">Доставлен</option>
  </select>
- <select id="ordersSort" title="Сортировка списка">
- <option value="default">Сортировка · как есть</option>
- <option value="shop_asc">Точка · А→Я</option>
- <option value="shop_desc">Точка · Я→А</option>
- <option value="status">Статус · воронка</option>
- <option value="pay">Оплата</option>
- <option value="status_pay">Статус, затем оплата</option>
- <option value="shop_status">Точка, затем статус</option>
- </select>
  <button type="button" class="btn terra" data-action="newOrder" id="btnNewOrder">+ Новый заказ</button>
  </div>
  <div id="ordersListWrap" class="on">
  <table class="so-list">
  <thead>
  <tr>
- <th>№</th>
- <th>Товар / клиентский заказ</th>
- <th class="sortable" data-orders-sort="shop" title="Сортировать по точке">Точка <span class="sort-ind" id="sortIndShop"></span></th>
- <th class="sortable" data-orders-sort="status_pay" title="Сортировать по статусу и оплате">Статус и оплата <span class="sort-ind" id="sortIndStatus"></span></th>
- <th>Сумма</th>
+ <th class="sortable" data-orders-sort="id" title="Сортировать по номеру">№ <span class="sort-ind" data-sort-ind="id"></span></th>
+ <th class="sortable" data-orders-sort="name" title="Сортировать по названию">Товар / заказ <span class="sort-ind" data-sort-ind="name"></span></th>
+ <th class="sortable" data-orders-sort="shop" title="Клик: точка А→Я / Я→А">Точка <span class="sort-ind" data-sort-ind="shop"></span></th>
+ <th class="sortable" data-orders-sort="status" title="Клик: статус · ещё раз — оплата · ещё — оба">Статус / оплата <span class="sort-ind" data-sort-ind="status"></span></th>
+ <th class="sortable" data-orders-sort="price" title="Сортировать по сумме">Сумма <span class="sort-ind" data-sort-ind="price"></span></th>
  </tr>
  </thead>
  <tbody id="ordersListBody"></tbody>
@@ -2479,6 +2473,7 @@
   var ordersSearch = '';
   var ordersStatusFilter = '*';
   var ordersSort = 'default';
+  var ordersSortDir = 'asc';
   var nomSearch = '';
   var nomGroup = '*';
 
@@ -2847,66 +2842,94 @@
     var mode = ordersSort || 'default';
     if (mode === 'default') return list;
     var arr = list.slice();
+    var dir = ordersSortDir === 'desc' ? -1 : 1;
     arr.sort(function (a, b) {
-      if (mode === 'shop_asc' || mode === 'shop_desc') {
-        var cmp = String(a.shop || '').localeCompare(String(b.shop || ''), 'ru');
-        if (cmp !== 0) return mode === 'shop_desc' ? -cmp : cmp;
-        return String(a.id).localeCompare(String(b.id));
-      }
-      if (mode === 'status') {
+      var r = 0;
+      if (mode === 'shop') {
+        r = String(a.shop || '').localeCompare(String(b.shop || ''), 'ru');
+      } else if (mode === 'status') {
         var sa = STATUS_ORDER[a.status] != null ? STATUS_ORDER[a.status] : 99;
         var sb = STATUS_ORDER[b.status] != null ? STATUS_ORDER[b.status] : 99;
-        if (sa !== sb) return sa - sb;
-        return String(a.id).localeCompare(String(b.id));
-      }
-      if (mode === 'pay') {
+        r = sa - sb;
+      } else if (mode === 'pay') {
         var pa = PAY_ORDER[orderPayKey(a)] != null ? PAY_ORDER[orderPayKey(a)] : 99;
         var pb = PAY_ORDER[orderPayKey(b)] != null ? PAY_ORDER[orderPayKey(b)] : 99;
-        if (pa !== pb) return pa - pb;
-        return String(a.id).localeCompare(String(b.id));
-      }
-      if (mode === 'status_pay') {
+        r = pa - pb;
+      } else if (mode === 'status_pay') {
         var s1 = STATUS_ORDER[a.status] != null ? STATUS_ORDER[a.status] : 99;
         var s2 = STATUS_ORDER[b.status] != null ? STATUS_ORDER[b.status] : 99;
-        if (s1 !== s2) return s1 - s2;
-        var p1 = PAY_ORDER[orderPayKey(a)] != null ? PAY_ORDER[orderPayKey(a)] : 99;
-        var p2 = PAY_ORDER[orderPayKey(b)] != null ? PAY_ORDER[orderPayKey(b)] : 99;
-        if (p1 !== p2) return p1 - p2;
-        return String(a.id).localeCompare(String(b.id));
+        r = s1 - s2;
+        if (r === 0) {
+          var p1 = PAY_ORDER[orderPayKey(a)] != null ? PAY_ORDER[orderPayKey(a)] : 99;
+          var p2 = PAY_ORDER[orderPayKey(b)] != null ? PAY_ORDER[orderPayKey(b)] : 99;
+          r = p1 - p2;
+        }
+      } else if (mode === 'id') {
+        r = String(a.id || '').localeCompare(String(b.id || ''), 'ru');
+      } else if (mode === 'name') {
+        r = String(a.name || '').localeCompare(String(b.name || ''), 'ru');
+      } else if (mode === 'price') {
+        r = (a.price || 0) - (b.price || 0);
       }
-      if (mode === 'shop_status') {
-        var sc = String(a.shop || '').localeCompare(String(b.shop || ''), 'ru');
-        if (sc !== 0) return sc;
-        var ss1 = STATUS_ORDER[a.status] != null ? STATUS_ORDER[a.status] : 99;
-        var ss2 = STATUS_ORDER[b.status] != null ? STATUS_ORDER[b.status] : 99;
-        if (ss1 !== ss2) return ss1 - ss2;
-        return String(a.id).localeCompare(String(b.id));
-      }
-      return 0;
+      if (r === 0) r = String(a.id || '').localeCompare(String(b.id || ''), 'ru');
+      return r * dir;
     });
     return arr;
   }
 
   function updateOrdersSortUI() {
-    var sel = $('#ordersSort');
-    if (sel && sel.value !== ordersSort) sel.value = ordersSort;
-    var shopTh = document.querySelector('th[data-orders-sort="shop"]');
-    var stTh = document.querySelector('th[data-orders-sort="status_pay"]');
-    var indShop = $('#sortIndShop');
-    var indSt = $('#sortIndStatus');
-    if (shopTh) shopTh.classList.toggle('on', ordersSort === 'shop_asc' || ordersSort === 'shop_desc' || ordersSort === 'shop_status');
-    if (stTh) stTh.classList.toggle('on', ordersSort === 'status' || ordersSort === 'pay' || ordersSort === 'status_pay');
-    if (indShop) {
-      if (ordersSort === 'shop_asc') indShop.textContent = '↑';
-      else if (ordersSort === 'shop_desc') indShop.textContent = '↓';
-      else if (ordersSort === 'shop_status') indShop.textContent = '↕';
-      else indShop.textContent = '';
+    $$('#ordersListWrap th.sortable').forEach(function (th) {
+      var key = th.getAttribute('data-orders-sort');
+      var active = false;
+      if (key === 'shop') active = ordersSort === 'shop';
+      else if (key === 'status') active = ordersSort === 'status' || ordersSort === 'pay' || ordersSort === 'status_pay';
+      else active = ordersSort === key;
+      th.classList.toggle('on', active);
+      var ind = th.querySelector('.sort-ind');
+      if (!ind) return;
+      if (!active) {
+        ind.textContent = '↕';
+        return;
+      }
+      if (ordersSort === 'status') ind.textContent = ordersSortDir === 'desc' ? '⚙↓' : '⚙↑';
+      else if (ordersSort === 'pay') ind.textContent = ordersSortDir === 'desc' ? '₽↓' : '₽↑';
+      else if (ordersSort === 'status_pay') ind.textContent = '⚙₽';
+      else ind.textContent = ordersSortDir === 'desc' ? '↓' : '↑';
+    });
+  }
+
+  function cycleOrdersSort(key) {
+    // Status column cycles: status → pay → status_pay → off
+    if (key === 'status') {
+      if (ordersSort === 'status' && ordersSortDir === 'asc') {
+        ordersSortDir = 'desc';
+      } else if (ordersSort === 'status' && ordersSortDir === 'desc') {
+        ordersSort = 'pay';
+        ordersSortDir = 'asc';
+      } else if (ordersSort === 'pay' && ordersSortDir === 'asc') {
+        ordersSortDir = 'desc';
+      } else if (ordersSort === 'pay' && ordersSortDir === 'desc') {
+        ordersSort = 'status_pay';
+        ordersSortDir = 'asc';
+      } else if (ordersSort === 'status_pay') {
+        ordersSort = 'default';
+        ordersSortDir = 'asc';
+      } else {
+        ordersSort = 'status';
+        ordersSortDir = 'asc';
+      }
+      return;
     }
-    if (indSt) {
-      if (ordersSort === 'status') indSt.textContent = '⚙';
-      else if (ordersSort === 'pay') indSt.textContent = '₽';
-      else if (ordersSort === 'status_pay') indSt.textContent = '↕';
-      else indSt.textContent = '';
+    // Other columns: asc → desc → off
+    if (ordersSort === key) {
+      if (ordersSortDir === 'asc') ordersSortDir = 'desc';
+      else {
+        ordersSort = 'default';
+        ordersSortDir = 'asc';
+      }
+    } else {
+      ordersSort = key;
+      ordersSortDir = 'asc';
     }
   }
 
@@ -4080,24 +4103,11 @@
  if (os) os.addEventListener('input', function () { ordersSearch = this.value; renderOrdersList(); });
  var of = $('#ordersStatusFilter');
  if (of) of.addEventListener('change', function () { ordersStatusFilter = this.value; renderOrdersList(); });
- var osort = $('#ordersSort');
- if (osort) osort.addEventListener('change', function () { ordersSort = this.value; renderOrdersList(); });
  var olh = document.querySelector('#ordersListWrap thead');
  if (olh) olh.addEventListener('click', function (e) {
    var th = e.target.closest('th[data-orders-sort]');
    if (!th) return;
-   var key = th.getAttribute('data-orders-sort');
-   if (key === 'shop') {
-     if (ordersSort === 'shop_asc') ordersSort = 'shop_desc';
-     else if (ordersSort === 'shop_desc') ordersSort = 'shop_status';
-     else if (ordersSort === 'shop_status') ordersSort = 'default';
-     else ordersSort = 'shop_asc';
-   } else if (key === 'status_pay') {
-     if (ordersSort === 'status') ordersSort = 'pay';
-     else if (ordersSort === 'pay') ordersSort = 'status_pay';
-     else if (ordersSort === 'status_pay') ordersSort = 'default';
-     else ordersSort = 'status';
-   }
+   cycleOrdersSort(th.getAttribute('data-orders-sort'));
    renderOrdersList();
  });
  var olb = $('#ordersListBody');
