@@ -150,6 +150,22 @@
  transition: all 0.2s; box-shadow: 0 4px 14px rgba(224, 107, 74, 0.28);
   }
   .chip.terra:hover { background: var(--terra-2); transform: translateY(-1px); }
+  .btn-new-order,
+  .chip.terra[data-action="newOrder"],
+  #btnNewOrder {
+ font-size: 0.95rem !important;
+ font-weight: 800 !important;
+ letter-spacing: -0.01em;
+ padding: 12px 20px !important;
+ border-radius: 12px !important;
+ box-shadow: 0 6px 18px rgba(224, 107, 74, 0.35) !important;
+  }
+  .btn-new-order:hover,
+  .chip.terra[data-action="newOrder"]:hover,
+  #btnNewOrder:hover {
+ transform: translateY(-1px);
+ box-shadow: 0 8px 22px rgba(224, 107, 74, 0.42) !important;
+  }
   .chip .dot.ok { background: var(--terra); }
   .chip .dot.online { background: var(--sage); }
 
@@ -1618,7 +1634,7 @@
   <header class="topbar">
  <div class="crumb"><b>Кабинет</b><span class="sep">·</span><span id="crumbView">Сегодня</span></div>
  <div class="tb-chips">
- <button class="chip terra" data-action="newOrder">+ Новый заказ</button>
+ <button type="button" class="chip terra btn-new-order" data-action="newOrder">+ Новый заказ</button>
  </div>
   </header>
 
@@ -1689,7 +1705,7 @@
  <button type="button" class="on" data-oview="list">Список</button>
  </div>
  <input type="search" id="ordersSearch" class="grow" placeholder="№ заказа, товар, точка…" autocomplete="off" />
- <button type="button" class="btn terra" data-action="newOrder" id="btnNewOrder">+ Новый заказ</button>
+ <button type="button" class="btn terra btn-new-order" data-action="newOrder" id="btnNewOrder">+ Новый заказ</button>
  </div>
  <div id="ordersListWrap" class="on">
  <table class="so-list">
