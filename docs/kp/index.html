@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bloom CRM — хаб КП</title>
+  <meta name="description" content="Каталог коммерческих предложений Bloom CRM для заказчиков." />
+  <style>
+    :root {
+      --bg: #0f1412;
+      --card: #1a221e;
+      --ink: #f2f5f2;
+      --mute: #9aaba2;
+      --line: #2a3830;
+      --terra: #c45c3e;
+      --terra-2: #e8a090;
+      --ok: #6bcf8e;
+      --draft: #c9a227;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1e2e26 0%, var(--bg) 55%);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 40px 20px 80px; }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 8px;
+    }
+    .mark {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(145deg, var(--terra), #8b3a28);
+      display: grid; place-items: center; font-weight: 700; font-size: 18px;
+    }
+    h1 { font-size: 1.75rem; margin: 0 0 8px; font-weight: 650; letter-spacing: -0.02em; }
+    .lead { color: var(--mute); margin: 0 0 28px; max-width: 36em; }
+    .hint {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 14px 16px; color: var(--mute);
+      font-size: 0.92rem; margin-bottom: 28px;
+    }
+    .hint code { color: var(--terra-2); font-size: 0.88em; }
+    .list { display: grid; gap: 14px; }
+    .card {
+      display: block; text-decoration: none; color: inherit;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 18px 20px;
+      transition: border-color .15s, transform .15s;
+    }
+    .card:hover { border-color: var(--terra); transform: translateY(-1px); }
+    .row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline; justify-content: space-between; }
+    .card h2 { margin: 0; font-size: 1.15rem; font-weight: 600; }
+    .meta { color: var(--mute); font-size: 0.88rem; margin-top: 6px; }
+    .badge {
+      font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; padding: 4px 8px; border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    .badge.active { color: var(--ok); border-color: #2d5a3c; background: #15251a; }
+    .badge.draft { color: var(--draft); border-color: #5a4a1a; background: #241e10; }
+    .badge.archived { color: var(--mute); }
+    .links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .links a {
+      color: var(--terra-2); font-size: 0.88rem; text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    .links a:hover { border-bottom-color: var(--terra-2); }
+    footer { margin-top: 40px; color: var(--mute); font-size: 0.85rem; }
+    footer a { color: var(--mute); }
+    .err { color: #f0a0a0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="mark">B</div>
+      <div>
+        <div style="font-size:0.8rem;color:var(--mute);letter-spacing:0.06em;text-transform:uppercase">Bloom CRM</div>
+        <h1>Хаб коммерческих предложений</h1>
+      </div>
+    </div>
+    <p class="lead">
+      Здесь лежат КП и демо для заказчиков. Каждый клиент — отдельная папка
+      <code style="color:var(--terra-2)">/kp/{имя}/</code>. Продукт CRM появится отдельно позже.
+    </p>
+
+    <div class="hint">
+      Новое КП: <code>.\docs\scripts\new-kp.ps1 -Slug roza-spb -Title "…" -Client "…"</code>
+      · документация: <code>docs/kp/README.md</code>
+    </div>
+
+    <div id="list" class="list">
+      <!-- fallback без JS -->
+      <a class="card" href="kp/demo/">
+        <div class="row">
+          <h2>Bloom CRM — демо КП</h2>
+          <span class="badge active">active</span>
+        </div>
+        <div class="meta">Демо / pre-sales · 2026-08-01</div>
+        <div class="links">
+          <span>КП →</span>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      <strong>crmbloom.ru</strong> · pre-sales / КП. Не боевая CRM.
+      · <a href="https://github.com/ivansvetlov/bloom-crm">репозиторий</a>
+    </footer>
+  </div>
+
+  <script>
+    (async function () {
+      const root = document.getElementById('list');
+      try {
+        const res = await fetch('kp/index.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('index.json ' + res.status);
+        const data = await res.json();
+        const clients = (data.clients || []).slice().sort((a, b) =>
+          String(b.created || '').localeCompare(String(a.created || ''))
+        );
+        if (!clients.length) {
+          root.innerHTML = '<p class="err">В реестре пока нет КП.</p>';
+          return;
+        }
+        root.innerHTML = clients.map((c) => {
+          const slug = c.slug;
+          const base = 'kp/' + encodeURIComponent(slug) + '/';
+          const st = (c.status || 'draft').toLowerCase();
+          return (
+            '<article class="card" style="cursor:default">' +
+              '<div class="row">' +
+                '<h2>' + esc(c.title || slug) + '</h2>' +
+                '<span class="badge ' + esc(st) + '">' + esc(st) + '</span>' +
+              '</div>' +
+              '<div class="meta">' + esc(c.client || '') +
+                (c.created ? ' · ' + esc(c.created) : '') +
+                (c.summary ? '<br>' + esc(c.summary) : '') +
+              '</div>' +
+              '<div class="links">' +
+                '<a href="' + base + (c.entry || 'index.html') + '">КП</a>' +
+                '<a href="' + base + 'demo.html">Демо</a>' +
+                '<a href="' + base + 'questions.html">Опросник</a>' +
+                '<a href="' + base + 'test-dynamic.html">Роли / 12 недель</a>' +
+              '</div>' +
+            '</article>'
+          );
+        }).join('');
+      } catch (e) {
+        console.warn(e);
+        /* leave fallback */
+      }
+
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+    })();
+  </script>
+</body>
+</html>
