@@ -2337,6 +2337,82 @@
   </div>
 </div>
 
+<!-- ═════════════ MODAL · NEW TASK ═════════════ -->
+<div class="modal" id="taskModal">
+  <div class="modal-head">
+    <span class="m-title">Новая задача</span>
+    <button type="button" class="modal-close" data-action="closeTaskModal" aria-label="Закрыть">✕</button>
+  </div>
+  <div class="modal-body">
+    <p class="modal-hint">Задача для смены: что сделать, к какому сроку, кто отвечает и с чем связано.</p>
+    <div class="field-wrap full">
+      <label for="tTitle">Что сделать *</label>
+      <input id="tTitle" type="text" placeholder="Например: согласовать фото букета" value="" />
+    </div>
+    <div class="field-wrap full">
+      <label for="tBody">Описание</label>
+      <textarea id="tBody" placeholder="Детали, что важно не забыть…"></textarea>
+    </div>
+    <div class="field-wrap">
+      <label for="tStatus">Статус</label>
+      <select id="tStatus">
+        <option value="todo">К выполнению</option>
+        <option value="doing">В работе</option>
+        <option value="done">Готово</option>
+      </select>
+    </div>
+    <div class="field-wrap">
+      <label for="tDue">Срок</label>
+      <input id="tDue" type="text" placeholder="сегодня 16:00 / завтра" value="сегодня" />
+    </div>
+    <div class="field-wrap">
+      <label for="tAssignee">Исполнитель</label>
+      <select id="tAssignee">
+        <option value="Анна К.">Анна К.</option>
+        <option value="Игорь М.">Игорь М.</option>
+        <option value="Света П.">Света П.</option>
+        <option value="Максим Р.">Максим Р.</option>
+      </select>
+    </div>
+    <div class="field-wrap">
+      <label for="tRelType">Связь с</label>
+      <select id="tRelType">
+        <option value="shop">Точка</option>
+        <option value="order">Заказ</option>
+        <option value="client">Клиент</option>
+        <option value="chat">Чат</option>
+        <option value="sku">Номенклатура</option>
+        <option value="none">Без связи</option>
+      </select>
+    </div>
+    <div class="field-wrap full">
+      <label for="tRelLabel">Что именно (заказ, клиент, точка…)</label>
+      <input id="tRelLabel" type="text" placeholder="FW-1042 / Марина К. / Мира 14" value="" />
+    </div>
+    <div class="field-wrap">
+      <label for="tPriority">Приоритет</label>
+      <select id="tPriority">
+        <option value="normal">Обычный</option>
+        <option value="high">Высокий</option>
+        <option value="low">Низкий</option>
+      </select>
+    </div>
+    <div class="field-wrap">
+      <label for="tShop">Точка</label>
+      <select id="tShop">
+        <option value="Мира 14">Мира 14</option>
+        <option value="Ленина 92">Ленина 92</option>
+        <option value="Рижская 8">Рижская 8</option>
+        <option value="*">Вся сеть</option>
+      </select>
+    </div>
+  </div>
+  <div class="modal-actions">
+    <button type="button" class="btn ghost" data-action="closeTaskModal">Отмена</button>
+    <button type="button" class="btn terra" data-action="saveTask">Создать задачу</button>
+  </div>
+</div>
+
 <div class="drawer-scrim" id="drawerScrim"></div>
 <div class="order-drawer" id="orderDrawer">
   <div class="od-head">
@@ -3096,7 +3172,114 @@
   function closeModal() {
     $('#scrim').classList.remove('show');
     $('#orderModal').classList.remove('show');
+    var tm = $('#taskModal');
+    if (tm) tm.classList.remove('show');
     state.simPaused = false;
+  }
+
+  function openTaskModal(prefills) {
+    prefills = prefills || {};
+    state.simPaused = true;
+    if ($('#tTitle')) $('#tTitle').value = prefills.title || '';
+    if ($('#tBody')) $('#tBody').value = prefills.body || '';
+    if ($('#tStatus')) $('#tStatus').value = prefills.status || 'todo';
+    if ($('#tDue')) $('#tDue').value = prefills.due || 'сегодня';
+    if ($('#tAssignee')) {
+      var a = prefills.assignee || state.assignee || 'Анна К.';
+      $('#tAssignee').value = a;
+      // if custom name not in list, still show via first option override
+      var opts = Array.prototype.map.call($('#tAssignee').options, function (o) { return o.value; });
+      if (opts.indexOf(a) < 0 && $('#tAssignee').options.length) {
+        $('#tAssignee').options[0].value = a;
+        $('#tAssignee').options[0].textContent = a;
+        $('#tAssignee').value = a;
+      }
+    }
+    if ($('#tRelType')) $('#tRelType').value = prefills.relType || 'shop';
+    if ($('#tRelLabel')) $('#tRelLabel').value = prefills.relLabel || (state.shop !== '*' ? state.shop : '');
+    if ($('#tPriority')) $('#tPriority').value = prefills.priority || 'normal';
+    if ($('#tShop')) {
+      $('#tShop').value = prefills.shop || (state.shop !== '*' ? state.shop : 'Мира 14');
+    }
+    $('#scrim').classList.add('show');
+    var tm = $('#taskModal');
+    if (tm) tm.classList.add('show');
+    setTimeout(function () {
+      var el = $('#tTitle');
+      if (el) el.focus();
+    }, 200);
+  }
+
+  function closeTaskModal() {
+    var tm = $('#taskModal');
+    if (tm) tm.classList.remove('show');
+    // keep scrim if order modal still open
+    if (!$('#orderModal') || !$('#orderModal').classList.contains('show')) {
+      $('#scrim').classList.remove('show');
+      state.simPaused = false;
+    }
+  }
+
+  function saveTask() {
+    var title = ($('#tTitle') && $('#tTitle').value.trim()) || '';
+    var body = ($('#tBody') && $('#tBody').value.trim()) || '';
+    var status = ($('#tStatus') && $('#tStatus').value) || 'todo';
+    var due = ($('#tDue') && $('#tDue').value.trim()) || 'сегодня';
+    var assignee = ($('#tAssignee') && $('#tAssignee').value) || (state.assignee || 'Анна К.');
+    var relType = ($('#tRelType') && $('#tRelType').value) || 'none';
+    var relLabel = ($('#tRelLabel') && $('#tRelLabel').value.trim()) || '';
+    var priority = ($('#tPriority') && $('#tPriority').value) || 'normal';
+    var shop = ($('#tShop') && $('#tShop').value) || '*';
+
+    if (!title) {
+      toast('Укажите, что сделать');
+      if ($('#tTitle')) $('#tTitle').focus();
+      return;
+    }
+
+    if (relType === 'none') {
+      relType = 'shop';
+      relLabel = relLabel || (shop === '*' ? 'Сеть' : shop);
+    } else if (!relLabel) {
+      if (relType === 'shop') relLabel = shop === '*' ? 'Сеть' : shop;
+      else relLabel = '—';
+    }
+
+    var relId = relLabel;
+    if (relType === 'order') {
+      var o = state.orders.filter(function (x) {
+        return x.id === relLabel || (x.id && x.id.toLowerCase() === relLabel.toLowerCase());
+      })[0];
+      if (o) { relId = o.id; relLabel = o.id; }
+    } else if (relType === 'client') {
+      var cl = clients.filter(function (c) {
+        return c.name === relLabel || c.id === relLabel;
+      })[0];
+      if (cl) { relId = cl.id; relLabel = cl.name; }
+    } else if (relType === 'shop') {
+      relId = shop === '*' ? (relLabel || 'Сеть') : shop;
+      if (!relLabel || relLabel === '—') relLabel = shop === '*' ? 'Сеть' : shop;
+    }
+
+    var id = 't' + (tasks.length + 1) + '-' + Date.now().toString(36).slice(-4);
+    tasks.unshift({
+      id: id,
+      title: title,
+      status: status,
+      due: due,
+      assignee: assignee,
+      relType: relType,
+      relId: relId,
+      relLabel: relLabel,
+      body: body,
+      priority: priority,
+      shop: shop
+    });
+    state.taskId = id;
+    closeTaskModal();
+    if (state.view !== 'tasks') switchView('tasks');
+    else renderTasks();
+    toast('Задача создана');
   }
 
   function saveOrder() {
@@ -3673,6 +3856,8 @@
  if (a === 'newOrder') openModal();
  if (a === 'closeModal') closeModal();
  if (a === 'saveOrder') saveOrder();
+ if (a === 'closeTaskModal') closeTaskModal();
+ if (a === 'saveTask') saveTask();
  if (a === 'reset') reset();
  });
 
@@ -4886,16 +5071,50 @@
  };
  var bt = $('#btnNoteToTask');
  if (bt) bt.onclick = function () {
- var id = 't' + (tasks.length + 1);
- tasks.unshift({
- id: id, title: n.title, status: 'todo', due: 'сегодня', assignee: state.assignee,
- relType: n.relType, relId: n.relId, relLabel: n.relLabel, body: n.body
+ openTaskModal({
+   title: n.title,
+   body: n.body || '',
+   status: 'todo',
+   due: 'сегодня',
+   assignee: state.assignee || 'Анна К.',
+   relType: n.relType || 'none',
+   relLabel: n.relLabel || '',
+   shop: state.shop !== '*' ? state.shop : 'Мира 14'
  });
- state.taskId = id;
- switchView('tasks');
- toast('Задача создана из заметки');
  };
   }
+
+  /* task list events (search / filter / create / row click) */
+  (function bindTasksUI() {
+    var ts = $('#taskSearch');
+    if (ts) ts.addEventListener('input', function () { taskSearch = this.value; renderTasks(); });
+    var tf = $('#taskStatusFilter');
+    if (tf) tf.addEventListener('change', function () { taskFilter = this.value; renderTasks(); });
+    var bat = $('#btnAddTask');
+    if (bat) bat.addEventListener('click', function () { openTaskModal(); });
+    var tb = $('#tasksBody');
+    if (tb) {
+      tb.addEventListener('click', function (e) {
+        var tog = e.target.closest('[data-task-toggle]');
+        if (tog) {
+          e.stopPropagation();
+          var tid = tog.getAttribute('data-task-toggle');
+          var task = tasks.filter(function (x) { return x.id === tid; })[0];
+          if (!task) return;
+          task.status = task.status === 'done' ? 'todo' : 'done';
+          state.taskId = tid;
+          renderTasks();
+          toast(task.status === 'done' ? 'Готово' : 'Снова к выполнению');
+          return;
+        }
+        var row = e.target.closest('[data-task]');
+        if (row) {
+          state.taskId = row.getAttribute('data-task');
+          renderTasks();
+        }
+      });
+    }
+  })();
 
 
   /* ────────────────────────── CASES ────────────────────────── */
