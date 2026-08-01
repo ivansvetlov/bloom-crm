@@ -3,1638 +3,1908 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Один кабинет для всей вашей флористики — КП</title>
-<meta name="description" content="Операционная CRM для сети цветочных салонов: заказы Flowwow, прямые продажи и чаты WhatsApp, Telegram, MAX в одном кабинете.">
+<title>Bloom CRM — консольное КП</title>
+<meta name="description" content="Операционная CRM для сети цветочных салонов: заказы Flowwow, прямые продажи и чаты WhatsApp, Telegram, MAX в одном кабинете. Консоль-представление КП.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@600;700;800;900&family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&family=Spectral:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ═══════════════ DESIGN SYSTEM · BLOOM ═══════════════ */
+  /* ═══════════════ CONSOLE DESIGN SYSTEM · BLOOM ═══════════════ */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    /* Cream scale — warm paper */
-    --cream:   #FAF6EF;
-    --cream-2: #F2EADD;
-    --cream-3: #E8DFCF;
-    /* Ink scale — warm text */
-    --ink:     #2A2520;
-    --ink-dim: #5A4F46;
-    --ink-mute:#8A8170;
+    /* Neutral light — Linear/Vercel */
+    --bg:        #F6F6F4;
+    --bg-2:      #FFFFFF;
+    --bg-3:      #EFEFEC;
+    --border:    #E5E5E1;
+    --border-2:  #D8D8D3;
+    --ink:       #18181B;
+    --ink-dim:   #3F3F46;
+    --ink-mute:  #8E8E93;
+    --ink-faint: #B4B4B8;
 
-    /* Accents — florist warmth */
-    --terra:   #C76B47;   /* primary */
-    --terra-2: #B5573A;   /* hover */
-    --terra-soft: #F0D4C5;
-    --sage:    #7C8B6F;   /* success / statuses */
-    --sage-soft:#DDE5D6;
-    --plum:    #6B4865;   /* premium */
-    --amber:   #D9A441;   /* CTA / new order */
-    --amber-2: #C8912E;
+    /* Brand — florist warmth */
+    --terra:    #C76B47;
+    --terra-2:  #B5573A;
+    --terra-soft: #FAEFE8;
+    --sage:     #7C8B6F;
+    --sage-soft:#EFF3EB;
+    --plum:     #6B4865;
+    --plum-soft:#F1EAEE;
+    --amber:    #D9A441;
+    --amber-soft:#F8F0DC;
+    --red:      #D6493A;
+    --red-soft: #FBEDEB;
 
-    --hairline: #DDD3C2;
+    --font:    'Inter', system-ui, -apple-system, sans-serif;
+    --mono:    'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
 
-    --font:         'Inter', 'Roboto Flex', system-ui, sans-serif;
-    --font-brand:   'Roboto Flex', 'Inter', sans-serif;
-    --font-display: 'Manrope', 'Roboto Flex', var(--font);
-    --font-serif:   'Spectral', Georgia, serif;
-    --font-mono:    'JetBrains Mono', 'SF Mono', monospace;
-
-    --ease: cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-hard: cubic-bezier(0.77, 0, 0.18, 1);
-    --radius: 18px;
-    --radius-sm: 12px;
-    --radius-pill: 999px;
+    --ease:    cubic-bezier(0.16, 1, 0.3, 1);
+    --radius:  12px;
+    --radius-sm: 8px;
+    --sidebar-w: 252px;
+    --topbar-h: 56px;
   }
 
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
   body {
     font-family: var(--font);
-    background: var(--cream);
+    background: var(--bg);
     color: var(--ink);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    font-size: 15px;
   }
 
-  /* Soft color wash (flower warmth) */
-  body::after {
-    content: '';
-    position: fixed; inset: 0; z-index: 1; pointer-events: none;
-    background-image:
-      radial-gradient(circle at 15% 20%, rgba(199,107,71,0.05), transparent 45%),
-      radial-gradient(circle at 85% 75%, rgba(123,139,111,0.05), transparent 45%),
-      radial-gradient(circle at 60% 10%, rgba(217,164,65,0.04), transparent 40%);
-  }
-  /* Subtle grain */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 2; pointer-events: none;
-    opacity: 0.035;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  }
+  ::selection { background: var(--terra); color: #fff; }
 
-  ::selection { background: var(--terra); color: var(--cream); }
-
-  /* ═════════════ TOP BAR ═════════════ */
-  .top-bar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 28px;
-    background: linear-gradient(180deg, rgba(250,246,239,0.92), rgba(250,246,239,0));
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    font-family: var(--font-mono); font-size: 0.72rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--ink-mute);
-    transition: opacity 0.6s var(--ease);
-  }
-  .top-bar .brand-mark {
-    display: flex; align-items: center; gap: 10px;
-    color: var(--ink); font-weight: 600;
-  }
-  .top-bar .brand-mark svg { width: 22px; height: 22px; }
-  .top-bar .doc-tag { color: var(--terra); font-weight: 600; }
-
-  /* ═════════════ CHAPTER RAIL ═════════════ */
-  .chapter-rail {
-    position: fixed; left: 28px; top: 50%; transform: translateY(-50%);
-    z-index: 40;
-    display: flex; flex-direction: column; gap: 20px;
-    font-family: var(--font-mono); font-size: 0.64rem;
-    letter-spacing: 0.1em;
-    transition: opacity 0.6s var(--ease);
-  }
-  .ch-link {
-    display: flex; align-items: center; gap: 12px;
-    color: var(--ink-mute); text-decoration: none; cursor: pointer;
-    transition: color var(--ease);
-  }
-  .ch-link::before {
-    content: ''; width: 16px; height: 1px; background: currentColor;
-    transition: width var(--ease);
-  }
-  .ch-link span { opacity: 0; transition: opacity var(--ease); }
-  .ch-link.active { color: var(--terra); }
-  .ch-link.active::before { width: 32px; }
-  .ch-link.active span, .ch-link:hover span { opacity: 1; }
-  .ch-link:hover { color: var(--ink); }
-
-  /* ═════════════ CHAPTERS ═════════════ */
-  .chapter {
-    position: relative; z-index: 3;
-    min-height: 100vh;
-    padding: 110px 80px 90px;
+  /* Volumetric floral backdrop */
+  .bg-decor {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
     overflow: hidden;
   }
-  .ch-num {
-    font-family: var(--font-mono); font-size: 0.72rem;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--ink-mute); margin-bottom: 18px;
+  .bg-decor__svg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
   }
-  .ch-num .ch-of { color: var(--terra); }
+  .app, .main, .content { position: relative; }
+  .content { background: rgba(246,246,244,0.55); }
 
-  /* ═════════════ TYPOGRAPHIC MORPH ═════════════ */
-  .morph-headline {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: clamp(2.6rem, 9vw, 7.5rem);
-    line-height: 0.98;
-    letter-spacing: -0.035em;
-    will-change: opacity, letter-spacing;
-    color: var(--ink);
+  /* Scrollbars — console-like thin */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 6px; border: 2px solid var(--bg); }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  /* ═════════════ APP SHELL ═════════════ */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ═════════════ SIDEBAR ═════════════ */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 60;
+    width: var(--sidebar-w);
+    display: flex; flex-direction: column;
+    background: var(--bg-2);
+    border-right: 1px solid var(--border);
+    padding: 16px 12px;
+    transition: transform 0.35s var(--ease);
   }
-  .hero h1.morph-headline { font-size: clamp(2.2rem, 6.5vw, 5.2rem); }
-  h2.morph-headline { font-size: clamp(1.9rem, 4.6vw, 3.4rem); }
-  .morph-headline .word { display: inline-block; }
-  .morph-headline .terra { color: var(--terra); }
-  .morph-headline .plum  { color: var(--plum); }
-  .morph-headline .outline {
-    -webkit-text-stroke: 2px var(--ink);
-    color: transparent;
+  .sb-brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .sb-brand svg { width: 22px; height: 22px; flex-shrink: 0; }
+  .sb-brand .b-name {
+    font-weight: 800; font-size: 0.94rem; letter-spacing: -0.02em;
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .sb-brand .b-name .pro {
+    font-size: 0.58rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--terra);
+    border: 1px solid var(--terra-soft); background: var(--terra-soft);
+    padding: 2px 7px; border-radius: 999px;
   }
 
-  .ch-lede {
-    font-family: var(--font-serif); font-style: italic;
-    font-size: clamp(1.1rem, 1.7vw, 1.35rem);
-    color: var(--ink-dim); max-width: 600px;
-    line-height: 1.65; margin-top: 28px;
+  .sb-label {
+    font-family: var(--mono); font-size: 0.6rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-faint); padding: 0 10px; margin: 12px 0 8px;
   }
-  .ch-lede strong { color: var(--ink); font-weight: 500; font-style: normal; }
-  .ch-lede em { color: var(--terra); font-style: italic; }
+
+  .sb-nav { display: flex; flex-direction: column; gap: 1px; overflow-y: auto; flex: 1; }
+  .sb-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; border-radius: 7px;
+    font-size: 0.86rem; font-weight: 500; color: var(--ink-mute);
+    text-decoration: none; cursor: pointer; border: none; background: none;
+    text-align: left; font-family: var(--font);
+    transition: background 0.15s, color 0.15s;
+  }
+  .sb-link .idx { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-faint); width: 20px; }
+  .sb-link:hover { background: var(--bg-3); color: var(--ink-dim); }
+  .sb-link.active {
+    background: var(--bg-3); color: var(--ink); font-weight: 600;
+  }
+  .sb-link.active .idx { color: var(--terra); }
+
+  .sb-foot {
+    margin-top: 12px; padding: 12px 10px 4px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono); font-size: 0.64rem; line-height: 1.8;
+    color: var(--ink-mute);
+  }
+  .sb-foot .row { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dot.online { background: var(--sage); box-shadow: 0 0 0 3px var(--sage-soft); }
+  .dot.warn   { background: var(--amber); box-shadow: 0 0 0 3px var(--amber-soft); }
+  .dot.ok     { background: var(--terra); box-shadow: 0 0 0 3px var(--terra-soft); }
+
+  .sb-toggle {
+    display: none; position: fixed; top: 14px; left: 14px; z-index: 70;
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    color: var(--ink-dim); cursor: pointer;
+    align-items: center; justify-content: center;
+  }
+
+  .scrim {
+    position: fixed; inset: 0; z-index: 55; background: rgba(24,24,27,0.4);
+    opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease);
+  }
+  body.nav-open .scrim { opacity: 1; pointer-events: auto; }
+
+  /* ═════════════ MAIN COLUMN ═════════════ */
+  .main {
+    flex: 1; min-width: 0;
+    margin-left: var(--sidebar-w);
+    display: flex; flex-direction: column;
+  }
+
+  /* Topbar */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    height: var(--topbar-h);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 0 32px;
+    background: rgba(246,246,244,0.85);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .crumb {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--ink-mute);
+  }
+  .crumb b { color: var(--ink); font-weight: 600; }
+  .crumb .sep { color: var(--ink-faint); }
+  .tb-chips { display: flex; align-items: center; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--border-2); background: var(--bg-2);
+    color: var(--ink-mute); white-space: nowrap;
+  }
+  .chip .dot { width: 6px; height: 6px; }
+  .chip.sage { color: var(--sage); border-color: var(--sage-soft); background: var(--sage-soft); }
+  .chip.terra { color: var(--terra); border-color: var(--terra-soft); background: var(--terra-soft); }
+
+  /* Content */
+  .content { padding: 40px 48px 96px; max-width: 1060px; width: 100%; }
+
+  /* ═════════════ SECTION PRIMITIVES ═════════════ */
+  section.block { padding: 48px 0 64px; }
+  section.block + section.block { border-top: 1px solid var(--border); }
+
+  .sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 10px; }
+  .sec-num {
+    font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.12em; color: var(--terra);
+    border: 1px solid var(--terra-soft); background: var(--terra-soft);
+    padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  .sec-tag { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+
+  h1.sec-h {
+    font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+    font-size: clamp(2rem, 5vw, 3.4rem); margin: 18px 0 6px;
+  }
+  h2.sec-h {
+    font-weight: 800; letter-spacing: -0.025em; line-height: 1.08;
+    font-size: clamp(1.6rem, 3.4vw, 2.4rem); margin: 18px 0 6px;
+  }
+  .sec-h .accent { color: var(--terra); }
+  .sec-h .mono-inline { font-family: var(--mono); font-weight: 600; }
+  .sec-lede {
+    font-size: 1.02rem; color: var(--ink-dim); max-width: 640px; line-height: 1.65;
+    margin-bottom: 8px;
+  }
+  .sec-lede strong { color: var(--ink); font-weight: 600; }
+  .sec-lede em { color: var(--terra); font-style: italic; }
+
+  .panel {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(24,24,27,0.04);
+  }
+  .panel-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+  }
+  .win-dots { display: flex; gap: 6px; }
+  .win-dots i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+  .win-dots i:nth-child(1) { background: #FF5F57; }
+  .win-dots i:nth-child(2) { background: #FEBC2E; }
+  .win-dots i:nth-child(3) { background: #28C840; }
+  .panel-title {
+    font-family: var(--mono); font-size: 0.66rem;
+    letter-spacing: 0.08em; color: var(--ink-mute); margin-left: 8px;
+  }
+  .panel-body { padding: 20px; }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* Mono text bits */
+  .k { font-family: var(--mono); font-size: 0.82em; color: var(--ink-dim); }
+  .k-ok   { color: var(--sage); }
+  .k-warn { color: var(--amber-2, var(--amber)); }
+  .k-err  { color: var(--red); }
 
   /* ═════════════ HERO ═════════════ */
-  .hero {
-    display: flex; flex-direction: column; justify-content: center;
-  }
-  .hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 10px;
-    align-self: flex-start;
-    background: var(--sage-soft); color: var(--sage);
-    font-family: var(--font-mono); font-weight: 600;
-    font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase;
-    padding: 8px 16px; border-radius: var(--radius-pill);
-    margin-bottom: 28px;
-  }
-  .hero-eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sage); }
-  .hero h1 {
-    font-family: var(--font-display); font-weight: 900;
-    font-size: clamp(2.4rem, 7.5vw, 6rem);
-    line-height: 0.96; letter-spacing: -0.035em;
-    max-width: 980px; color: var(--ink);
-  }
-  .hero h1 .line2 { color: var(--terra); display: block; }
-  .hero-sub {
-    font-family: var(--font-brand); font-weight: 400;
-    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
-    color: var(--ink-dim); max-width: 560px; line-height: 1.6;
-    margin-top: 30px;
-  }
-  .hero-cta {
-    display: inline-flex; align-items: center; gap: 12px;
-    margin-top: 40px; align-self: flex-start;
-    background: var(--ink); color: var(--cream);
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 1rem; letter-spacing: -0.01em;
-    padding: 16px 30px; border-radius: var(--radius-pill);
-    text-decoration: none; cursor: pointer;
-    transition: transform var(--ease), background var(--ease);
-  }
-  .hero-cta:hover { background: var(--terra); transform: translateY(-2px); }
-  .hero-cta .arrow { transition: transform var(--ease); }
-  .hero-cta:hover .arrow { transform: translateX(4px); }
-
-  /* Flowwow-style round category tiles */
-  .category-row {
-    display: flex; gap: 22px; flex-wrap: wrap;
-    margin-top: 64px;
-  }
-  .cat-tile {
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
-    width: 96px;
-  }
-  .cat-circle {
-    width: 88px; height: 88px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform var(--ease);
-  }
-  .cat-tile:hover .cat-circle { transform: translateY(-4px) scale(1.04); }
-  .cat-circle.c1 { background: var(--terra-soft); }
-  .cat-circle.c2 { background: var(--sage-soft); }
-  .cat-circle.c3 { background: #F3E4D4; }
-  .cat-circle.c4 { background: var(--amber); }
-  .cat-circle svg { width: 40px; height: 40px; }
-  .cat-label {
-    font-family: var(--font-mono); font-size: 0.68rem;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--ink-mute); text-align: center;
-  }
-
-  .hero-scroll {
-    position: absolute; bottom: 40px; left: 80px;
-    font-family: var(--font-mono); font-size: 0.7rem;
-    letter-spacing: 0.2em; color: var(--ink-mute);
-    text-transform: uppercase;
-    animation: nudge 2.4s var(--ease) infinite;
-  }
-  @keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
-
-  /* ═════════════ BENTO GRID ═════════════ */
-  .bento {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: 200px;
-    gap: 18px;
-    margin-top: 48px;
-  }
-  .bento-card {
-    background: rgba(255,255,255,0.55);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius);
-    padding: 26px;
-    position: relative;
-    transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
-    overflow: hidden;
-  }
-  .bento-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 40px -20px rgba(42,37,32,0.22);
-    border-color: var(--terra-soft);
-  }
-  .bento-card.wide { grid-column: span 2; }
-  .bento-card.tall { grid-row: span 2; }
-  .bento-card.feature {
-    background: linear-gradient(135deg, var(--terra), var(--terra-2));
-    color: var(--cream); border-color: transparent;
-  }
-  .bento-card.feature:hover { box-shadow: 0 18px 40px -16px rgba(199,107,71,0.5); }
-  .bento-card.sage-feat {
-    background: linear-gradient(135deg, var(--sage), #6B7A60);
-    color: var(--cream); border-color: transparent;
-  }
-  .bc-icon {
-    width: 42px; height: 42px; border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 16px;
-  }
-  .bc-icon.terra { background: var(--terra-soft); color: var(--terra); }
-  .bc-icon.sage  { background: var(--sage-soft); color: var(--sage); }
-  .bc-icon.plum  { background: #EADFE6; color: var(--plum); }
-  .bc-icon.amber { background: #F5E6C4; color: var(--amber-2); }
-  .bc-icon.on-feat { background: rgba(255,255,255,0.2); color: var(--cream); }
-  .bc-icon svg { width: 22px; height: 22px; }
-  .bento-card h3 {
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 1.15rem; letter-spacing: -0.015em; margin-bottom: 8px;
-    line-height: 1.25;
-  }
-  .bento-card.feature h3 { font-size: 1.5rem; }
-  .bento-card p { font-size: 0.88rem; line-height: 1.55; color: var(--ink-dim); }
-  .bento-card.feature p, .bento-card.sage-feat p { color: rgba(255,255,255,0.85); }
-  .bc-num {
-    position: absolute; top: 22px; right: 24px;
-    font-family: var(--font-mono); font-size: 0.66rem;
-    letter-spacing: 0.12em; color: var(--ink-mute);
-  }
-  .bento-card.feature .bc-num, .bento-card.sage-feat .bc-num { color: rgba(255,255,255,0.6); }
-
-  /* ═════════════ ORDER FLOW (SVG stroke draw) ═════════════ */
-  .flow-stage { padding: 40px 0; }
-  .flow-track {
-    display: flex; align-items: stretch; gap: 0;
-    width: 100%; max-width: 1180px; margin: 0 auto;
-    position: relative;
-  }
-  .flow-step {
-    flex: 1; text-align: center; position: relative; z-index: 2;
-    display: flex; flex-direction: column; align-items: center; gap: 14px;
-  }
-  .flow-node {
-    width: 84px; height: 84px; border-radius: 50%;
-    background: var(--cream-2); border: 2px solid var(--hairline);
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.6s var(--ease);
-  }
-  .flow-node svg { width: 34px; height: 34px; color: var(--ink-mute); transition: color var(--ease); }
-  .flow-step.active .flow-node { border-color: var(--terra); background: var(--cream); box-shadow: 0 0 0 6px var(--terra-soft); }
-  .flow-step.active .flow-node svg { color: var(--terra); }
-  .flow-step .flow-label {
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 0.96rem; color: var(--ink);
-  }
-  .flow-step .flow-sub {
-    font-family: var(--font-mono); font-size: 0.66rem;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute);
-  }
-  .flow-svg {
-    position: absolute; top: 42px; left: 0; width: 100%; height: 2px;
-    z-index: 1; pointer-events: none;
-  }
-  .flow-svg path { fill: none; stroke: var(--terra); stroke-width: 2.5; stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 2s var(--ease); }
-  .flow-stage.drawn .flow-svg path { stroke-dashoffset: 0; }
-
-  .flow-sync {
-    margin-top: 48px; max-width: 720px; margin-left: auto; margin-right: auto;
-    text-align: center;
-    background: var(--cream-2); border: 1px dashed var(--terra);
-    border-radius: var(--radius); padding: 22px 28px;
-  }
-  .flow-sync .sync-label {
-    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--terra); margin-bottom: 6px;
-  }
-  .flow-sync p { font-size: 0.92rem; color: var(--ink-dim); }
-
-  /* ═════════════ HORIZONTAL PIN SCROLL ═════════════ */
-  .h-scroll-wrap { position: relative; height: 100vh; }
-  .h-scroll-pin {
-    position: sticky; top: 0; height: 100vh; overflow: hidden;
-    display: flex; align-items: center;
-  }
-  .h-scroll-track {
-    display: flex; gap: 32px; padding: 0 80px; will-change: transform;
-  }
-  .h-scroll-intro { flex-shrink: 0; max-width: 380px; padding-right: 40px; }
-  .msg-card {
-    flex-shrink: 0; width: 360px;
-    background: var(--cream-2); border: 1px solid var(--hairline);
-    border-radius: var(--radius); padding: 28px;
-    border-top: 3px solid var(--terra);
-  }
-  .msg-card.wa { border-top-color: #25D366; }
-  .msg-card.tg { border-top-color: #229ED9; }
-  .msg-card.max { border-top-color: var(--plum); }
-  .msg-head {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
-  }
-  .msg-avatar {
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; color: #fff;
-    font-family: var(--font-display); font-weight: 700; font-size: 1rem;
-  }
-  .msg-avatar.wa { background: #25D366; }
-  .msg-avatar.tg { background: #229ED9; }
-  .msg-avatar.max { background: var(--plum); }
-  .msg-name { font-family: var(--font-display); font-weight: 700; font-size: 0.96rem; }
-  .msg-chan { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); }
-  .msg-body { font-size: 0.9rem; color: var(--ink-dim); line-height: 1.6; }
-  .msg-body .bubble { background: var(--cream-3); border-radius: 14px; padding: 12px 16px; margin: 8px 0; }
-  .msg-oneclick {
-    margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--hairline);
+  .hero-block { padding-top: 28px; }
+  .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
-    font-family: var(--font-mono); font-size: 0.72rem; color: var(--terra); font-weight: 600;
+    font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--sage); background: var(--sage-soft);
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 20px;
   }
-  .h-scroll-hint {
-    position: absolute; bottom: 60px; left: 80px;
-    font-family: var(--font-mono); font-size: 0.7rem;
-    color: var(--ink-mute); letter-spacing: 0.15em; text-transform: uppercase;
+  .hero-badge .dot { width: 8px; height: 8px; animation: blink 2s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1.sec-h.hero-h { font-size: clamp(2.3rem, 6vw, 4.2rem); margin-top: 24px; }
+
+  .hero-sub {
+    font-size: 1.06rem; color: var(--ink-dim); max-width: 580px; line-height: 1.7;
+    margin-top: 18px;
+  }
+  .hero-sub b { color: var(--ink); }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 30px;
+    background: var(--ink); color: #fff;
+    font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em;
+    padding: 13px 24px; border-radius: 10px; text-decoration: none; cursor: pointer;
+    transition: background 0.2s, transform 0.2s var(--ease);
+  }
+  .hero-cta:hover { background: var(--terra); transform: translateY(-1px); }
+  .hero-cta svg { transition: transform 0.2s var(--ease); }
+  .hero-cta:hover svg { transform: translateX(3px); }
+  .hero-cta.ghost { background: transparent; color: var(--ink-dim); border: 1px solid var(--border-2); }
+  .hero-cta.ghost:hover { background: var(--bg-3); color: var(--ink); }
+
+  .hero-panels { display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; margin-top: 40px; }
+
+  /* Terminal */
+  .term { font-family: var(--mono); font-size: 0.78rem; line-height: 1.75; }
+  .term .t-line { display: flex; gap: 10px; padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+  .term .t-prompt { color: var(--terra); font-weight: 600; flex-shrink: 0; }
+  .term .t-cmd { color: var(--ink); font-weight: 600; }
+  .term .t-out { color: var(--ink-mute); }
+  .term .t-out .g { color: var(--sage); }
+  .term .t-out .y { color: var(--amber); }
+  .term .t-out .o { color: var(--terra); }
+  .cursor { display: inline-block; width: 8px; height: 15px; background: var(--terra); vertical-align: -2px; animation: blink 1.1s steps(1) infinite; }
+
+  .status-list { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; }
+  .st-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 9px 4px; border-bottom: 1px dashed var(--border);
+  }
+  .st-row:last-child { border-bottom: none; }
+  .st-name { display: flex; align-items: center; gap: 9px; font-size: 0.86rem; color: var(--ink-dim); font-weight: 500; }
+  .st-val { font-family: var(--mono); font-size: 0.66rem; color: var(--sage); font-weight: 600; letter-spacing: 0.05em; }
+
+  .cat-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .cat {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 9px 16px 9px 10px; border-radius: 999px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    font-size: 0.84rem; font-weight: 500; color: var(--ink-dim);
+  }
+  .cat .ic {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cat .ic svg { width: 16px; height: 16px; }
+  .cat.c1 .ic { background: var(--terra-soft); }
+  .cat.c2 .ic { background: var(--sage-soft); }
+  .cat.c3 .ic { background: var(--amber-soft); }
+  .cat.c4 .ic { background: var(--plum-soft); }
+
+  /* ═════════════ STEPPER (capabilities) ═════════════ */
+  .cap-panel { margin-top: 30px; overflow: hidden; }
+  .cap-row {
+    display: grid; grid-template-columns: 52px 44px 1fr auto;
+    gap: 18px; align-items: start;
+    padding: 20px 22px; border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .cap-row:last-child { border-bottom: none; }
+  .cap-row:hover { background: var(--bg); }
+  .cap-idx { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-faint); padding-top: 6px; }
+  .cap-row.in .cap-idx { color: var(--terra); }
+  .cap-ic {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-3); color: var(--ink-mute); border: 1px solid var(--border);
+    transition: all 0.3s var(--ease);
+  }
+  .cap-ic svg { width: 20px; height: 20px; }
+  .cap-row.in .cap-ic { background: var(--terra-soft); color: var(--terra); border-color: var(--terra-soft); }
+  .cap-body h3 { font-size: 1.02rem; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 4px; }
+  .cap-body p { font-size: 0.88rem; color: var(--ink-mute); line-height: 1.6; max-width: 640px; }
+  .cap-st {
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--sage); padding: 3px 9px; border-radius: 999px;
+    background: var(--sage-soft); white-space: nowrap; margin-top: 4px;
+  }
+  .cap-row:not(.in) { opacity: 0; transform: translateX(-14px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+  .cap-row.in { opacity: 1; transform: none; }
+
+  /* ═════════════ ORDER LIFECYCLE ═════════════ */
+  .kanban { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 30px; }
+  .kb-col {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .kb-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+    font-size: 0.8rem; font-weight: 600;
+  }
+  .kb-head .n { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-mute); font-weight: 500; }
+  .kb-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .kb-tag {
+    font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 5px;
+    align-self: flex-start;
+  }
+  .kb-sub { font-size: 0.74rem; color: var(--ink-mute); line-height: 1.5; }
+  .kb-col.on { border-color: var(--terra); }
+  .kb-col.on .kb-head { color: var(--terra); }
+  .kb-col.on .kb-tag { background: var(--terra-soft); color: var(--terra); }
+  .kb-col.done .kb-head { color: var(--sage); }
+  .kb-col.done .kb-tag { background: var(--sage-soft); color: var(--sage); }
+  .kb-arrow {
+    display: none;
   }
 
-  /* ═════════════ COMPARE (white vs grey) ═════════════ */
-  .compare {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
-    margin-top: 48px;
+  .flow-note { margin-top: 20px; }
+  .flow-note .term { padding: 16px 18px; }
+
+  /* ═════════════ CHATS ═════════════ */
+  .chat-shell { margin-top: 30px; display: grid; grid-template-columns: 220px 1fr; gap: 0; overflow: hidden; }
+  .chat-side { border-right: 1px solid var(--border); background: var(--bg); padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .chat-tab {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    border: 1px solid transparent; background: none;
+    font-size: 0.86rem; font-weight: 500; color: var(--ink-dim);
+    text-align: left; font-family: var(--font); width: 100%;
+    transition: background 0.15s, border-color 0.15s;
   }
-  .compare-col {
-    border-radius: var(--radius); padding: 36px;
-    border: 1px solid var(--hairline);
-    background: rgba(255,255,255,0.5);
-    backdrop-filter: blur(8px);
+  .chat-tab:hover { background: var(--bg-3); }
+  .chat-tab.on { background: var(--bg-2); border-color: var(--border); color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(24,24,27,0.05); }
+  .chat-tab .av {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 0.8rem;
   }
-  .compare-col.white { border-top: 4px solid var(--sage); }
-  .compare-col.grey { border-top: 4px solid var(--terra); }
-  .compare-tag {
-    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em;
-    text-transform: uppercase; margin-bottom: 8px;
+  .chat-tab .cn { font-family: var(--mono); font-size: 0.58rem; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; }
+  .av.wa  { background: #25D366; }
+  .av.tg  { background: #229ED9; }
+  .av.max { background: var(--plum); }
+
+  .chat-main { display: flex; flex-direction: column; background: var(--bg-2); }
+  .chat-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
   }
-  .compare-col.white .compare-tag { color: var(--sage); }
-  .compare-col.grey .compare-tag { color: var(--terra); }
-  .compare-col h3 {
-    font-family: var(--font-display); font-weight: 800;
-    font-size: 1.5rem; margin-bottom: 6px; letter-spacing: -0.02em;
+  .chat-head .who { display: flex; align-items: center; gap: 11px; }
+  .chat-head .nm { font-weight: 700; font-size: 0.92rem; }
+  .chat-head .ch { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+  .chat-head .meta { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-faint); }
+  .chat-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; min-height: 200px; justify-content: flex-end; }
+  .bubble {
+    max-width: 75%; padding: 10px 14px; border-radius: 14px;
+    font-size: 0.86rem; line-height: 1.55;
+    background: var(--bg-3); color: var(--ink-dim);
+    border: 1px solid var(--border);
   }
-  .compare-col .compare-sub { color: var(--ink-mute); font-size: 0.88rem; margin-bottom: 22px; }
-  .compare-list { list-style: none; }
-  .compare-list li {
+  .bubble.me { align-self: flex-end; background: var(--terra-soft); border-color: var(--terra-soft); color: var(--ink); }
+  .chat-input {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 18px 18px; padding: 10px 14px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 0.84rem; color: var(--ink-faint); font-family: var(--mono);
+  }
+  .chat-input .caret { color: var(--terra); }
+  .chat-cta {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin: 0 18px 18px; align-self: flex-start;
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    color: var(--terra); cursor: pointer; background: none; border: none; padding: 0;
+  }
+  .chat-cta:hover { text-decoration: underline; }
+
+  .chat-view { display: none; }
+  .chat-view.on { display: flex; flex-direction: column; }
+
+  /* ═════════════ COMPARE ═════════════ */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 30px; }
+  .cmp { overflow: hidden; }
+  .cmp-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .cmp-head .t { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; }
+  .cmp-head h3 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; margin-top: 4px; }
+  .cmp-head .sub { font-size: 0.8rem; color: var(--ink-mute); margin-top: 2px; }
+  .cmp.a .cmp-head { border-top: 3px solid var(--sage); }
+  .cmp.a .cmp-head .t { color: var(--sage); }
+  .cmp.b .cmp-head { border-top: 3px solid var(--terra); }
+  .cmp.b .cmp-head .t { color: var(--terra); }
+  .cmp-body { padding: 8px 20px 16px; }
+  .cmp-list { list-style: none; }
+  .cmp-list li {
     display: flex; gap: 12px; padding: 11px 0;
-    border-bottom: 1px solid var(--hairline);
-    font-size: 0.92rem; color: var(--ink-dim); line-height: 1.5;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.88rem; color: var(--ink-dim); line-height: 1.55;
   }
-  .compare-list li:last-child { border-bottom: none; }
-  .compare-list li::before {
-    content: ''; flex-shrink: 0; margin-top: 6px;
-    width: 8px; height: 8px; border-radius: 2px;
+  .cmp-list li:last-child { border-bottom: none; }
+  .cmp-list li::before { content: '✓'; flex-shrink: 0; font-family: var(--mono); font-weight: 700; }
+  .cmp.a .cmp-list li::before { color: var(--sage); }
+  .cmp.b .cmp-list li::before { color: var(--terra); }
+  .cmp-list li.warn::before { content: '!'; color: var(--amber); }
+  .cmp-list li.warn strong { color: var(--amber-2, #B67C1A); }
+  .cmp-price {
+    margin-top: 12px; padding: 12px 14px; border-radius: 8px;
+    background: var(--bg); font-family: var(--mono); font-size: 0.74rem;
+    color: var(--ink-mute); border: 1px solid var(--border);
   }
-  .compare-col.white .compare-list li::before { background: var(--sage); }
-  .compare-col.grey .compare-list li::before { background: var(--terra); }
-  .compare-price {
-    margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--hairline);
-    font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink-mute);
+  .cmp-price b { color: var(--ink); font-weight: 600; }
+
+  .compare-note {
+    margin-top: 26px; padding: 16px 20px;
+    border-left: 3px solid var(--amber);
+    background: var(--amber-soft); border-radius: 0 10px 10px 0;
+    font-size: 0.92rem; color: var(--ink-dim); line-height: 1.6;
   }
-  .compare-price strong { color: var(--ink); font-weight: 600; }
+  .compare-note b { color: var(--ink); }
 
   /* ═════════════ ANALYTICS ═════════════ */
-  .stat-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
-    margin-top: 48px;
-  }
-  .stat-card {
-    background: var(--cream-2); border: 1px solid var(--hairline);
-    border-radius: var(--radius); padding: 28px;
-  }
-  .stat-card .stat-label {
-    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 12px;
-  }
-  .stat-card .stat-val {
-    font-family: var(--font-display); font-weight: 900;
-    font-size: clamp(1.8rem, 3vw, 2.6rem); color: var(--terra);
-    line-height: 1; letter-spacing: -0.02em;
-  }
-  .stat-card .stat-val .unit { font-size: 0.5em; color: var(--ink-mute); font-weight: 600; }
-  .stat-card .stat-delta { font-size: 0.8rem; color: var(--sage); margin-top: 10px; font-weight: 600; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 30px; }
+  .stat { overflow: hidden; }
+  .stat .panel-body { padding: 18px 20px; }
+  .stat-label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 10px; }
+  .stat-val { font-weight: 800; font-size: clamp(1.5rem, 2.6vw, 2rem); letter-spacing: -0.02em; line-height: 1; }
+  .stat-val .unit { font-size: 0.55em; color: var(--ink-mute); font-weight: 600; }
+  .stat-delta { font-family: var(--mono); font-size: 0.66rem; font-weight: 600; color: var(--sage); margin-top: 10px; }
+  .stat-delta::before { content: '▲ '; }
 
-  .client-card {
-    margin-top: 28px; background: linear-gradient(135deg, var(--plum), #5A3C56);
-    color: var(--cream); border-radius: var(--radius); padding: 36px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center;
-  }
-  .client-card h4 {
-    font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; margin-bottom: 8px;
-  }
-  .client-card p { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
-  .client-rows { display: flex; flex-direction: column; gap: 14px; }
-  .client-row { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); }
-  .client-row:last-child { border-bottom: none; }
-  .client-row .ck { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
-  .client-row .cv { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+  .client-panel { margin-top: 18px; overflow: hidden; }
+  .client-panel .panel-body { padding: 0; display: grid; grid-template-columns: 1fr 1fr; }
+  .client-desc { padding: 24px; border-right: 1px solid var(--border); }
+  .client-desc h4 { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.015em; margin-bottom: 8px; }
+  .client-desc p { font-size: 0.88rem; color: var(--ink-mute); line-height: 1.6; }
+  .client-rows { padding: 16px 24px; display: flex; flex-direction: column; justify-content: center; }
+  .c-row { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+  .c-row:last-child { border-bottom: none; }
+  .c-row .ck { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-mute); }
+  .c-row .cv { font-weight: 700; font-size: 0.95rem; }
 
-  /* ═════════════ RELIABILITY ═════════════ */
-  .reliab-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 48px; }
-  .reliab-card {
-    background: var(--cream-2); border: 1px solid var(--hairline);
-    border-left: 3px solid var(--sage);
-    border-radius: var(--radius); padding: 30px;
+  /* ═════════════ RELIABILITY / SECURITY / COST / TIMELINE ═════════════ */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 30px; }
+  .reliab { overflow: hidden; }
+  .reliab .panel-body { padding: 20px; }
+  .rl-tag {
+    font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--sage); background: var(--sage-soft);
+    display: inline-block; padding: 3px 9px; border-radius: 6px; margin-bottom: 12px;
   }
-  .reliab-card .rl-tag {
-    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em;
-    text-transform: uppercase; color: var(--sage); margin-bottom: 14px;
+  .reliab h3 { font-size: 1.02rem; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 6px; }
+  .reliab p { font-size: 0.86rem; color: var(--ink-mute); line-height: 1.6; }
+  .note-amber {
+    margin-top: 20px; padding: 14px 18px; border-radius: 10px;
+    background: var(--amber-soft); border: 1px solid var(--amber);
+    font-size: 0.9rem; color: var(--ink-dim); line-height: 1.6;
   }
-  .reliab-card h3 {
-    font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; margin-bottom: 10px;
-  }
-  .reliab-card p { font-size: 0.9rem; color: var(--ink-dim); line-height: 1.6; }
+  .note-amber b { color: var(--ink); }
 
-  /* ═════════════ SECURITY ═════════════ */
-  .sec-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 40px; }
+  .sec-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 30px; }
   .sec-item {
-    display: flex; gap: 16px; align-items: flex-start;
-    padding: 22px; background: var(--cream-2); border-radius: var(--radius-sm);
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 16px 18px; background: var(--bg-2);
+    border: 1px solid var(--border); border-radius: var(--radius);
   }
   .sec-check {
-    flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px;
     background: var(--sage-soft); color: var(--sage);
     display: flex; align-items: center; justify-content: center;
   }
-  .sec-check svg { width: 16px; height: 16px; }
-  .sec-item h4 { font-family: var(--font-display); font-weight: 700; font-size: 0.98rem; margin-bottom: 4px; }
-  .sec-item p { font-size: 0.84rem; color: var(--ink-mute); line-height: 1.5; }
+  .sec-check svg { width: 14px; height: 14px; }
+  .sec-item h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 2px; letter-spacing: -0.01em; }
+  .sec-item p { font-size: 0.82rem; color: var(--ink-mute); line-height: 1.5; }
 
-  /* ═════════════ COST ═════════════ */
-  .cost-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 48px; }
-  .cost-card {
-    background: var(--cream-2); border: 1px solid var(--hairline);
-    border-radius: var(--radius); padding: 26px;
+  .cost-table { margin-top: 30px; overflow: hidden; }
+  .cost-row {
+    display: grid; grid-template-columns: 40px 1fr auto;
+    gap: 16px; align-items: center;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
   }
-  .cost-card .cost-ico { width: 38px; height: 38px; border-radius: 10px; background: var(--terra-soft); color: var(--terra); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
-  .cost-card .cost-ico svg { width: 20px; height: 20px; }
-  .cost-card h4 { font-family: var(--font-display); font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
-  .cost-card .cost-range { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; color: var(--terra); margin: 10px 0 4px; }
-  .cost-card p { font-size: 0.82rem; color: var(--ink-mute); line-height: 1.5; }
-  .cost-note {
-    margin-top: 32px; text-align: center;
-    font-family: var(--font-serif); font-style: italic;
-    color: var(--ink-dim); font-size: 1.05rem;
+  .cost-row:last-child { border-bottom: none; }
+  .cost-ic {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: var(--bg-3); color: var(--ink-mute);
+    display: flex; align-items: center; justify-content: center;
   }
-  .cost-note strong { color: var(--terra); font-style: normal; font-weight: 600; }
+  .cost-ic svg { width: 18px; height: 18px; }
+  .cost-name h4 { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em; }
+  .cost-name p { font-size: 0.82rem; color: var(--ink-mute); line-height: 1.5; }
+  .cost-price { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; color: var(--terra); white-space: nowrap; }
+  .cost-total {
+    margin-top: 16px; padding: 14px 20px; border-radius: 10px;
+    background: var(--terra-soft); border: 1px solid var(--terra-soft);
+    font-size: 0.92rem; color: var(--ink-dim);
+  }
+  .cost-total b { color: var(--terra); }
 
-  /* ═════════════ TIMELINE ═════════════ */
-  .timeline { margin-top: 48px; max-width: 880px; }
-  .tl-phase {
-    display: grid; grid-template-columns: 110px 1fr; gap: 28px;
-    padding: 22px 0; border-bottom: 1px solid var(--hairline); align-items: baseline;
+  .timeline { margin-top: 30px; overflow: hidden; }
+  .tl-row {
+    display: grid; grid-template-columns: 120px 1fr;
+    gap: 20px; align-items: baseline;
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
   }
-  .tl-phase:last-child { border-bottom: none; }
-  .tl-phase .tl-key { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--terra); font-weight: 600; }
-  .tl-phase .tl-val { font-family: var(--font-display); font-weight: 600; font-size: 1.12rem; color: var(--ink); }
-  .tl-phase .tl-val .tl-sub { display: block; font-family: var(--font); font-weight: 400; font-size: 0.84rem; color: var(--ink-mute); margin-top: 4px; }
+  .tl-row:last-child { border-bottom: none; }
+  .tl-key { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: var(--terra); }
+  .tl-val { font-weight: 600; font-size: 0.98rem; }
+  .tl-val .tl-sub { display: block; font-weight: 400; font-size: 0.82rem; color: var(--ink-mute); margin-top: 2px; }
+  .tl-row.done .tl-key { color: var(--sage); }
+  .tl-row.done .tl-val { color: var(--ink-dim); }
+
+  /* ═════════════ QUESTION WIZARD ═════════════ */
+  .wizard { margin-top: 30px; overflow: hidden; }
+  .wiz-progress { padding: 18px 24px; border-bottom: 1px solid var(--border); }
+  .wiz-progress .wp-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .wiz-progress .wp-label { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mute); }
+  .wiz-progress .wp-count { font-family: var(--mono); font-size: 0.66rem; color: var(--terra); font-weight: 600; }
+  .wiz-bar { height: 6px; background: var(--bg-3); border-radius: 999px; overflow: hidden; }
+  .wiz-bar i { display: block; height: 100%; width: 0%; background: var(--terra); border-radius: 999px; transition: width 0.5s var(--ease); }
+  .wiz-dots { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .wiz-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
+    background: var(--bg-3); color: var(--ink-faint);
+    cursor: pointer; border: 1px solid var(--border); transition: all 0.2s;
+  }
+  .wiz-dot:hover { border-color: var(--terra); color: var(--terra); }
+  .wiz-dot.done { background: var(--sage-soft); color: var(--sage); border-color: var(--sage-soft); }
+  .wiz-dot.cur { background: var(--terra); color: #fff; border-color: var(--terra); }
+
+  .wiz-body { padding: 28px 32px 8px; }
+  .wiz-block { display: none; }
+  .wiz-block.on { display: block; animation: fadeSlide 0.4s var(--ease); }
+  @keyframes fadeSlide { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+  .wb-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .wb-num {
+    width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
+    background: var(--terra); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 0.74rem; font-weight: 700;
+  }
+  .wb-title { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.015em; }
+  .wb-tag { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-faint); margin: 4px 0 18px 40px; }
+  .wiz-item { margin-bottom: 20px; }
+  .wiz-q { font-size: 0.92rem; color: var(--ink-dim); line-height: 1.6; margin-bottom: 10px; padding-left: 40px; position: relative; }
+  .wiz-q::before {
+    content: ''; position: absolute; left: 14px; top: 9px;
+    width: 6px; height: 6px; border-radius: 2px; background: var(--terra); opacity: 0.5;
+  }
+  .wiz-q b { color: var(--ink); font-weight: 600; }
+
+  .qfree {
+    margin-left: 40px; width: calc(100% - 40px); min-height: 74px;
+    padding: 12px 14px;
+    border: 1px solid var(--border-2); border-radius: 10px;
+    background: var(--bg); font-family: var(--font); font-size: 0.9rem;
+    color: var(--ink); resize: vertical; line-height: 1.55;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  }
+  .qfree:focus { outline: none; border-color: var(--terra); background: var(--bg-2); box-shadow: 0 0 0 3px var(--terra-soft); }
+  .qfree::placeholder { color: var(--ink-faint); }
+  .qfree.has-val { border-color: var(--sage); }
+
+  .qopt-row { display: flex; flex-wrap: wrap; gap: 8px; margin-left: 40px; }
+  .qopt {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 9px;
+    background: var(--bg-2); border: 1px solid var(--border-2);
+    font-size: 0.84rem; color: var(--ink-dim); cursor: pointer;
+    transition: all 0.2s; font-family: var(--font); font-weight: 500;
+  }
+  .qopt:hover { border-color: var(--terra); color: var(--terra); }
+  .qopt.sel { background: var(--terra); border-color: var(--terra); color: #fff; }
+  .qopt input { display: none; }
+
+  .wiz-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; padding: 20px 32px 28px;
+  }
+  .wiz-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 9px;
+    font-family: var(--font); font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border-2);
+    background: var(--bg-2); color: var(--ink-dim);
+    transition: all 0.2s;
+  }
+  .wiz-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .wiz-btn.primary { background: var(--terra); border-color: var(--terra); color: #fff; }
+  .wiz-btn.primary:hover { background: var(--terra-2); border-color: var(--terra-2); }
+  .wiz-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .wiz-btn.ghost { border-color: transparent; background: none; color: var(--ink-mute); }
+  .wiz-btn.ghost:hover { color: var(--ink); }
+  .wiz-err { color: var(--red); font-size: 0.8rem; font-weight: 500; }
+
+  .wiz-final { display: none; }
+  .wiz-final.on { display: block; animation: fadeSlide 0.5s var(--ease); padding: 20px 0; }
+
+  /* Contact fields */
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 20px 32px; border-top: 1px solid var(--border); }
+  .field-wrap { display: flex; flex-direction: column; gap: 5px; }
+  .field-wrap label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mute); }
+  .field-wrap .qfree { margin-left: 0; width: 100%; min-height: 0; padding: 12px 14px; }
+
+  /* Terminal log inside wizard */
+  .wiz-log {
+    margin: 0 32px 8px; padding: 14px 16px;
+    background: #1A1A1E; border-radius: 10px;
+    font-family: var(--mono); font-size: 0.72rem; line-height: 1.8;
+    color: #A1A1AA; max-height: 150px; overflow-y: auto;
+  }
+  .wiz-log .log-in { color: #E4E4E7; }
+  .wiz-log .log-in::before { content: '> '; color: var(--terra); }
+  .wiz-log .log-ok { color: var(--sage); }
+  .wiz-log .log-ok::before { content: '✓ '; }
+  .wiz-log .log-title { color: #E4E4E7; font-weight: 600; }
+  .wiz-log .log-mut { color: #71717A; }
+
+  /* Final success */
+  .final-card {
+    text-align: center; padding: 40px 32px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .final-check {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--sage-soft); color: var(--sage);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .final-check svg { width: 30px; height: 30px; }
+  .final-card h3 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
+  .final-card p { color: var(--ink-mute); font-size: 0.92rem; max-width: 460px; line-height: 1.6; }
+  .final-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
 
   /* ═════════════ EPILOGUE ═════════════ */
   .epilogue {
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center; padding: 130px 80px;
+    margin-top: 40px; padding: 56px 32px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: var(--radius); text-align: center;
   }
   .epilogue .closing {
-    font-family: var(--font-serif); font-style: italic;
-    font-size: clamp(1.4rem, 2.4vw, 2rem);
-    color: var(--ink-dim); max-width: 680px; margin: 0 auto 40px; line-height: 1.5;
+    font-size: clamp(1.2rem, 2vw, 1.7rem); font-weight: 600;
+    letter-spacing: -0.02em; max-width: 620px; margin: 0 auto 14px; line-height: 1.4;
   }
-  .epilogue .closing .terra { color: var(--terra); font-style: normal; font-weight: 500; }
-  .epilogue .signoff {
-    font-family: var(--font-mono); font-size: 0.78rem;
-    color: var(--ink-mute); letter-spacing: 0.15em; text-transform: uppercase;
+  .epilogue .closing .accent { color: var(--terra); }
+  .epilogue .signoff { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-faint); letter-spacing: 0.12em; text-transform: uppercase; }
+  .epilogue .cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 22px; padding: 12px 22px; border-radius: 10px;
+    background: var(--terra); color: #fff; font-weight: 600; font-size: 0.92rem;
+    text-decoration: none; cursor: pointer; border: none;
+    transition: background 0.2s;
   }
-
-  /* ═════════════ REVEAL ═════════════ */
-  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  /* ═════════════ FEATURE STEPPER (sequential reveal) ═════════════ */
-  .stepper {
-    margin-top: 56px; position: relative;
-    display: grid; grid-template-columns: 1fr; gap: 0;
-  }
-  .step-row {
-    display: grid; grid-template-columns: 64px 56px 1fr; gap: 24px;
-    align-items: start;
-    padding: 28px 0;
-    border-bottom: 1px solid var(--hairline);
-    position: relative;
-    opacity: 0; transform: translateX(-24px);
-    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
-  }
-  .step-row.in { opacity: 1; transform: translateX(0); }
-  .step-row:last-child { border-bottom: none; }
-  .step-row .step-idx {
-    font-family: var(--font-mono); font-size: 0.74rem;
-    letter-spacing: 0.12em; color: var(--ink-mute);
-    padding-top: 14px;
-  }
-  .step-row.in .step-idx { color: var(--terra); }
-  .step-row .step-ico {
-    width: 56px; height: 56px; border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--cream-2); color: var(--ink-mute);
-    border: 1px solid var(--hairline);
-    transition: all var(--ease);
-  }
-  .step-row.in .step-ico {
-    background: var(--terra-soft); color: var(--terra); border-color: var(--terra-soft);
-    box-shadow: 0 8px 20px -10px rgba(199,107,71,0.45);
-  }
-  .step-row .step-ico svg { width: 26px; height: 26px; }
-  .step-row .step-body { padding-top: 6px; }
-  .step-row .step-body h3 {
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 1.25rem; letter-spacing: -0.015em; margin-bottom: 8px;
-    transition: color var(--ease);
-  }
-  .step-row.in .step-body h3 { color: var(--ink); }
-  .step-row .step-body p { font-size: 0.92rem; color: var(--ink-dim); line-height: 1.6; max-width: 640px; }
-  .step-arrow {
-    position: absolute; left: 90px; bottom: -10px;
-    color: var(--terra); opacity: 0;
-    transition: opacity 0.5s var(--ease) 0.3s;
-    z-index: 2;
-  }
-  .step-row.in .step-arrow { opacity: 0.5; }
-  .step-row:last-child .step-arrow { display: none; }
-
-  /* ═════════════ ORDER FLOW (enhanced) ═════════════ */
-  .flow-node {
-    width: 96px; height: 96px;
-    box-shadow: none;
-  }
-  .flow-step.active .flow-node {
-    border-color: var(--terra); border-width: 2px;
-    background: linear-gradient(135deg, var(--cream), #fff);
-    box-shadow: 0 0 0 6px var(--terra-soft), 0 12px 30px -12px rgba(199,107,71,0.55);
-  }
-  .flow-step.active .flow-node svg { color: var(--terra); filter: drop-shadow(0 2px 4px rgba(199,107,71,0.3)); }
-  .flow-step .flow-label { transition: color var(--ease); }
-  .flow-step.active .flow-label { color: var(--terra); }
-  .flow-pulse {
-    position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px;
-    border-radius: 50%; border: 2px solid var(--terra);
-    opacity: 0; pointer-events: none;
-  }
-  .flow-step.active .flow-pulse { animation: pulse 2s var(--ease) infinite; }
-  @keyframes pulse {
-    0% { opacity: 0.6; transform: scale(1); }
-    100% { opacity: 0; transform: scale(1.35); }
-  }
-
-  /* ═════════════ QUESTION FORM ═════════════ */
-  .qform {
-    margin-top: 48px; max-width: 760px;
-    background: var(--cream-2); border: 1px solid var(--hairline);
-    border-radius: var(--radius); padding: 44px;
-    box-shadow: 0 20px 50px -30px rgba(42,37,32,0.25);
-  }
-  .qform-intro {
-    font-family: var(--font-serif); font-style: italic;
-    font-size: 1.1rem; color: var(--ink-dim); line-height: 1.6;
-    margin-bottom: 32px; padding-bottom: 24px;
-    border-bottom: 1px solid var(--hairline);
-  }
-  .qblock { margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--hairline); }
-  .qblock:last-of-type { margin-bottom: 0; border-bottom: none; }
-  .qitem { margin-top: 22px; }
-  .qitem:first-child { margin-top: 8px; }
-  .qitem-q {
-    font-size: 0.92rem; color: var(--ink-dim); line-height: 1.6;
-    margin-bottom: 12px; padding-left: 38px; position: relative;
-  }
-  .qitem-q::before {
-    content: ''; position: absolute; left: 10px; top: 9px;
-    width: 6px; height: 6px; border-radius: 50%; background: var(--terra);
-    opacity: 0.5;
-  }
-  .qitem .qfree { margin-left: 38px; width: calc(100% - 38px); min-height: 72px; }
-  .qitem .qblock-options { padding-left: 38px; }
-  .qblock-head {
-    display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px;
-  }
-  .qblock-num {
-    font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
-    color: var(--cream); background: var(--terra);
-    width: 26px; height: 26px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .qblock-title {
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 1.08rem; color: var(--ink);
-  }
-  .qblock-q {
-    font-size: 0.94rem; color: var(--ink-dim); line-height: 1.6;
-    margin-bottom: 12px; padding-left: 38px;
-  }
-  .qblock-options { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 38px; }
-  .qopt {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 14px; border-radius: var(--radius-pill);
-    background: var(--cream); border: 1px solid var(--hairline);
-    font-size: 0.82rem; color: var(--ink-dim); cursor: pointer;
-    transition: all var(--ease);
-    font-family: var(--font);
-  }
-  .qopt:hover { border-color: var(--terra); color: var(--terra); }
-  .qopt.sel { background: var(--terra); border-color: var(--terra); color: var(--cream); }
-  .qopt input { display: none; }
-  .qfree {
-    width: 100%; margin-top: 10px; padding: 12px 16px;
-    border: 1px solid var(--hairline); border-radius: var(--radius-sm);
-    background: var(--cream); font-family: var(--font); font-size: 0.9rem;
-    color: var(--ink); resize: vertical; min-height: 64px;
-    transition: border-color var(--ease);
-  }
-  .qfree:focus { outline: none; border-color: var(--terra); }
-  .qfree::placeholder { color: var(--ink-mute); }
-  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--hairline); }
-  .contact-grid .qfree { margin-top: 0; min-height: 0; padding: 14px 16px; }
-  .contact-grid .field-wrap { display: flex; flex-direction: column; gap: 4px; }
-  .contact-grid label { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); }
-  .qsubmit {
-    margin-top: 24px; width: 100%;
-    background: var(--terra); color: var(--cream);
-    font-family: var(--font-display); font-weight: 700; font-size: 1.05rem;
-    padding: 18px; border: none; border-radius: var(--radius-pill);
-    cursor: pointer; transition: all var(--ease);
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-  }
-  .qsubmit:hover { background: var(--terra-2); transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgba(199,107,71,0.6); }
-  .qnote {
-    margin-top: 16px; text-align: center;
-    font-family: var(--font-mono); font-size: 0.72rem;
-    color: var(--ink-mute); letter-spacing: 0.06em;
-  }
+  .epilogue .cta:hover { background: var(--terra-2); }
 
   /* ═════════════ RESPONSIVE ═════════════ */
-  @media (max-width: 980px) {
-    .bento { grid-template-columns: repeat(2, 1fr); }
-    .stat-grid, .cost-grid { grid-template-columns: repeat(2, 1fr); }
-    .client-card { grid-template-columns: 1fr; }
+  @media (max-width: 1100px) {
+    .hero-panels { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .kanban { grid-template-columns: repeat(3, 1fr); }
+    .kb-col:nth-child(n+4) { margin-top: 0; }
   }
-  @media (max-width: 880px) {
-    .chapter-rail { display: none; }
-    .top-bar { padding: 12px 16px; font-size: 0.6rem; }
-    .chapter { padding: 90px 22px 70px; }
-    .hero-scroll { left: 22px; }
-    .bento, .compare, .reliab-grid, .sec-list { grid-template-columns: 1fr; }
-    .bento-card.wide, .bento-card.tall { grid-column: auto; grid-row: auto; }
-    .step-row { grid-template-columns: 44px 48px 1fr; gap: 16px; padding: 22px 0; }
-    .step-row .step-ico { width: 48px; height: 48px; }
-    .step-row .step-body h3 { font-size: 1.1rem; }
-    .step-arrow { display: none; }
-    .qform { padding: 28px 20px; }
-    .qblock-q, .qblock-options { padding-left: 0; }
-    .qitem-q { padding-left: 0; }
-    .qitem-q::before { display: none; }
-    .qitem .qfree, .qitem .qblock-options { margin-left: 0; width: 100%; }
-    .contact-grid { grid-template-columns: 1fr; }
-    .stat-grid, .cost-grid { grid-template-columns: 1fr 1fr; }
-    .h-scroll-track { padding: 0 22px; }
-    .msg-card { width: 280px; }
-    .flow-track { flex-direction: column; gap: 24px; }
-    .flow-svg { display: none; }
-    .tl-phase { grid-template-columns: 1fr; gap: 6px; }
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); box-shadow: 0 0 40px rgba(0,0,0,0.15); }
+    body.nav-open .sidebar { transform: none; }
+    .sb-toggle { display: flex; }
+    .main { margin-left: 0; }
+    .topbar { padding: 0 16px 0 64px; }
+    .tb-chips .chip.hide-m { display: none; }
+    .content { padding: 24px 20px 72px; }
+    .compare { grid-template-columns: 1fr; }
+    .grid-2, .sec-list { grid-template-columns: 1fr; }
+    .client-panel .panel-body { grid-template-columns: 1fr; }
+    .client-desc { border-right: none; border-bottom: 1px solid var(--border); }
+    .chat-shell { grid-template-columns: 1fr; }
+    .chat-side { flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .chat-tab { width: auto; white-space: nowrap; }
+    .wiz-body { padding: 20px 18px 4px; }
+    .wiz-nav { padding: 16px 18px 24px; }
+    .contact-grid { padding: 16px 18px; grid-template-columns: 1fr; }
+    .wiz-log { margin: 0 18px 8px; }
+    .tl-row { grid-template-columns: 90px 1fr; gap: 12px; padding: 14px 16px; }
+    .cost-row { grid-template-columns: 36px 1fr; }
+    .cost-price { grid-column: 2; }
+  }
+  @media (max-width: 620px) {
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .kanban { grid-template-columns: 1fr 1fr; }
+    .wiz-q { padding-left: 0; }
+    .wiz-q::before { display: none; }
+    .qfree, .qopt-row { margin-left: 0; width: 100%; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     .reveal { opacity: 1; transform: none; }
-    [data-morph] { opacity: 1 !important; letter-spacing: -0.035em !important; filter: none !important; }
-    .flow-svg path { stroke-dashoffset: 0 !important; }
     html { scroll-behavior: auto; }
   }
 </style>
 </head>
 <body>
 
-<!-- ═════════════ TOP BAR ═════════════ -->
-<header class="top-bar" id="topBar">
-  <div class="brand-mark">
+<div class="bg-decor" aria-hidden="true">
+  <svg class="bg-decor__svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="g-flower-a" cx="35%" cy="35%" r="75%">
+        <stop offset="0%" stop-color="#E9B89B"/>
+        <stop offset="55%" stop-color="#D98D67"/>
+        <stop offset="100%" stop-color="#C76B47"/>
+      </radialGradient>
+      <radialGradient id="g-flower-b" cx="35%" cy="35%" r="75%">
+        <stop offset="0%" stop-color="#B9C4AD"/>
+        <stop offset="55%" stop-color="#93A58A"/>
+        <stop offset="100%" stop-color="#7C8B6F"/>
+      </radialGradient>
+      <radialGradient id="g-flower-c" cx="35%" cy="35%" r="75%">
+        <stop offset="0%" stop-color="#9B7A93"/>
+        <stop offset="55%" stop-color="#7A5A74"/>
+        <stop offset="100%" stop-color="#6B4865"/>
+      </radialGradient>
+      <radialGradient id="g-flower-d" cx="35%" cy="35%" r="75%">
+        <stop offset="0%" stop-color="#F2D293"/>
+        <stop offset="55%" stop-color="#E2BC63"/>
+        <stop offset="100%" stop-color="#D9A441"/>
+      </radialGradient>
+      <radialGradient id="g-core" cx="40%" cy="35%" r="70%">
+        <stop offset="0%" stop-color="#F6E3CE"/>
+        <stop offset="100%" stop-color="#E5C9A4"/>
+      </radialGradient>
+      <filter id="f-soft"><feGaussianBlur stdDeviation="38"/></filter>
+      <filter id="f-mid"><feGaussianBlur stdDeviation="22"/></filter>
+
+      <g id="fl-a">
+        <circle r="62" fill="url(#g-flower-a)" opacity="0.5"/>
+        <g stroke="url(#g-flower-a)" stroke-width="13" stroke-linecap="round" fill="none">
+          <path d="M0 0 C 6 -34, 6 -58, 0 -74"/>
+          <path d="M0 0 C 30 -16, 54 -18, 68 -27"/>
+          <path d="M0 0 C 18 26, 34 44, 46 56"/>
+          <path d="M0 0 C -30 -16, -54 -18, -68 -27"/>
+          <path d="M0 0 C -18 26, -34 44, -46 56"/>
+          <path d="M0 0 C 0 40, 0 62, 0 70"/>
+        </g>
+        <circle r="9" fill="url(#g-core)"/>
+      </g>
+
+      <g id="fl-b">
+        <circle r="46" fill="url(#g-flower-b)" opacity="0.5"/>
+        <g stroke="url(#g-flower-b)" stroke-width="10" stroke-linecap="round" fill="none">
+          <path d="M0 0 C 6 -26, 6 -44, 0 -56"/>
+          <path d="M0 0 C 23 -12, 40 -14, 51 -21"/>
+          <path d="M0 0 C 14 20, 26 33, 35 42"/>
+          <path d="M0 0 C -23 -12, -40 -14, -51 -21"/>
+          <path d="M0 0 C -14 20, -26 33, -35 42"/>
+          <path d="M0 0 C 0 30, 0 47, 0 53"/>
+        </g>
+        <circle r="7" fill="url(#g-core)"/>
+      </g>
+    </defs>
+
+    <g filter="url(#f-soft)" opacity="0.9">
+      <circle cx="180" cy="140" r="300" fill="url(#g-flower-a)"/>
+      <circle cx="1290" cy="160" r="260" fill="url(#g-flower-d)"/>
+      <circle cx="1260" cy="820" r="320" fill="url(#g-flower-b)"/>
+      <circle cx="240" cy="860" r="280" fill="url(#g-flower-c)"/>
+    </g>
+
+    <g filter="url(#f-mid)" opacity="0.55">
+      <use href="#fl-b" transform="translate(540 210) scale(1.5)"/>
+      <use href="#fl-b" transform="translate(930 620) scale(1.8)"/>
+    </g>
+
+    <g opacity="0.42">
+      <use href="#fl-a" transform="translate(230 340) scale(1.6)"/>
+      <use href="#fl-b" transform="translate(1180 420) scale(1.9)"/>
+      <use href="#fl-b" transform="translate(760 150) scale(1.1)"/>
+      <use href="#fl-b" transform="translate(520 780) scale(1.3)"/>
+    </g>
+
+    <g opacity="0.28">
+      <use href="#fl-a" transform="translate(990 300) scale(1.1)"/>
+      <use href="#fl-b" transform="translate(300 620) scale(1.0)"/>
+      <use href="#fl-a" transform="translate(720 470) scale(0.8)"/>
+    </g>
+  </svg>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<button class="sb-toggle" id="sbToggle" aria-label="Меню">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</button>
+
+<!-- ═════════════ SIDEBAR ═════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 2C9 5 9 8 12 11C15 8 15 5 12 2Z" fill="#C76B47" stroke="#C76B47"/>
       <path d="M12 11C9 8 6 9 5 12C8 14 11 14 12 11Z" fill="#7C8B6F" stroke="#7C8B6F"/>
       <path d="M12 11C15 8 18 9 19 12C16 14 13 14 12 11Z" fill="#7C8B6F" stroke="#7C8B6F"/>
-      <path d="M12 11V20" stroke="#2A2520"/>
+      <path d="M12 11V20" stroke="#18181B"/>
     </svg>
-    <span>Bloom CRM — КП</span>
-  </div>
-  <div class="doc-tag">Коммерческое предложение · 2026</div>
-</header>
-
-<!-- ═════════════ CHAPTER RAIL ═════════════ -->
-<nav class="chapter-rail" id="chapterRail">
-  <a class="ch-link active" data-target="hero"><span>Старт</span></a>
-  <a class="ch-link" data-target="problems"><span>Возможности</span></a>
-  <a class="ch-link" data-target="flow"><span>Заказ</span></a>
-  <a class="ch-link" data-target="inbox"><span>Чаты</span></a>
-  <a class="ch-link" data-target="messengers"><span>Мессенджеры</span></a>
-  <a class="ch-link" data-target="analytics"><span>Аналитика</span></a>
-  <a class="ch-link" data-target="reliability"><span>Надёжность</span></a>
-  <a class="ch-link" data-target="security"><span>Безопасность</span></a>
-  <a class="ch-link" data-target="cost"><span>Стоимость</span></a>
-  <a class="ch-link" data-target="timeline"><span>Этапы</span></a>
-  <a class="ch-link" data-target="contact"><span>Обсуждение</span></a>
-</nav>
-
-<main>
-
-<!-- ═════════════ 01 · HERO ═════════════ -->
-<section class="chapter hero" id="hero">
-  <div class="hero-eyebrow reveal"><span class="dot"></span> CRM для цветочной сети</div>
-  <h1 class="morph-headline" data-morph>
-    <span class="word">Один</span> <span class="word">кабинет</span><br>
-    <span class="word">для</span> <span class="word terra">всей</span> <span class="word">вашей</span><br>
-    <span class="word">флористики</span>
-  </h1>
-  <p class="hero-sub reveal">Заказы Flowwow, прямые продажи и чаты WhatsApp, Telegram и MAX — в едином кабинете. С статусами туда-обратно, аналитикой и управлением витриной. Работает на любом устройстве.</p>
-  <a class="hero-cta reveal" data-to="problems">
-    Смотреть, как это работает
-    <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-  </a>
-
-  <div class="category-row reveal">
-    <div class="cat-tile">
-      <div class="cat-circle c1"><svg viewBox="0 0 24 24" fill="none" stroke="#C76B47" stroke-width="1.5"><path d="M12 8C9 5 9 2 12 2C15 2 15 5 12 8ZM12 8C9 11 6 10 5 7C8 5 11 5 12 8ZM12 8C15 11 18 10 19 7C16 5 13 5 12 8Z"/><path d="M12 8v12"/></svg></div>
-      <span class="cat-label">Букеты</span>
-    </div>
-    <div class="cat-tile">
-      <div class="cat-circle c2"><svg viewBox="0 0 24 24" fill="none" stroke="#7C8B6F" stroke-width="1.5"><circle cx="12" cy="10" r="5"/><path d="M12 15v6M9 21h6"/></svg></div>
-      <span class="cat-label">Торты</span>
-    </div>
-    <div class="cat-tile">
-      <div class="cat-circle c3"><svg viewBox="0 0 24 24" fill="none" stroke="#B5573A" stroke-width="1.5"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M12 8V4"/></svg></div>
-      <span class="cat-label">Подарки</span>
-    </div>
-    <div class="cat-tile">
-      <div class="cat-circle c4"><svg viewBox="0 0 24 24" fill="none" stroke="#2A2520" stroke-width="1.5"><path d="M12 2v6M8 4l4 2 4-2M5 8h14l-1 13H6L5 8z"/></svg></div>
-      <span class="cat-label">Растения</span>
-    </div>
+    <div class="b-name">Bloom CRM <span class="pro">КП</span></div>
   </div>
 
-  <div class="hero-scroll">Листайте вниз ↓</div>
-</section>
+  <div class="sb-label">Содержание</div>
+  <nav class="sb-nav" id="sbNav">
+    <button class="sb-link active" data-target="hero"><span class="idx">01</span>Старт</button>
+    <button class="sb-link" data-target="capabilities"><span class="idx">02</span>Возможности</button>
+    <button class="sb-link" data-target="lifecycle"><span class="idx">03</span>Жизненный цикл</button>
+    <button class="sb-link" data-target="chats"><span class="idx">04</span>Единый инбокс</button>
+    <button class="sb-link" data-target="messengers"><span class="idx">05</span>Мессенджеры</button>
+    <button class="sb-link" data-target="analytics"><span class="idx">06</span>Аналитика</button>
+    <button class="sb-link" data-target="reliability"><span class="idx">07</span>Надёжность</button>
+    <button class="sb-link" data-target="security"><span class="idx">08</span>Безопасность</button>
+    <button class="sb-link" data-target="cost"><span class="idx">09</span>Стоимость</button>
+    <button class="sb-link" data-target="timeline"><span class="idx">10</span>Этапы</button>
+    <button class="sb-link" data-target="survey"><span class="idx">11</span>Обсуждение</button>
+  </nav>
 
-<!-- ═════════════ 02 · CAPABILITIES / STEPPER ═════════════ -->
-<section class="chapter" id="problems">
-  <div class="ch-num reveal"><span class="ch-of">02</span> / Возможности</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">Что</span> <span class="word">умеет</span><br>
-    <span class="word terra">кабинет</span>
-  </h2>
-  <p class="ch-lede reveal">Десять пунктов вашего запроса — <strong>разложены по шагам</strong>. Листайте — каждая возможность раскрывается одна за другой.</p>
-
-  <div class="stepper" id="stepper">
-    <div class="step-row">
-      <div class="step-idx">01</div>
-      <div class="step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" fill="currentColor" stroke="none"/></svg></div>
-      <div class="step-body"><h3>Новый заказ — за секунды</h3><p>Оплаченный заказ Flowwow появляется в кабинете с пометкой «Новый» и звуком. Постоянная сверка с маркетплейсом — ни один заказ не потеряется.</p></div>
-      <svg class="step-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </div>
-    <div class="step-row">
-      <div class="step-idx">02</div>
-      <div class="step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg></div>
-      <div class="step-body"><h3>Полная карточка заказа</h3><p>Состав с фото и суммой, дата и время доставки, способ доставки, адрес, заказчик и получатель, комментарии, текст открытки, фото букета до и после.</p></div>
-      <svg class="step-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </div>
-    <div class="step-row">
-      <div class="step-idx">03</div>
-      <div class="step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
-      <div class="step-body"><h3>Статусы синхронизируются туда-обратно</h3><p>Приняли у нас — статус сразу поменялся во Flowwow. И наоборот: изменения на маркетплейсе отображаются в кабинете в реальном времени.</p></div>
-      <svg class="step-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </div>
-    <div class="step-row">
-      <div class="step-idx">04</div>
-      <div class="step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 3l5 5-5 5M21 8H9a6 6 0 00-6 6v1"/></svg></div>
-      <div class="step-body"><h3>Прямые продажи в общем списке</h3><p>Заказы мимо Flowwow — от постоянных клиентов, по телефону и в мессенджерах — менеджер заводит вручную. Они живут наравне с остальными, с пометкой «Прямой».</p></div>
-      <svg class="step-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </div>
-    <div class="step-row">
-      <div class="step-idx">05</div>
-      <div class="step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-      <div class="step-body"><h3>Чаты WhatsApp, Telegram и MAX в одном окне</h3><p>Все диалоги из трёх мессенджеров — в едином инбоксе. Менеджер читает и отвечает от ваших аккаунтов, отправляет фото и файлы. Заказ из переписки — в один клик.</p></div>
-      <svg class="step-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </div>
-    <div class="step-row">
-      <div class="step-idx">06</div>
-      <div class="step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg></div>
-      <div class="step-body"><h3>Аналитика по продажам и клиентам</h3><p>Выручка и количество заказов за любой период, средний чек, график динамики, топ товаров и категорий. Отдельно видно заказы Flowwow и прямые продажи.</p></div>
-      <svg class="step-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </div>
-    <div class="step-row">
-      <div class="step-idx">07</div>
-      <div class="step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
-      <div class="step-body"><h3>Управление витриной всех точек</h3><p>Изменение цен и скидок, обновление остатков, скрытие и показ товаров — сразу по всем магазинам и филиалам из одного окна. Топ магазинов и отзывы.</p></div>
-      <svg class="step-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </div>
-    <div class="step-row">
-      <div class="step-idx">08</div>
-      <div class="step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <div class="step-body"><h3>Контроль подключений и алерты</h3><p>Система сама следит за всеми ключами Flowwow и аккаунтами мессенджеров. Что-то отвалилось — мгновенное сообщение в Telegram с диагнозом и инструкцией, как починить.</p></div>
-    </div>
+  <div class="sb-foot">
+    <div class="row"><span class="dot online"></span> system: online</div>
+    <div class="row"><span class="dot ok"></span> чаты · заказы · витрина</div>
+    <div class="row"><span class="dot online"></span> v1.0 · 2026</div>
   </div>
-</section>
+</aside>
 
-<!-- ═════════════ 03 · ORDER FLOW ═════════════ -->
-<section class="chapter" id="flow">
-  <div class="ch-num reveal"><span class="ch-of">03</span> / Жизненный цикл</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">Путь</span> <span class="word">заказа</span>
-  </h2>
-  <p class="ch-lede reveal">От появления до выполнения — <strong>пять шагов</strong>. Каждый статус синхронизирован с Flowwow <em>в обе стороны</em>.</p>
+<!-- ═════════════ MAIN ═════════════ -->
+<div class="main">
 
-  <div class="flow-stage reveal" id="flowStage">
-    <div class="flow-track">
-      <svg class="flow-svg" viewBox="0 0 1000 2" preserveAspectRatio="none"><path d="M0 1 L1000 1"/></svg>
-      <div class="flow-step active"><div class="flow-node"><span class="flow-pulse"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div><div><div class="flow-label">Новый</div><div class="flow-sub">звук + бейдж</div></div></div>
-      <div class="flow-step"><div class="flow-node"><span class="flow-pulse"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div><div><div class="flow-label">Принят</div><div class="flow-sub">+3 мин напоминание</div></div></div>
-      <div class="flow-step"><div class="flow-node"><span class="flow-pulse"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 7l-8 8-4-4-5 5"/><path d="M16 7h4v4"/></svg></div><div><div class="flow-label">Собран</div><div class="flow-sub">фото букета</div></div></div>
-      <div class="flow-step"><div class="flow-node"><span class="flow-pulse"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7M5.5 18.5a2 2 0 104 0M18.5 18.5a2 2 0 104 0"/></svg></div><div><div class="flow-label">В доставке</div><div class="flow-sub">или самовывоз</div></div></div>
-      <div class="flow-step"><div class="flow-node"><span class="flow-pulse"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div><div><div class="flow-label">Выполнен</div><div class="flow-sub">фото после</div></div></div>
+  <header class="topbar">
+    <div class="crumb">
+      <span>~/</span><b>bloom-crm</b><span class="sep">/</span><span>коммерческое-предложение.md</span>
     </div>
-    <div class="flow-sync">
-      <div class="sync-label">↔ Двусторонняя синхронизация</div>
-      <p>Изменили статус в кабинете — обновилось во Flowwow. Клиент отменил на Flowwow — видно у нас, с уведомлением. Можно отказаться с указанием причины и фото.</p>
+    <div class="tb-chips">
+      <span class="chip sage hide-m"><span class="dot online"></span>Flowwow · подключено</span>
+      <span class="chip hide-m">RUB · РФ</span>
+      <span class="chip terra"><span class="dot ok"></span>вопросы →</span>
     </div>
-  </div>
-</section>
+  </header>
 
-<!-- ═════════════ 04 · INBOX (HORIZONTAL PIN) ═════════════ -->
-<section class="h-scroll-wrap" id="inbox">
-  <div class="h-scroll-pin">
-    <div class="h-scroll-track">
-      <div class="h-scroll-intro">
-        <div class="ch-num"><span class="ch-of">04</span> / Единый инбокс</div>
-        <h2 class="morph-headline" data-morph>
-          <span class="word">Все</span> <span class="word">диалоги</span><br>
-          <span class="word terra">в одном</span><br>
-          <span class="word">окне</span>
-        </h2>
-        <p class="ch-lede" style="margin-top:24px">Клиенты пишут <strong>туда же, куда и всегда</strong>. Менеджер отвечает от ваших аккаунтов. Заказ создаётся прямо из переписки.</p>
+  <main class="content">
+
+    <!-- ═════════════ 01 · HERO ═════════════ -->
+    <section class="block hero-block reveal" id="hero">
+      <span class="hero-badge"><span class="dot"></span> система для управления цветочным бизнесом</span>
+      <h1 class="sec-h hero-h">Вся ваша флористика<br>в <span class="accent">одном кабинете</span></h1>
+      <p class="hero-sub">Заказы из Flowwow, заказы от постоянных клиентов и все переписки с покупателями — в одном окне, которое видно с любого устройства. Меньше рутины, больше времени на цветы. <b>Работает на телефоне и компьютере.</b></p>
+      <a class="hero-cta" data-to="capabilities">
+        Смотреть, как это работает
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <a class="hero-cta ghost" href="demo.html" style="margin-left:10px">
+        Попробовать демо
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+
+      <div class="cat-row">
+        <span class="cat c1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C76B47" stroke-width="1.8"><path d="M12 8C9 5 9 2 12 2C15 2 15 5 12 8ZM12 8C9 11 6 10 5 7C8 5 11 5 12 8ZM12 8C15 11 18 10 19 7C16 5 13 5 12 8Z"/><path d="M12 8v12"/></svg></span>Букеты</span>
+        <span class="cat c2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#7C8B6F" stroke-width="1.8"><circle cx="12" cy="10" r="5"/><path d="M12 15v6M9 21h6"/></svg></span>Торты</span>
+        <span class="cat c3"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#B5573A" stroke-width="1.8"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M12 8V4"/></svg></span>Подарки</span>
+        <span class="cat c4"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#6B4865" stroke-width="1.8"><path d="M12 2v6M8 4l4 2 4-2M5 8h14l-1 13H6L5 8z"/></svg></span>Растения</span>
       </div>
 
-      <div class="msg-card wa">
-        <div class="msg-head">
-          <div class="msg-avatar wa">М</div>
-          <div><div class="msg-name">Марина К.</div><div class="msg-chan">WhatsApp</div></div>
+      <div class="hero-panels">
+        <div class="panel reveal">
+          <div class="panel-head">
+            <div class="win-dots"><i></i><i></i><i></i></div>
+            <div class="panel-title">bloom@crm: ~/setup</div>
+          </div>
+          <div class="panel-body term">
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">./bloom init --channels wa tg max</span></div>
+            <div class="t-line"><span class="t-out"><span class="g">✓</span> flowwow — подключение установлено, заказы идут</span></div>
+            <div class="t-line"><span class="t-out"><span class="g">✓</span> whatsapp + telegram + max — все чаты в одном окне</span></div>
+            <div class="t-line"><span class="t-out"><span class="g">✓</span> витрина: цены, остатки, скрытие — все точки сразу</span></div>
+            <div class="t-line"><span class="t-out"><span class="y">●</span> следим за связями — при проблеме напишем в Telegram</span></div>
+            <div class="t-line"><span class="t-out">готово к запуску в <span class="o">≈ 9–13 недель</span> <span class="cursor"></span></span></div>
+          </div>
         </div>
-        <div class="msg-body">
-          <div class="bubble">Добрый день! Можно букет пионов на пятницу, до 12?</div>
-          <div class="bubble" style="background:var(--terra-soft);color:var(--ink)">Конечно! Соберём нежно-розовый, 15 шт. — 3 200 ₽. Доставим к 11:30 ✿</div>
-        </div>
-        <div class="msg-oneclick">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          Создать заказ →
+
+        <div class="panel reveal">
+          <div class="panel-head">
+            <div class="win-dots"><i></i><i></i><i></i></div>
+            <div class="panel-title">состояние · сейчас</div>
+          </div>
+          <div class="panel-body status-list">
+            <div class="st-row"><span class="st-name"><span class="dot online"></span>Flowwow заказы</span><span class="st-val">работают</span></div>
+            <div class="st-row"><span class="st-name"><span class="dot online"></span>WhatsApp</span><span class="st-val">в сети</span></div>
+            <div class="st-row"><span class="st-name"><span class="dot online"></span>Telegram</span><span class="st-val">в сети</span></div>
+            <div class="st-row"><span class="st-name"><span class="dot online"></span>MAX</span><span class="st-val">в сети</span></div>
+            <div class="st-row"><span class="st-name"><span class="dot warn"></span>Резервные номера</span><span class="st-val">план Б</span></div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="msg-card tg">
-        <div class="msg-head">
-          <div class="msg-avatar tg">А</div>
-          <div><div class="msg-name">Алексей</div><div class="msg-chan">Telegram</div></div>
+    <!-- ═════════════ 02 · CAPABILITIES ═════════════ -->
+    <section class="block reveal" id="capabilities">
+      <div class="sec-head"><span class="sec-num">02</span><span class="sec-tag">возможности</span></div>
+      <h2 class="sec-h">Что умеет <span class="accent">кабинет</span></h2>
+      <p class="sec-lede">Десять вещей, которые вы просили — <strong>готовы работать из коробки</strong>. Листайте вниз — каждая раскрывается по очереди.</p>
+
+      <div class="panel cap-panel">
+        <div class="cap-row" data-in>
+          <div class="cap-idx">01</div>
+          <div class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+          <div class="cap-body"><h3>Новый заказ — за секунды</h3><p>Как только клиент оплатил на Flowwow, заказ уже в кабинете — с пометкой «Новый» и звуком. Система постоянно сверяется с маркетплейсом, так что ни один заказ не потеряется.</p></div>
+          <span class="cap-st">заказ</span>
         </div>
-        <div class="msg-body">
-          <div class="bubble">Привет, ещё раз спасибо за вчерашний букет! Жене очень понравилось</div>
-          <div class="bubble" style="background:var(--terra-soft);color:var(--ink)">Очень рады 🌸 Будем рады видеть вас снова. Держите бонусную карту в кабинете</div>
+        <div class="cap-row" data-in>
+          <div class="cap-idx">02</div>
+          <div class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg></div>
+          <div class="cap-body"><h3>Вся карточка заказа перед глазами</h3><p>Что заказали и сколько это стоит, когда и куда доставлять, кто заказчик и кто получатель, комментарии и текст открытки, фото букета до и после.</p></div>
+          <span class="cap-st">карточка</span>
         </div>
-        <div class="msg-oneclick">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          Создать заказ →
+        <div class="cap-row" data-in>
+          <div class="cap-idx">03</div>
+          <div class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+          <div class="cap-body"><h3>Статусы — в обоих местах сразу</h3><p>Приняли заказ в кабинете — статус сам обновился и на Flowwow. Клиент всё видит и не дёргает менеджера вопросами.</p></div>
+          <span class="cap-st">синхронизация</span>
+        </div>
+        <div class="cap-row" data-in>
+          <div class="cap-idx">04</div>
+          <div class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 3l5 5-5 5M21 8H9a6 6 0 00-6 6v1"/></svg></div>
+          <div class="cap-body"><h3>Заказы мимо Flowwow — тоже сюда</h3><p>Постоянные клиенты, заказы по телефону и из мессенджеров — менеджер заводит их вручную, и они живут в общем списке рядом с остальными, с пометкой «Прямой».</p></div>
+          <span class="cap-st">прямые продажи</span>
+        </div>
+        <div class="cap-row" data-in>
+          <div class="cap-idx">05</div>
+          <div class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+          <div class="cap-body"><h3>WhatsApp, Telegram и MAX — в одном окне</h3><p>Все диалоги из трёх мессенджеров собраны в единый чат. Менеджер отвечает с ваших аккаунтов, отправляет фото, а заказ из переписки создаётся в один клик.</p></div>
+          <span class="cap-st">чаты</span>
+        </div>
+        <div class="cap-row" data-in>
+          <div class="cap-idx">06</div>
+          <div class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg></div>
+          <div class="cap-body"><h3>Понятные цифры по продажам</h3><p>Выручка и число заказов за любой период, средний чек, график по дням, самые продаваемые букеты и категории. Заказы с Flowwow и прямые продажи — отдельно друг от друга.</p></div>
+          <span class="cap-st">аналитика</span>
+        </div>
+        <div class="cap-row" data-in>
+          <div class="cap-idx">07</div>
+          <div class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <div class="cap-body"><h3>Витрина всех точек — одним движением</h3><p>Поменяли цену или скрыли позицию — это применилось сразу во всех магазинах. Плюс топ магазинов и отзывы клиентов под рукой.</p></div>
+          <span class="cap-st">витрина</span>
+        </div>
+        <div class="cap-row" data-in>
+          <div class="cap-idx">08</div>
+          <div class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="cap-body"><h3>Сама следит за связями</h3><p>Что-то отвалилось в подключениях — система сама напишет в Telegram, объяснит, что случилось, и подскажет, как починить.</p></div>
+          <span class="cap-st">наблюдение</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ 03 · LIFECYCLE ═════════════ -->
+    <section class="block reveal" id="lifecycle">
+      <div class="sec-head"><span class="sec-num">03</span><span class="sec-tag">путь заказа</span></div>
+      <h2 class="sec-h">Как движется заказ</h2>
+      <p class="sec-lede">От появления до выполнения — <strong>пять шагов</strong>. Каждый шаг виден и вам, и клиенту: что происходит с букетом, всегда понятно.</p>
+
+      <div class="kanban">
+        <div class="kb-col on">
+          <div class="kb-head">Новый <span class="n">01</span></div>
+          <div class="kb-body"><span class="kb-tag">звук + бейдж</span><div class="kb-sub">Оплаченный заказ прилетает мгновенно и подсвечивается.</div></div>
+        </div>
+        <div class="kb-col">
+          <div class="kb-head">Принят <span class="n">02</span></div>
+          <div class="kb-body"><span class="kb-tag">+3 мин напоминание</span><div class="kb-sub">Если не приняли за 3 минуты — напомним.</div></div>
+        </div>
+        <div class="kb-col">
+          <div class="kb-head">Собран <span class="n">03</span></div>
+          <div class="kb-body"><span class="kb-tag">фото букета</span><div class="kb-sub">Флорист прикрепляет фото до отправки.</div></div>
+        </div>
+        <div class="kb-col">
+          <div class="kb-head">В доставке <span class="n">04</span></div>
+          <div class="kb-body"><span class="kb-tag">или самовывоз</span><div class="kb-sub">Передали курьеру или готово к выдаче.</div></div>
+        </div>
+        <div class="kb-col done">
+          <div class="kb-head">Выполнен <span class="n">05</span></div>
+          <div class="kb-body"><span class="kb-tag">фото после</span><div class="kb-sub">Заказ закрыт с подтверждением.</div></div>
         </div>
       </div>
 
-      <div class="msg-card max">
-        <div class="msg-head">
-          <div class="msg-avatar max">Е</div>
-          <div><div class="msg-name">Елена С.</div><div class="msg-chan">MAX</div></div>
-        </div>
-        <div class="msg-body">
-          <div class="bubble">Здравствуйте! Нужен корпоративный заказ на 8 марта, 20 букетов</div>
-          <div class="bubble" style="background:var(--terra-soft);color:var(--ink)">Отличный повод! Пришлём коммерческое предложение с тремя вариантами. Когда обсудить звонком?</div>
-        </div>
-        <div class="msg-oneclick">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          Создать заказ →
+      <div class="panel flow-note">
+        <div class="panel-body term">
+          <div class="t-line"><span class="t-out"><span class="o">↔</span> <span class="t-title" style="color:var(--ink);font-weight:600">всё в обоих местах одновременно</span> — active</span></div>
+          <div class="t-line"><span class="t-out"><span class="g">✓</span> поменяли статус в кабинете → клиент увидел на Flowwow</span></div>
+          <div class="t-line"><span class="t-out"><span class="g">✓</span> клиент отменил на Flowwow → сразу видно у вас, с уведомлением</span></div>
+          <div class="t-line"><span class="t-out">отказ — с указанием причины и фото</span></div>
         </div>
       </div>
+    </section>
 
-      <div class="h-scroll-intro" style="max-width:320px">
-        <div class="ch-num" style="color:var(--terra)">Навсегда</div>
-        <h2 class="morph-headline" data-morph style="font-size:clamp(2rem,5vw,3.5rem)">
-          <span class="word">Вся</span> <span class="word">новая</span><br>
-          <span class="word plum">переписка</span><br>
-          <span class="word">сохраняется</span>
-        </h2>
-        <p class="ch-lede" style="margin-top:20px;font-size:1rem">Полностью и безвозвратно. Старые диалоги подтянутся в объёме, что отдаёт мессенджер.</p>
-      </div>
-    </div>
-    <div class="h-scroll-hint">Листайте →</div>
-  </div>
-</section>
+    <!-- ═════════════ 04 · CHATS ═════════════ -->
+    <section class="block reveal" id="chats">
+      <div class="sec-head"><span class="sec-num">04</span><span class="sec-tag">все чаты</span></div>
+      <h2 class="sec-h">Все диалоги <span class="accent">в одном окне</span></h2>
+      <p class="sec-lede">Клиенты пишут <strong>туда же, куда и всегда</strong> — вы отвечаете из одного окна. Заказ из переписки создаётся прямо здесь.</p>
 
-<!-- ═════════════ 05 · MESSENGERS COMPARE ═════════════ -->
-<section class="chapter" id="messengers">
-  <div class="ch-num reveal"><span class="ch-of">05</span> / Мессенджеры</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">Честно</span> <span class="word terra">про</span><br>
-    <span class="word">аккаунты</span>
-  </h2>
-  <p class="ch-lede reveal">Есть два пути подключения чатов. Мы не будем скрывать риски — <strong>выбор за вами</strong>, а наша задача — сделать так, чтобы система работала надёжно в любом сценарии.</p>
+      <div class="panel chat-shell">
+        <div class="chat-side" id="chatSide">
+          <button class="chat-tab on" data-chat="wa">
+            <span class="av wa">М</span>
+            <span><div>Марина К.</div><div class="cn">WhatsApp</div></span>
+          </button>
+          <button class="chat-tab" data-chat="tg">
+            <span class="av tg">А</span>
+            <span><div>Алексей</div><div class="cn">Telegram</div></span>
+          </button>
+          <button class="chat-tab" data-chat="max">
+            <span class="av max">Е</span>
+            <span><div>Елена С.</div><div class="cn">MAX</div></span>
+          </button>
+        </div>
 
-  <div class="compare">
-    <div class="compare-col white reveal">
-      <div class="compare-tag">Путь А · Официальный</div>
-      <h3>Бизнес-API</h3>
-      <div class="compare-sub">WhatsApp Cloud API, Telegram Bot API, MAX бизнес-аккаунт</div>
-      <ul class="compare-list">
-        <li>Стабильно, без риска блокировки аккаунтов</li>
-        <li>Гарантия работы — можно обещать срок от года</li>
-        <li>Поддержка самого мессенджера, обновления API</li>
-        <li>Клиенты пишут на официальный бизнес-номер</li>
-        <li>Полная история переписки доступна через API</li>
-      </ul>
-      <div class="compare-price">Стоимость: <strong>оплата за сообщение</strong>, зависит от объёма. Точную цифру посчитаем после ответов на вопросы.</div>
-    </div>
+        <div class="chat-main">
+          <div class="chat-view on" data-view="wa">
+            <div class="chat-head">
+              <div class="who"><span class="av wa">М</span><div><div class="nm">Марина К.</div><div class="ch">WhatsApp · бизнес-аккаунт</div></div></div>
+              <span class="meta">сегодня · 11:02</span>
+            </div>
+            <div class="chat-body">
+              <div class="bubble">Добрый день! Можно букет пионов на пятницу, до 12?</div>
+              <div class="bubble me">Конечно! Соберём нежно-розовый, 15 шт. — 3 200 ₽. Доставим к 11:30 ✿</div>
+            </div>
+            <button class="chat-cta" data-to="survey">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Создать заказ →
+            </button>
+          </div>
 
-    <div class="compare-col grey reveal">
-      <div class="compare-tag">Путь Б · Автоматизация личных</div>
-      <h3>Личные аккаунты</h3>
-      <div class="compare-sub">Неофициальная автоматизация веб-версии / MTProto</div>
-      <ul class="compare-list">
-        <li>Дёшево, без оплаты за сообщение</li>
-        <li>Клиенты пишут на привычные номера менеджеров</li>
-        <li><strong>Риск блокировки</strong> — вопрос «когда», не «если»</li>
-        <li>Старая история недоступна через API — только новые сообщения</li>
-        <li>Требует резервирования номеров и плана «Б»</li>
-      </ul>
-      <div class="compare-price">Стоимость: <strong>минимальная</strong>, но заложите бюджет на резервные номера и поддержку.</div>
-    </div>
-  </div>
-  <p class="cost-note reveal" style="margin-top:40px">Чтобы выбрать — нам нужна одна цифра: <strong>сколько сообщений в день</strong> вы сейчас отправляете. Иногда официальный путь выходит дешевле.</p>
-</section>
+          <div class="chat-view" data-view="tg">
+            <div class="chat-head">
+              <div class="who"><span class="av tg">А</span><div><div class="nm">Алексей</div><div class="ch">Telegram · личный / бот</div></div></div>
+              <span class="meta">вчера · 19:40</span>
+            </div>
+            <div class="chat-body">
+              <div class="bubble">Привет, ещё раз спасибо за вчерашний букет! Жене очень понравилось</div>
+              <div class="bubble me">Очень рады 🌸 Будем рады видеть вас снова. Держите бонусную карту в кабинете</div>
+            </div>
+            <button class="chat-cta" data-to="survey">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Создать заказ →
+            </button>
+          </div>
 
-<!-- ═════════════ 06 · ANALYTICS ═════════════ -->
-<section class="chapter" id="analytics">
-  <div class="ch-num reveal"><span class="ch-of">06</span> / Аналитика</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">Цифры</span><br>
-    <span class="word terra">которые</span> <span class="word">видно</span>
-  </h2>
-  <p class="ch-lede reveal">Выручка и количество заказов за любой период, средний чек, динамика — <strong>с фильтром по магазинам и филиалам</strong>. Flowwow и прямые продажи — отдельно.</p>
+          <div class="chat-view" data-view="max">
+            <div class="chat-head">
+              <div class="who"><span class="av max">Е</span><div><div class="nm">Елена С.</div><div class="ch">MAX · корп. клиент</div></div></div>
+              <span class="meta">пн · 14:15</span>
+            </div>
+            <div class="chat-body">
+              <div class="bubble">Здравствуйте! Нужен корпоративный заказ на 8 марта, 20 букетов</div>
+              <div class="bubble me">Отличный повод! Пришлём коммерческое предложение с тремя вариантами. Когда обсудить звонком?</div>
+            </div>
+            <button class="chat-cta" data-to="survey">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Создать заказ →
+            </button>
+          </div>
 
-  <div class="stat-grid">
-    <div class="stat-card reveal">
-      <div class="stat-label">Выручка · месяц</div>
-      <div class="stat-val" data-count="847" data-suffix=" тыс ₽">0<span class="unit"></span></div>
-      <div class="stat-delta">▲ 12% к прошлому</div>
-    </div>
-    <div class="stat-card reveal">
-      <div class="stat-label">Заказов · месяц</div>
-      <div class="stat-val" data-count="312">0</div>
-      <div class="stat-delta">▲ 8%</div>
-    </div>
-    <div class="stat-card reveal">
-      <div class="stat-label">Средний чек</div>
-      <div class="stat-val" data-count="2715" data-suffix=" ₽">0</div>
-      <div class="stat-delta">▲ 4%</div>
-    </div>
-    <div class="stat-card reveal">
-      <div class="stat-label">Повторных клиентов</div>
-      <div class="stat-val" data-count="64" data-suffix="%">0</div>
-      <div class="stat-delta">▲ 6%</div>
-    </div>
-  </div>
-
-  <div class="client-card reveal">
-    <div>
-      <h4>Карточка клиента</h4>
-      <p>Сколько потратил, средний чек, с какой периодичностью возвращается — по каждому клиенту.</p>
-    </div>
-    <div class="client-rows">
-      <div class="client-row"><span class="ck">Сумма покупок</span><span class="cv">48 200 ₽</span></div>
-      <div class="client-row"><span class="ck">Средний чек</span><span class="cv">3 215 ₽</span></div>
-      <div class="client-row"><span class="ck">Заказов всего</span><span class="cv">15</span></div>
-      <div class="client-row"><span class="ck">Периодичность</span><span class="cv">раз в 3 недели</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ═════════════ 07 · RELIABILITY ═════════════ -->
-<section class="chapter" id="reliability">
-  <div class="ch-num reveal"><span class="ch-of">07</span> / Надёжность</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">Гарантия</span><br>
-    <span class="word terra">работы</span>
-  </h2>
-  <p class="ch-lede reveal">Частная разработка — это не крупный SaaS со саппортом. Но мы делаем <strong>больше</strong>, чем просто систему. Вот как защищён ваш бизнес:</p>
-
-  <div class="reliab-grid">
-    <div class="reliab-card reveal">
-      <div class="rl-tag">SLA в договоре</div>
-      <h3>Время реакции и восстановления</h3>
-      <p>Прописываем чёткие сроки: за сколько реагируем на критическую ошибку и за сколько восстанавливаем работу. Это обязательство, а не «постараемся».</p>
-    </div>
-    <div class="reliab-card reveal">
-      <div class="rl-tag">Ваш код и данные</div>
-      <h3>Полный доступ — у вас</h3>
-      <p>Передаём исходный код и доступ к базе данных. Вы не заложник одного разработчика: в любой момент можно продолжить с другой командой.</p>
-    </div>
-    <div class="reliab-card reveal">
-      <div class="rl-tag">Бэкапы</div>
-      <h3>Автоматические резервные копии</h3>
-      <p>Ежедневное резервирование базы и файлов. Даже при серьёзном сбое — данные восстанавливаются из копии за считанные часы.</p>
-    </div>
-    <div class="reliab-card reveal">
-      <div class="rl-tag">Мониторинг</div>
-      <h3>Знаем о проблеме раньше вас</h3>
-      <p>Система сама следит за подключениями и услугами. Алерт в Telegram приходит до того, как заметит менеджер — с диагнозом и как чинить.</p>
-    </div>
-  </div>
-  <p class="cost-note reveal" style="margin-top:40px">Дополнительно: возможно <strong>эскроу-соглашение</strong> — исходники у независимой стороны, забираете в любой момент.</p>
-</section>
-
-<!-- ═════════════ 08 · SECURITY ═════════════ -->
-<section class="chapter" id="security">
-  <div class="ch-num reveal"><span class="ch-of">08</span> / Безопасность</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">152-ФЗ</span> <span class="word">и</span><br>
-    <span class="word sage">данные</span> <span class="word">клиентов</span>
-  </h2>
-  <p class="ch-lede reveal">Имена и телефоны — это персональные данные. Закон требует определённой инфраструктуры, и мы её закладываем <strong>с самого начала</strong>.</p>
-
-  <div class="sec-list">
-    <div class="sec-item reveal"><div class="sec-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-9"/></svg></div><div><h4>Хостинг в России</h4><p>Сервера на территории РФ — требование закона для ПДн.</p></div></div>
-    <div class="sec-item reveal"><div class="sec-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-9"/></svg></div><div><h4>Шифрование данных</h4><p>При передаче (HTTPS) и хранении — данные защищены.</p></div></div>
-    <div class="sec-item reveal"><div class="sec-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-9"/></svg></div><div><h4>Политика конфиденциальности</h4><p>Юридический документ и согласие клиентов на обработку.</p></div></div>
-    <div class="sec-item reveal"><div class="sec-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-9"/></svg></div><div><h4>Журнал действий</h4><p>Кто и когда менял заказы и цены — для разборов и безопасности.</p></div></div>
-  </div>
-</section>
-
-<!-- ═════════════ 09 · COST ═════════════ -->
-<section class="chapter" id="cost">
-  <div class="ch-num reveal"><span class="ch-of">09</span> / Стоимость</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">Прозрачно</span><br>
-    <span class="word terra">по</span> <span class="word">статьям</span>
-  </h2>
-  <p class="ch-lede reveal">Ежемесячные расходы складываются из понятных частей. Точную цифру назовём <strong>после ваших ответов</strong> на вопросы — пока обозначим диапазон.</p>
-
-  <div class="cost-grid">
-    <div class="cost-card reveal">
-      <div class="cost-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="11" width="20" height="6" rx="1"/><rect x="2" y="19" width="20" height="3" rx="1"/></svg></div>
-      <h4>Сервер + БД</h4>
-      <div class="cost-range">2–6 тыс ₽</div>
-      <p>VPS в РФ, Postgres. Зависит от числа точек и нагрузки в пики.</p>
-    </div>
-    <div class="cost-card reveal">
-      <div class="cost-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>
-      <h4>Хранилище фото</h4>
-      <div class="cost-range">0.5–3 тыс ₽</div>
-      <p>S3-совместимое хранилище. Растёт с числом фото букетов.</p>
-    </div>
-    <div class="cost-card reveal">
-      <div class="cost-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-      <h4>Мессенджеры</h4>
-      <div class="cost-range">0–15 тыс ₽</div>
-      <p>Зависит от пути: серая схема почти бесплатна, официальный API — оплата за сообщение.</p>
-    </div>
-    <div class="cost-card reveal">
-      <div class="cost-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg></div>
-      <h4>Домен</h4>
-      <div class="cost-range">0.2–1 тыс ₽</div>
-      <p>Адрес кабинета в интернете, ежегодно.</p>
-    </div>
-  </div>
-  <p class="cost-note reveal">Базовый сценарий — <strong>от 5 000 ₽/мес</strong>. Точная сумма — после ответов на вопросы по объёму и мессенджерам.</p>
-</section>
-
-<!-- ═════════════ 10 · TIMELINE ═════════════ -->
-<section class="chapter" id="timeline">
-  <div class="ch-num reveal"><span class="ch-of">10</span> / Этапы</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">Как</span> <span class="word">мы</span><br>
-    <span class="word terra">двигаемся</span>
-  </h2>
-  <p class="ch-lede reveal">От согласования деталей — к работающей системе. Каждый этап <strong>видим и обсуждаем</strong>.</p>
-
-  <div class="timeline reveal">
-    <div class="tl-phase"><div class="tl-key">Фаза 0</div><div class="tl-val">Решения и разведка<span class="tl-sub">Креды Flowwow API, выбор пути мессенджеров, объём данных</span></div></div>
-    <div class="tl-phase"><div class="tl-key">Фаза 1</div><div class="tl-val">Архитектура и инфраструктура<span class="tl-sub">Сервер, база, хранилище, домен, безопасность</span></div></div>
-    <div class="tl-phase"><div class="tl-key">Фаза 2</div><div class="tl-val">Каркас кабинета<span class="tl-sub">Вход, роли, модель заказов и клиентов, интерфейс</span></div></div>
-    <div class="tl-phase"><div class="tl-key">Фаза 3–4</div><div class="tl-val">Заказы Flowwow и управление<span class="tl-sub">Ингест, статусы туда-обратно, карточка, история</span></div></div>
-    <div class="tl-phase"><div class="tl-key">Фаза 5–7</div><div class="tl-val">Прямые продажи, чаты, уведомления<span class="tl-sub">Ручной ввод, единый инбокс, оповещения</span></div></div>
-    <div class="tl-phase"><div class="tl-key">Фаза 8–10</div><div class="tl-val">Аналитика, витрина, мониторинг<span class="tl-sub">Цифры, управление ценами, контроль подключений</span></div></div>
-    <div class="tl-phase"><div class="tl-key">Фаза 11–13</div><div class="tl-val">Лояльность, оплата, харденинг<span class="tl-sub">Бонусы, банк, безопасность, передача кода</span></div></div>
-  </div>
-</section>
-
-<!-- ═════════════ 11 · QUESTIONS / FORM ═════════════ -->
-<section class="chapter" id="contact">
-  <div class="ch-num reveal"><span class="ch-of">11</span> / Обсуждение</div>
-  <h2 class="morph-headline" data-morph>
-    <span class="word">Несколько</span><br>
-    <span class="word terra">вопросов</span>
-  </h2>
-  <p class="ch-lede reveal">Точную смету и сроки назовём после честных ответов. <strong>От этого зависят стоимость и гарантия работы</strong>. Вопросы по 10 блокам — отвечайте своими словами, поля можно оставлять пустыми.</p>
-
-  <form class="qform reveal" id="qForm" onsubmit="return false;">
-
-    <!-- БЛОК 1 · Мессенджеры -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">1</span><span class="qblock-title">Мессенджеры — самое важное</span></div>
-
-      <div class="qitem">
-        <div class="qitem-q">1. По WhatsApp. В ТЗ подключаем личные аккаунты менеджеров и используем «дешёвую платформу». Правильно ли понимаем, что это не официальный бизнес-аккаунт, а серый способ автоматизировать переписку через веб-версию? Готовы ли к риску блокировки номеров, и есть ли план Б?</div>
-        <textarea class="qfree" data-name="b1q1" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">2. По истории переписок. По личным аккаунтам WhatsApp история хранится только на телефоне — через API мы её не получим. Увидим только сообщения после подключения. Это нормально, или нужно выгрузить историю с телефонов?</div>
-        <textarea class="qfree" data-name="b1q2" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">3. По Telegram. В ТЗ «личные аккаунты, не боты». Для ботов есть стабильное официальное API, для личных — только неофициальные библиотеки (риск бана). Допустимо ли, чтобы клиенты писали боту, а не лично менеджеру?</div>
-        <textarea class="qfree" data-name="b1q3" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">4. По MAX. Что это за мессенджер? Есть ли у него официальное API для бизнеса или это сторонний сервис? Какие риски при подключении?</div>
-        <textarea class="qfree" data-name="b1q4" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">5. Общий по чатам. Два пути: дёшево и быстро с риском блокировок, либо официально (WhatsApp Business API, Telegram Bot) — дороже и сложнее, но стабильно. Какой путь выбираете? От этого зависит и стоимость, и гарантия на год (п.11 ТЗ).</div>
-        <div class="qblock-options" data-multi="true" data-name="b1q5">
-          <label class="qopt"><input type="checkbox" value="Дёшево, с риском">Дёшево, с риском</label>
-          <label class="qopt"><input type="checkbox" value="Официально, дороже">Официально, дороже</label>
-          <label class="qopt"><input type="checkbox" value="Посоветуйте вы">Посоветуйте вы</label>
+          <div class="chat-input"><span class="caret">▌</span> ваше сообщение…</div>
         </div>
       </div>
-    </div>
 
-    <!-- БЛОК 2 · Интеграция с Flowwow -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">2</span><span class="qblock-title">Интеграция с Flowwow — что реально можно сделать</span></div>
+      <p class="note-amber" style="margin-top:18px">Вся новая переписка сохраняется <b>полностью и безвозвратно</b>. Старые диалоги подтянутся в объёме, что отдаёт мессенджер.</p>
+    </section>
 
-      <div class="qitem">
-        <div class="qitem-q">6. Есть ли доступ к API Flowwow? Какие ограничения? Можно только читать заказы или ещё менять статусы, отменять, загружать фото, управлять ценами и остатками (п.4 и п.10 ТЗ)?</div>
-        <textarea class="qfree" data-name="b2q6" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">7. Заказы приходят мгновенно (вебхук) или надо постоянно опрашивать сервер (каждые 5–10 секунд)? От этого зависит нагрузка на систему.</div>
-        <textarea class="qfree" data-name="b2q7" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">8. Что происходит, если Flowwow временно недоступен или замедляется? Заказы теряются или накапливаются и подтягиваются позже?</div>
-        <textarea class="qfree" data-name="b2q8" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">9. Один аккаунт Flowwow на все магазины или у каждой точки свой? От этого зависит разграничение заказов между филиалами.</div>
-        <div class="qblock-options" data-multi="true" data-name="b2q9">
-          <label class="qopt"><input type="checkbox" value="Один на все">Один на все</label>
-          <label class="qopt"><input type="checkbox" value="Свой на каждую точку">Свой на каждую точку</label>
+    <!-- ═════════════ 05 · MESSENGERS ═════════════ -->
+    <section class="block reveal" id="messengers">
+      <div class="sec-head"><span class="sec-num">05</span><span class="sec-tag">мессенджеры</span></div>
+      <h2 class="sec-h">Честно про <span class="accent">подключение чатов</span></h2>
+      <p class="sec-lede">Есть два способа подключить чаты — <strong>официальный и более дешёвый</strong>. О рисках скажем прямо, выбор за вами. Мы сделаем надёжно при любом решении.</p>
+
+      <div class="compare">
+        <div class="panel cmp a">
+          <div class="cmp-head">
+            <div>
+              <div class="t">Путь А · Официальный</div>
+              <h3>Бизнес-подключение</h3>
+              <div class="sub">Официальные сервисы для бизнеса: WhatsApp для компаний, Telegram-бот, корпоративный MAX</div>
+            </div>
+          </div>
+          <div class="cmp-body">
+            <ul class="cmp-list">
+              <li>Стабильно, без риска блокировок</li>
+              <li>Гарантия работы — можно обещать от года</li>
+              <li>Поддержка со стороны самого мессенджера</li>
+              <li>Клиенты пишут на ваш официальный номер</li>
+              <li>Вся история переписки сохраняется полностью</li>
+            </ul>
+            <div class="cmp-price">Стоимость: <b>оплата за сообщение</b> — зависит от объёма. Точную цифру посчитаем после ваших ответов.</div>
+          </div>
+        </div>
+
+        <div class="panel cmp b">
+          <div class="cmp-head">
+            <div>
+              <div class="t">Путь Б · Личные аккаунты</div>
+              <h3>Как сейчас</h3>
+              <div class="sub">Те же номера менеджеров, что используют сегодня</div>
+            </div>
+          </div>
+          <div class="cmp-body">
+            <ul class="cmp-list">
+              <li>Дёшево, без оплаты за сообщение</li>
+              <li>Клиенты пишут на привычные номера</li>
+              <li class="warn"><strong>Риск блокировки</strong> — вопрос «когда», а не «если»</li>
+              <li class="warn">Старая переписка не переносится — видна только новая</li>
+              <li>Нужны резервные номера и план «Б»</li>
+            </ul>
+            <div class="cmp-price">Стоимость: <b>минимальная</b>, но заложите бюджет на резервные номера и поддержку.</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- БЛОК 3 · Перенос данных и внедрение -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">3</span><span class="qblock-title">Перенос данных и внедрение</span></div>
+      <div class="compare-note">Чтобы выбрать — нужна одна цифра: <b>сколько сообщений в день</b> вы сейчас отправляете. Иногда официальный путь выходит дешевле.</div>
+    </section>
 
-      <div class="qitem">
-        <div class="qitem-q">10. Откуда берём базу клиентов — из Flowwow автоматически, из Excel-файлов менеджера, из другой CRM? Сколько записей — тысяча, десять, сто тысяч?</div>
-        <textarea class="qfree" data-name="b3q10" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">11. Насколько данные чистые? В Excel часто бывают дубли, ошибки в телефонах, старые записи. Будете чистить руки или отдаёте «как есть»?</div>
-        <textarea class="qfree" data-name="b3q11" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">12. Будет ли период, когда старая и новая системы работают параллельно (неделя-две подстраховки), или переезжаем в один день?</div>
-        <textarea class="qfree" data-name="b3q12" placeholder="Ваш ответ…"></textarea>
-      </div>
-    </div>
+    <!-- ═════════════ 06 · ANALYTICS ═════════════ -->
+    <section class="block reveal" id="analytics">
+      <div class="sec-head"><span class="sec-num">06</span><span class="sec-tag">аналитика</span></div>
+      <h2 class="sec-h">Цифры, <span class="accent">которые видно</span></h2>
+      <p class="sec-lede">Выручка и число заказов за любой период, средний чек, динамика — <strong>по магазинам и филиалам</strong>. Flowwow и прямые продажи — отдельно.</p>
 
-    <!-- БЛОК 4 · Персонал и роли -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">4</span><span class="qblock-title">Персонал и роли</span></div>
+      <div class="stat-grid">
+        <div class="panel stat">
+          <div class="panel-body">
+            <div class="stat-label">Выручка · месяц</div>
+            <div class="stat-val" data-count="847" data-suffix=" тыс ₽">0</div>
+            <div class="stat-delta">12% к прошлому</div>
+          </div>
+        </div>
+        <div class="panel stat">
+          <div class="panel-body">
+            <div class="stat-label">Заказов · месяц</div>
+            <div class="stat-val" data-count="312">0</div>
+            <div class="stat-delta">8%</div>
+          </div>
+        </div>
+        <div class="panel stat">
+          <div class="panel-body">
+            <div class="stat-label">Средний чек</div>
+            <div class="stat-val" data-count="2715" data-suffix=" ₽">0</div>
+            <div class="stat-delta">4%</div>
+          </div>
+        </div>
+        <div class="panel stat">
+          <div class="panel-body">
+            <div class="stat-label">Повторных клиентов</div>
+            <div class="stat-val" data-count="64" data-suffix="%">0</div>
+            <div class="stat-delta">6%</div>
+          </div>
+        </div>
+      </div>
 
-      <div class="qitem">
-        <div class="qitem-q">13. В ТЗ «менеджеры видят все магазины и все заказы». Точно ли это правильно? Может, менеджер конкретного магазина должен видеть только свои заказы? Или осознанное решение — все видят всё?</div>
-        <textarea class="qfree" data-name="b4q13" placeholder="Ваш ответ…"></textarea>
+      <div class="panel client-panel">
+        <div class="panel-body">
+          <div class="client-desc">
+            <h4>Карточка клиента</h4>
+            <p>Сколько потратил, средний чек, с какой периодичностью возвращается — по каждому клиенту.</p>
+            <div style="font-family:var(--mono);font-size:0.66rem;color:var(--ink-faint);margin-top:16px">// id: cl-0482 · segment: repeat</div>
+          </div>
+          <div class="client-rows">
+            <div class="c-row"><span class="ck">Сумма покупок</span><span class="cv">48 200 ₽</span></div>
+            <div class="c-row"><span class="ck">Средний чек</span><span class="cv">3 215 ₽</span></div>
+            <div class="c-row"><span class="ck">Заказов всего</span><span class="cv">15</span></div>
+            <div class="c-row"><span class="ck">Периодичность</span><span class="cv">раз в 3 недели</span></div>
+          </div>
+        </div>
       </div>
-      <div class="qitem">
-        <div class="qitem-q">14. Будут ли роли: обычный менеджер, старший менеджер, директор? Или все пользователи имеют одинаковые права — принимать, отказывать, менять статусы, цены, остатки?</div>
-        <textarea class="qfree" data-name="b4q14" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">15. Вход только по логину и паролю, без СМС. А если менеджер забыл пароль — как восстанавливать? Вопрос-ответ или другой механизм?</div>
-        <textarea class="qfree" data-name="b4q15" placeholder="Ваш ответ…"></textarea>
-      </div>
-    </div>
+    </section>
 
-    <!-- БЛОК 5 · Лояльность и оплата -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">5</span><span class="qblock-title">Система лояльности и оплата</span></div>
+    <!-- ═════════════ 07 · RELIABILITY ═════════════ -->
+    <section class="block reveal" id="reliability">
+      <div class="sec-head"><span class="sec-num">07</span><span class="sec-tag">надёжность</span></div>
+      <h2 class="sec-h">Всё под <span class="accent">контролем</span></h2>
+      <p class="sec-lede">Ваш бизнес не должен зависеть от одного человека. Вот как защищены ваши деньги, данные и рабочие процессы:</p>
 
-      <div class="qitem">
-        <div class="qitem-q">16. По лояльности — отдельно будет ТЗ. Когда его увидим? Готово сейчас или разрабатывать с нуля? Важно для проектирования базы данных.</div>
-        <textarea class="qfree" data-name="b5q16" placeholder="Ваш ответ…"></textarea>
+      <div class="grid-2">
+        <div class="panel reliab">
+          <div class="panel-body">
+            <span class="rl-tag">Сроки в договоре</span>
+            <h3>Время реакции и восстановления</h3>
+            <p>Прописываем чёткие сроки: за сколько отреагируем на ошибку и за сколько всё вернём в работу. Это обязательство, а не «постараемся».</p>
+          </div>
+        </div>
+        <div class="panel reliab">
+          <div class="panel-body">
+            <span class="rl-tag">Ваш код и данные</span>
+            <h3>Полный доступ — у вас</h3>
+            <p>Передаём исходный код и доступ к базе. Вы не заложник одного разработчика: в любой момент можно продолжить с другой командой.</p>
+          </div>
+        </div>
+        <div class="panel reliab">
+          <div class="panel-body">
+            <span class="rl-tag">Резервные копии</span>
+            <h3>Автоматические бэкапы</h3>
+            <p>База и файлы копируются каждый день. Даже при серьёзном сбое данные восстанавливаются за считанные часы.</p>
+          </div>
+        </div>
+        <div class="panel reliab">
+          <div class="panel-body">
+            <span class="rl-tag">Следим сами</span>
+            <h3>Узнаём о проблеме раньше вас</h3>
+            <p>Система сама наблюдает за подключениями. Если что-то случилось — сообщение в Telegram с описанием и способом починить.</p>
+          </div>
+        </div>
       </div>
-      <div class="qitem">
-        <div class="qitem-q">17. По привязке банка. Это приём платежей от клиентов на ваш счёт? Или просто запись в системе, что клиент оплатил, а эквайринг подключается отдельно? Какой конкретно банк или платёжный шлюз?</div>
-        <textarea class="qfree" data-name="b5q17" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">18. Будет ли система формировать чеки для налоговой (ОФД)? Или это не требуется?</div>
-        <textarea class="qfree" data-name="b5q18" placeholder="Ваш ответ…"></textarea>
-      </div>
-    </div>
 
-    <!-- БЛОК 6 · Надёжность, поддержка и страхи (п.11) -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">6</span><span class="qblock-title">Надёжность, поддержка и страхи (п.11)</span></div>
+      <div class="note-amber">Дополнительно: можно <b>эскроу-соглашение</b> — исходники лежат у независимой стороны, и вы можете забрать их в любой момент.</div>
+    </section>
 
-      <div class="qitem">
-        <div class="qitem-q">19. Переживаете из-за частной разработки. Мы не можем дать гарантию как крупная CRM. Но можем: прописать в договоре чёткий SLA (время реакции и восстановления), передать полный доступ к коду и базе, настроить автоматические бэкапы и мониторинг. Это устроит как компромисс?</div>
-        <textarea class="qfree" data-name="b6q19" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">20. Если прекратим сотрудничество через год — весь код и база остаются у вас? Или только пользовательский доступ, а код наш?</div>
-        <textarea class="qfree" data-name="b6q20" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">21. Если с нами что-то случится — есть ли план? Можно заключить эскроу-соглашение, чтобы исходники лежали у независимой стороны (например, у вашего юриста). Устраивает такой вариант?</div>
-        <textarea class="qfree" data-name="b6q21" placeholder="Ваш ответ…"></textarea>
-      </div>
-    </div>
+    <!-- ═════════════ 08 · SECURITY ═════════════ -->
+    <section class="block reveal" id="security">
+      <div class="sec-head"><span class="sec-num">08</span><span class="sec-tag">данные клиентов</span></div>
+      <h2 class="sec-h">Личные данные — <span class="accent">под защитой</span></h2>
+      <p class="sec-lede">Имена и телефоны клиентов — это персональные данные, и закон требует их защиты. Всё закладываем <strong>с первого дня</strong>, без доплат потом.</p>
 
-    <!-- БЛОК 7 · Законодательство и персональные данные -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">7</span><span class="qblock-title">Законодательство и персональные данные</span></div>
-
-      <div class="qitem">
-        <div class="qitem-q">22. В системе будут имена и телефоны клиентов — это персональные данные по 152-ФЗ. Значит, сервера в России, политика конфиденциальности, согласие клиентов, шифрование, журналы доступа. Вы это готовили, или делаем в рамках проекта?</div>
-        <textarea class="qfree" data-name="b7q22" placeholder="Ваш ответ…"></textarea>
+      <div class="sec-list">
+        <div class="sec-item">
+          <span class="sec-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-9"/></svg></span>
+          <div><h4>Сервера в России</h4><p>Данные хранятся на территории РФ — как требует закон.</p></div>
+        </div>
+        <div class="sec-item">
+          <span class="sec-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-9"/></svg></span>
+          <div><h4>Шифрование</h4><p>Данные защищены и при передаче, и при хранении.</p></div>
+        </div>
+        <div class="sec-item">
+          <span class="sec-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-9"/></svg></span>
+          <div><h4>Документы для закона</h4><p>Политика конфиденциальности и согласие клиентов на обработку.</p></div>
+        </div>
+        <div class="sec-item">
+          <span class="sec-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-9"/></svg></span>
+          <div><h4>Журнал действий</h4><p>Кто и когда менял заказы и цены — видно в любой момент.</p></div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- БЛОК 8 · Инфраструктура и расходы -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">8</span><span class="qblock-title">Инфраструктура и ежемесячные расходы</span></div>
+    <!-- ═════════════ 09 · COST ═════════════ -->
+    <section class="block reveal" id="cost">
+      <div class="sec-head"><span class="sec-num">09</span><span class="sec-tag">стоимость</span></div>
+      <h2 class="sec-h">Прозрачно <span class="accent">по статьям</span></h2>
+      <p class="sec-lede">Ежемесячные расходы складываются из понятных частей. Точную цифру назовём <strong>после ваших ответов</strong> — пока покажем диапазон.</p>
 
-      <div class="qitem">
-        <div class="qitem-q">23. Хотите точно понимать месячную стоимость. Цифра зависит от: где сервера (РФ, облако, ваше железо), сколько места под фото и историю чатов, нужны ли внешние сервисы (распознавание фото, отправка уведомлений). Нормален ли базовый вариант на Yandex Cloud или Timeweb, или искать другое?</div>
-        <textarea class="qfree" data-name="b8q23" placeholder="Ваш ответ…"></textarea>
+      <div class="panel cost-table">
+        <div class="cost-row">
+          <span class="cost-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="11" width="20" height="6" rx="1"/><rect x="2" y="19" width="20" height="3" rx="1"/></svg></span>
+          <div class="cost-name"><h4>Сервер и база</h4><p>Размещение в облаке в России. Зависит от числа точек и нагрузки в пики.</p></div>
+          <div class="cost-price">2–6 тыс ₽</div>
+        </div>
+        <div class="cost-row">
+          <span class="cost-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></span>
+          <div class="cost-name"><h4>Хранилище фото</h4><p>Место для фотографий букетов. Растёт по мере накопления.</p></div>
+          <div class="cost-price">0.5–3 тыс ₽</div>
+        </div>
+        <div class="cost-row">
+          <span class="cost-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+          <div class="cost-name"><h4>Мессенджеры</h4><p>Зависит от выбранного способа: дешёвый вариант почти бесплатен, официальный — оплата за сообщение.</p></div>
+          <div class="cost-price">0–15 тыс ₽</div>
+        </div>
+        <div class="cost-row">
+          <span class="cost-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg></span>
+          <div class="cost-name"><h4>Домен</h4><p>Адрес кабинета в интернете, ежегодно.</p></div>
+          <div class="cost-price">0.2–1 тыс ₽</div>
+        </div>
       </div>
-    </div>
 
-    <!-- БЛОК 9 · Объём и масштаб -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">9</span><span class="qblock-title">Объём и масштаб</span></div>
+      <div class="cost-total">Базовый сценарий — <b>от 5 000 ₽/мес</b>. Точная сумма — после ответов на вопросы об объёме и мессенджерах.</div>
+    </section>
 
-      <div class="qitem">
-        <div class="qitem-q">24. Сколько магазинов/филиалов сейчас? Сколько планируется через год?</div>
-        <textarea class="qfree" data-name="b9q24" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">25. Сколько менеджеров одновременно работают — 2 человека или 20?</div>
-        <textarea class="qfree" data-name="b9q25" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">26. Сколько заказов в день в пиковые дни (Новый год, 8 Марта) — 20, 200 или 2000? От этого зависит мощность серверов.</div>
-        <textarea class="qfree" data-name="b9q26" placeholder="Ваш ответ…"></textarea>
-      </div>
-      <div class="qitem">
-        <div class="qitem-q">27. Фотографии букетов — сколько весит одна? Сколько таких фото будет загружаться в день? Влияет на объём хранилища и скорость работы.</div>
-        <textarea class="qfree" data-name="b9q27" placeholder="Ваш ответ…"></textarea>
-      </div>
-    </div>
+    <!-- ═════════════ 10 · TIMELINE ═════════════ -->
+    <section class="block reveal" id="timeline">
+      <div class="sec-head"><span class="sec-num">10</span><span class="sec-tag">план работы</span></div>
+      <h2 class="sec-h">Как мы <span class="accent">двигаемся</span></h2>
+      <p class="sec-lede">От согласования деталей — к работающей системе. Каждый этап <strong>виден и обсуждается</strong> с вами.</p>
 
-    <!-- БЛОК 10 · Доставка -->
-    <div class="qblock">
-      <div class="qblock-head"><span class="qblock-num">10</span><span class="qblock-title">Доставка</span></div>
-
-      <div class="qitem">
-        <div class="qitem-q">28. В статусах есть «Передан в доставку». Это курьеры Flowwow, ваши собственные курьеры или сторонняя служба доставки?</div>
-        <textarea class="qfree" data-name="b10q28" placeholder="Ваш ответ…"></textarea>
+      <div class="panel timeline">
+        <div class="tl-row"><div class="tl-key">Фаза 0</div><div class="tl-val">Решения и разведка<span class="tl-sub">Доступы к Flowwow, выбор способа чатов, объём данных</span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 1</div><div class="tl-val">Основа системы<span class="tl-sub">Сервер, база, домен, защита данных</span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 2</div><div class="tl-val">Каркас кабинета<span class="tl-sub">Вход, роли, заказы и клиенты, интерфейс</span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 3–4</div><div class="tl-val">Заказы Flowwow<span class="tl-sub">Приём заказов, статусы в обе стороны, карточка, история</span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 5–7</div><div class="tl-val">Прямые продажи и чаты<span class="tl-sub">Ручные заказы, все чаты в одном окне, уведомления</span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 8–10</div><div class="tl-val">Цифры и витрина<span class="tl-sub">Аналитика, управление ценами, контроль подключений</span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 11–13</div><div class="tl-val">Финал и передача<span class="tl-sub">Бонусы, оплата, укрепление защиты, передача кода</span></div></div>
       </div>
-      <div class="qitem">
-        <div class="qitem-q">29. Будет ли система отслеживать местоположение курьера (трек-номер) или просто ставить статус и отправлять клиенту уведомление «заказ в пути»?</div>
-        <textarea class="qfree" data-name="b10q29" placeholder="Ваш ответ…"></textarea>
+    </section>
+
+    <!-- ═════════════ 11 · SURVEY ═════════════ -->
+    <section class="block reveal" id="survey">
+      <div class="sec-head"><span class="sec-num">11</span><span class="sec-tag">обсуждение</span></div>
+      <h2 class="sec-h">Несколько <span class="accent">вопросов</span></h2>
+      <p class="sec-lede">Точную смету и сроки назовём после честных ответов — <strong>от них зависят стоимость и гарантии</strong>. 10 блоков, отвечайте своими словами, пустые поля тоже подойдут.</p>
+
+      <div class="panel wizard" id="wizard">
+        <div class="wiz-progress">
+          <div class="wp-row">
+            <span class="wp-label" id="wpLabel">Блок 1 из 10</span>
+            <span class="wp-count" id="wpCount">0%</span>
+          </div>
+          <div class="wiz-bar"><i id="wizBar"></i></div>
+          <div class="wiz-dots" id="wizDots"></div>
+        </div>
+
+        <div class="wiz-log" id="wizLog"></div>
+
+        <form id="qForm" onsubmit="return false;">
+          <div class="wiz-body">
+
+            <!-- БЛОК 1 -->
+            <div class="wiz-block on" data-block="1">
+              <div class="wb-head"><span class="wb-num">1</span><span class="wb-title">Чаты и мессенджеры</span></div>
+              <div class="wb-tag">блок 1/10 · чаты</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>1.</b> Сейчас вы общаетесь с клиентами по WhatsApp с личных номеров менеджеров? В ТЗ написано «подключить личные аккаунты через дешёвую платформу». Поясним, что это значит: мы будем автоматически читать и вести переписку с личных номеров — это неофициальный способ, и WhatsApp может заблокировать такой номер. Понимаете ли вы этот риск и готовы ли к нему? Есть ли запасные номера (план Б)?</div>
+                <textarea class="qfree" data-name="b1q1" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>2.</b> История переписки в WhatsApp хранится только в телефоне менеджера. Если подключаем личные аккаунты, старые диалоги мы не увидим — только те, что начнутся после подключения. Вас это устраивает, или нужно заранее выгрузить историю с телефонов?</div>
+                <textarea class="qfree" data-name="b1q2" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>3.</b> По Telegram в ТЗ указано «личные аккаунты, не боты». Для ботов Telegram даёт официальный и надёжный доступ, а для личных аккаунтов — только неофициальные способы, за которые аккаунт могут заблокировать. Согласны ли вы, чтобы клиенты писали в бота с именем и аватаркой вашего менеджера? Для них это выглядит как обычный чат в Telegram.</div>
+                <textarea class="qfree" data-name="b1q3" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>4.</b> Про MAX: у MAX есть официальный способ подключения для бизнеса (как бот в Telegram) — это надёжно и без риска блокировки. Сколько примерно сообщений в MAX вы получаете?</div>
+                <textarea class="qfree" data-name="b1q4" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>5.</b> Для чатов вы выбрали какую-то платформу (дешёвый вариант). Расскажите о ней: как называется, какие мессенджеры поддерживает, как подключается? Это поможет встроить её в кабинет.</div>
+                <textarea class="qfree" data-name="b1q5" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 2 -->
+            <div class="wiz-block" data-block="2">
+              <div class="wb-head"><span class="wb-num">2</span><span class="wb-title">Заказы Flowwow</span></div>
+              <div class="wb-tag">блок 2/10 · flowwow</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>6.</b> Есть ли у вас технический доступ к данным Flowwow (то, что называют API)? Что он позволяет: только смотреть заказы или ещё менять статусы, отменять заказы, загружать фото, менять цены и остатки товаров?</div>
+                <textarea class="qfree" data-name="b2q6" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>7.</b> У вас один аккаунт Flowwow на все магазины или у каждого магазина свой? От этого зависит, как разделять заказы между филиалами.</div>
+                <div class="qopt-row" data-multi="true" data-name="b2q9">
+                  <label class="qopt"><input type="checkbox" value="Один на все">Один на все</label>
+                  <label class="qopt"><input type="checkbox" value="Свой на каждую точку">Свой на каждую точку</label>
+                </div>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>8.</b> Заказы приходят и мимо Flowwow — напрямую от постоянных клиентов, по телефону или в чатах. Нужно ли, чтобы менеджер мог заводить такие заказы вручную? Что важно указывать: источник заказа, способ оплаты, какой магазин его выполнит?</div>
+                <textarea class="qfree" data-name="b2qDirect" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>9.</b> Куда присылать уведомления о новых заказах — в Telegram, во ВКонтакте или в оба места? И если новый заказ не приняли за 3 минуты, напоминать повторно?</div>
+                <textarea class="qfree" data-name="b2qNotify" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>10.</b> Насколько нужны в кабинете рейтинги магазинов, топ по количеству заказов и отзывы клиентов — обязательно, опционально или не нужно?</div>
+                <textarea class="qfree" data-name="b2qRatings" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 3 -->
+            <div class="wiz-block" data-block="3">
+              <div class="wb-head"><span class="wb-num">3</span><span class="wb-title">Перенос данных и внедрение</span></div>
+              <div class="wb-tag">блок 3/10 · перенос данных</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>11.</b> Откуда взять список клиентов: автоматически из Flowwow, из Excel-файлов менеджера или из другой программы? Сколько примерно клиентов — тысяча, десять тысяч или больше?</div>
+                <textarea class="qfree" data-name="b3q10" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>12.</b> Насколько данные «чистые»? В Excel часто бывают повторы, ошибки в номерах, старые записи. Вы сами наведёте порядок или отдадите как есть?</div>
+                <textarea class="qfree" data-name="b3q11" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>13.</b> Переходим сразу на новую систему или какое-то время поработаем на старой и новой параллельно (неделю-две), чтобы подстраховаться?</div>
+                <textarea class="qfree" data-name="b3q12" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 4 -->
+            <div class="wiz-block" data-block="4">
+              <div class="wb-head"><span class="wb-num">4</span><span class="wb-title">Сотрудники и права доступа</span></div>
+              <div class="wb-tag">блок 4/10 · сотрудники</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>14.</b> Нужны ли разные уровни доступа — менеджер, старший менеджер, директор — или у всех одинаковые права (принимать и отменять заказы, менять цены и остатки)?</div>
+                <textarea class="qfree" data-name="b4q14" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>15.</b> Вход в систему — по логину и паролю, без СМС-подтверждения. Если сотрудник забудет пароль, как ему его восстанавливать: ответить на секретный вопрос или просто попросить вас?</div>
+                <textarea class="qfree" data-name="b4q15" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 5 -->
+            <div class="wiz-block" data-block="5">
+              <div class="wb-head"><span class="wb-num">5</span><span class="wb-title">Бонусы и оплата</span></div>
+              <div class="wb-tag">блок 5/10 · бонусы и оплата</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>16.</b> Система бонусов и лояльности будет отдельным документом (ТЗ). Когда вы его пришлёте? Это важно для устройства базы данных.</div>
+                <textarea class="qfree" data-name="b5q16" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>17.</b> «Привязка банка» — это приём денег от клиентов прямо в кабинете или просто отметка, что клиент оплатил? Какой банк или платёжная система у вас?</div>
+                <textarea class="qfree" data-name="b5q17" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>18.</b> Нужно ли автоматически формировать чеки для налоговой (как в онлайн-кассе)?</div>
+                <textarea class="qfree" data-name="b5q18" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 6 -->
+            <div class="wiz-block" data-block="6">
+              <div class="wb-head"><span class="wb-num">6</span><span class="wb-title">Надёжность и гарантии</span></div>
+              <div class="wb-tag">блок 6/10 · гарантии</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>19.</b> Переживаете, что система сделана частным разработчиком, а не крупной компанией? Объясним, как закрываем этот риск: прописываем в договоре сроки реакции и восстановления, передаём весь код и доступ к базе, настраиваем автоматические резервные копии и следим за работой. Такой вариант устроит?</div>
+                <textarea class="qfree" data-name="b6q19" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>20.</b> Если через год вы решите прекратить сотрудничество — весь код и данные остаются у вас?</div>
+                <textarea class="qfree" data-name="b6q20" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>21.</b> Если с нами что-то случится — есть ли план? Можно положить копию исходников на хранение третьей стороне, например вашему юристу. Подходит такой вариант?</div>
+                <textarea class="qfree" data-name="b6q21" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 7 -->
+            <div class="wiz-block" data-block="7">
+              <div class="wb-head"><span class="wb-num">7</span><span class="wb-title">Личные данные клиентов (закон)</span></div>
+              <div class="wb-tag">блок 7/10 · личные данные</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>22.</b> В системе будут имена и телефоны клиентов, а это персональные данные. По закону нужно: сервера в России, политика конфиденциальности, согласие клиентов, защита данных, журнал действий. Эти документы у вас уже есть, или делаем в рамках проекта?</div>
+                <textarea class="qfree" data-name="b7q22" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 8 -->
+            <div class="wiz-block" data-block="8">
+              <div class="wb-head"><span class="wb-num">8</span><span class="wb-title">Сервера и ежемесячные расходы</span></div>
+              <div class="wb-tag">блок 8/10 · сервера и расходы</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>23.</b> Чтобы точно посчитать месячные расходы, уточним: где разместить сервера (в России, в облаке), сколько места нужно под фото и переписку, нужны ли дополнительные сервисы. Подойдёт ли базовый вариант на Yandex Cloud или Timeweb?</div>
+                <textarea class="qfree" data-name="b8q23" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 9 -->
+            <div class="wiz-block" data-block="9">
+              <div class="wb-head"><span class="wb-num">9</span><span class="wb-title">Объём и масштаб</span></div>
+              <div class="wb-tag">блок 9/10 · масштаб</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>24.</b> Сколько у вас сейчас магазинов (точек)? Сколько планируете через год?</div>
+                <textarea class="qfree" data-name="b9q24" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>25.</b> Сколько менеджеров работает одновременно — 2 человека или 20?</div>
+                <textarea class="qfree" data-name="b9q25" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>26.</b> Сколько заказов в день в пиковые дни (Новый год, 8 Марта) — 20, 200 или 2000? От этого зависит мощность серверов.</div>
+                <textarea class="qfree" data-name="b9q26" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>27.</b> Сколько примерно весит одна фотография букета? Сколько таких фото загружается в день? Это влияет на место на сервере и скорость работы.</div>
+                <textarea class="qfree" data-name="b9q27" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>28.</b> В ТЗ упомянуты «партнёрские точки» — это ваши филиалы, точки Flowwow или что-то другое? Уточните, чтобы правильно настроить структуру.</div>
+                <textarea class="qfree" data-name="b9qPts" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+            <!-- БЛОК 10 -->
+            <div class="wiz-block" data-block="10">
+              <div class="wb-head"><span class="wb-num">10</span><span class="wb-title">Доставка</span></div>
+              <div class="wb-tag">блок 10/10 · доставка</div>
+
+              <div class="wiz-item">
+                <div class="wiz-q"><b>29.</b> Статус «Передан в доставку» — это курьеры Flowwow, ваши собственные курьеры или сторонняя служба доставки?</div>
+                <textarea class="qfree" data-name="b10q28" placeholder="Ваш ответ…"></textarea>
+              </div>
+              <div class="wiz-item">
+                <div class="wiz-q"><b>30.</b> Нужно ли видеть, где находится курьер (трек-номер, карта), или достаточно ставить статус и отправлять клиенту сообщение «заказ в пути»?</div>
+                <textarea class="qfree" data-name="b10q29" placeholder="Ваш ответ…"></textarea>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="contact-grid" id="contactGrid">
+            <div class="field-wrap">
+              <label for="qName">Как к вам обращаться</label>
+              <input class="qfree" id="qName" type="text" placeholder="Имя" data-name="contact_name">
+            </div>
+            <div class="field-wrap">
+              <label for="qContact">Телефон или мессенджер</label>
+              <input class="qfree" id="qContact" type="text" placeholder="+7 … или @username" data-name="contact">
+            </div>
+          </div>
+
+          <div class="wiz-nav">
+            <button type="button" class="wiz-btn ghost" id="wizPrev">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+              Назад
+            </button>
+            <div class="wiz-err" id="wizErr"></div>
+            <button type="submit" class="wiz-btn primary" id="wizNext">
+              Далее
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </form>
+
+        <!-- ФИНАЛ -->
+        <div class="wiz-final" id="wizFinal">
+          <div class="final-card">
+            <span class="final-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-9"/></svg></span>
+            <h3>Ответы приняты</h3>
+            <p id="finalMsg">Спасибо! Мы получили ваши ответы и вернёмся со сметой и планом.</p>
+            <div class="final-actions">
+              <button class="wiz-btn" id="finalAgain">Заполнить заново</button>
+              <button class="wiz-btn primary" data-to="hero">К началу ↑</button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="contact-grid">
-      <div class="field-wrap">
-        <label for="qName">Как к вам обращаться</label>
-        <input class="qfree" id="qName" type="text" placeholder="Имя" style="min-height:0">
-      </div>
-      <div class="field-wrap">
-        <label for="qContact">Телефон или мессенджер</label>
-        <input class="qfree" id="qContact" type="text" placeholder="@telegram или +7…" style="min-height:0">
-      </div>
-    </div>
+    <!-- ═════════════ EPILOGUE ═════════════ -->
+    <section class="epilogue reveal">
+      <div class="closing">Один кабинет — вся флористика. <span class="accent">Давайте сделаем</span> надёжно и без сюрпризов.</div>
+      <div class="signoff">bloom crm · commercial proposal · 2026</div>
+      <button class="cta" data-to="survey">
+        Обсудить проект
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
+    </section>
 
-    <button class="qsubmit" id="qSubmit" type="submit">
-      Отправить ответы
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-    </button>
-    <div class="qnote">29 вопросов по 10 блокам · ответы уйдут нам — вернёмся со сметой и планом · 2026</div>
-  </form>
-</section>
-
-<!-- ═════════════ EPILOGUE ═════════════ -->
-<section class="chapter epilogue">
-  <p class="closing reveal">Один кабинет — вся флористика. <span class="terra">Давайте сделаем</span> надёжно и без сюрпризов.</p>
-  <div class="signoff reveal">Bloom CRM · 2026</div>
-</section>
-
-</main>
+  </main>
+</div>
 
 <script>
-(function(){
+(function () {
   'use strict';
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isDesktop = () => window.innerWidth > 880;
-  const chapters = Array.from(document.querySelectorAll('section.chapter, section.h-scroll-wrap'));
-  const railLinks = Array.from(document.querySelectorAll('.ch-link'));
-  const topBar = document.getElementById('topBar');
-  const rail = document.getElementById('chapterRail');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Sidebar mobile toggle ── */
+  var sbToggle = document.getElementById('sbToggle');
+  var scrim = document.getElementById('scrim');
+  function closeNav() { document.body.classList.remove('nav-open'); }
+  sbToggle.addEventListener('click', function () { document.body.classList.toggle('nav-open'); });
+  scrim.addEventListener('click', closeNav);
+
+  /* ── Sidebar nav: scroll + click ── */
+  var sections = Array.from(document.querySelectorAll('main .block, main .epilogue'));
+  var links = Array.from(document.querySelectorAll('.sb-link'));
+  var linkTarget = {};
+  links.forEach(function (l) { linkTarget[l.dataset.target] = l; });
+
+  links.forEach(function (l) {
+    l.addEventListener('click', function () {
+      var t = document.getElementById(l.dataset.target);
+      if (t) t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+      closeNav();
+    });
+  });
+
+  var spyIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        links.forEach(function (l) { l.classList.toggle('active', l.dataset.target === e.target.id); });
+      }
+    });
+  }, { rootMargin: '-35% 0px -55% 0px' });
+  sections.forEach(function (s) { if (s.id) spyIO.observe(s); });
+
+  /* ── Data-to scroll (CTA) ── */
+  document.querySelectorAll('[data-to]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var t = document.getElementById(el.dataset.to);
+      if (t) t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  });
 
   /* ── Reveal on scroll ── */
-  const revealIO = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        revealIO.unobserve(e.target);
-      }
+  var revealIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealIO.unobserve(e.target); }
     });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
+  }, { threshold: 0 });
+  document.querySelectorAll('.reveal').forEach(function (el) { revealIO.observe(el); });
 
-  /* ── Order flow SVG draw ── */
-  const flowStage = document.getElementById('flowStage');
-  if (flowStage) {
-    const flowIO = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          flowStage.classList.add('drawn');
-          const steps = flowStage.querySelectorAll('.flow-step');
-          steps.forEach((s, i) => {
-            setTimeout(() => s.classList.add('active'), i * 380);
-          });
-          flowIO.unobserve(flowStage);
-        }
-      });
-    }, { threshold: 0.4 });
-    flowIO.observe(flowStage);
-  }
-
-  /* ── Stepper: sequential reveal as each row enters ── */
-  const stepper = document.getElementById('stepper');
-  if (stepper) {
-    const rows = Array.from(stepper.querySelectorAll('.step-row'));
-    const stepIO = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('in');
-          stepIO.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.45 });
-    rows.forEach(r => stepIO.observe(r));
-  }
-
-  /* ── Question form: option chips + collect answers ── */
-  document.querySelectorAll('.qblock-options').forEach(group => {
-    const chips = group.querySelectorAll('.qopt');
-    const multi = group.dataset.multi === 'true';
-    chips.forEach(chip => {
-      chip.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (!multi) chips.forEach(c => c.classList.remove('sel'));
-        chip.classList.toggle('sel');
-        const cb = chip.querySelector('input');
-        if (cb) cb.checked = chip.classList.contains('sel');
-      });
+  /* ── Capability rows sequential reveal ── */
+  var capRows = document.querySelectorAll('.cap-row[data-in]');
+  var capIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); capIO.unobserve(e.target); }
     });
-  });
+  }, { threshold: 0.3 });
+  capRows.forEach(function (r) { capIO.observe(r); });
 
-  const qForm = document.getElementById('qForm');
-  if (qForm) {
-    qForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = { ts: new Date().toISOString() };
-      qForm.querySelectorAll('.qblock-options').forEach(group => {
-        const name = group.dataset.name;
-        data[name] = Array.from(group.querySelectorAll('input:checked')).map(i => i.value);
-      });
-      qForm.querySelectorAll('.qfree[data-name]').forEach(t => { data[t.dataset.name] = t.value.trim(); });
-      data.contact_name = (document.getElementById('qName') || {}).value || '';
-      data.contact = (document.getElementById('qContact') || {}).value || '';
-      const btn = document.getElementById('qSubmit');
-      // Store locally + show summary (no backend yet)
-      try { localStorage.setItem('bloom_qa', JSON.stringify(data)); } catch (_) {}
-      const summary = Object.entries(data)
-        .filter(([k]) => !['ts', 'contact_name', 'contact'].includes(k))
-        .map(([k, v]) => '• ' + k + ': ' + (Array.isArray(v) ? (v.join(', ') || '—') : (v || '—')))
-        .join('\n');
-      const name = data.contact_name ? data.contact_name + ', ' : '';
-      btn.innerHTML = name ? 'Спасибо, ' + name + 'ответы приняты ✓' : 'Спасибо, ответы приняты ✓';
-      btn.style.background = 'var(--sage)';
-      btn.disabled = true;
-      console.log('[Bloom CRM] Ответы формы:', '\n\n' + summary + '\n\nКонтакт: ' + (data.contact || '—') + '\n\n(сохранено в localStorage)');
-      const note = qForm.querySelector('.qnote');
-      if (note) note.textContent = 'Ответы зафиксированы. Свяжемся со сметой и планом. (лог — в консоли браузера)';
-    });
-  }
-
-  /* ── Typographic morph (opacity-focus, no distortion) ── */
-  const morphs = Array.from(document.querySelectorAll('[data-morph]'));
-  function updateMorphs() {
-    if (reduceMotion || !isDesktop()) {
-      morphs.forEach(m => { m.style.opacity = '1'; m.style.letterSpacing = '-0.035em'; });
-      return;
-    }
-    const vh = window.innerHeight;
-    morphs.forEach(m => {
-      const r = m.getBoundingClientRect();
-      const center = r.top + r.height / 2;
-      const t = Math.max(-1, Math.min(1, (center - vh / 2) / (vh / 2)));
-      const absT = Math.abs(t);
-      // Only opacity (0.35 → 1) + a hair of letter-spacing. No blur, no scaleX.
-      m.style.opacity = (1 - absT * 0.65).toFixed(3);
-      m.style.letterSpacing = (-0.035 + absT * 0.025) + 'em';
-    });
-  }
-
-  /* ── Scroll-spy rail ── */
-  let ticking = false;
-  function updateActive() {
-    const scrollY = window.scrollY;
-    const offset = window.innerHeight * 0.4;
-    let current = chapters[0];
-    for (const c of chapters) {
-      if (c.offsetTop <= scrollY + offset) current = c;
-    }
-    railLinks.forEach(l => {
-      l.classList.toggle('active', current && l.dataset.target === current.id);
-    });
-    // fade chrome over hero
-    const hero = document.getElementById('hero');
-    if (hero) {
-      const hr = hero.getBoundingClientRect();
-      const ratio = Math.max(0, Math.min(1, 1 - (hr.bottom / window.innerHeight)));
-      if (hr.bottom > window.innerHeight * 0.6) {
-        if (topBar) topBar.style.opacity = '0.5';
-        if (rail) rail.style.opacity = '0.3';
-      } else {
-        if (topBar) topBar.style.opacity = '1';
-        if (rail) rail.style.opacity = '1';
-      }
-    }
-    updateMorphs();
-    ticking = false;
-  }
-  window.addEventListener('scroll', () => {
-    if (!ticking) { requestAnimationFrame(updateActive); ticking = true; }
-  }, { passive: true });
-
-  /* ── Rail click smooth-scroll ── */
-  railLinks.forEach(l => {
-    l.addEventListener('click', (e) => {
-      const t = document.getElementById(l.dataset.target);
-      if (t) { t.scrollIntoView({ behavior: 'smooth' }); }
-    });
-  });
-  document.querySelectorAll('[data-to]').forEach(el => {
-    el.addEventListener('click', (e) => {
-      const t = document.getElementById(el.dataset.to);
-      if (t) { t.scrollIntoView({ behavior: 'smooth' }); }
+  /* ── Chat tabs ── */
+  var chatTabs = document.querySelectorAll('.chat-tab');
+  var chatViews = document.querySelectorAll('.chat-view');
+  chatTabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      chatTabs.forEach(function (t) { t.classList.toggle('on', t === tab); });
+      chatViews.forEach(function (v) { v.classList.toggle('on', v.dataset.view === tab.dataset.chat); });
     });
   });
 
   /* ── Counters ── */
-  const counters = Array.from(document.querySelectorAll('[data-count]'));
-  const countIO = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const el = e.target;
-        const target = parseInt(el.dataset.count, 10);
-        const suffix = el.dataset.suffix || '';
-        if (reduceMotion) {
-          el.innerHTML = formatNum(target) + '<span class="unit">' + suffix + '</span>';
-        } else {
-          let start = null;
-          const dur = 1600;
-          function step(ts) {
-            if (!start) start = ts;
-            const p = Math.min(1, (ts - start) / dur);
-            const eased = 1 - Math.pow(1 - p, 3);
-            const val = Math.floor(eased * target);
-            el.innerHTML = formatNum(val) + '<span class="unit">' + suffix + '</span>';
-            if (p < 1) requestAnimationFrame(step);
-          }
-          requestAnimationFrame(step);
+  var counters = Array.from(document.querySelectorAll('[data-count]'));
+  function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  var countIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      var target = parseInt(el.dataset.count, 10);
+      var suffix = el.dataset.suffix || '';
+      if (reduceMotion) { el.textContent = fmt(target) + suffix; }
+      else {
+        var start = null, dur = 1400;
+        function step(ts) {
+          if (!start) start = ts;
+          var p = Math.min(1, (ts - start) / dur);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = fmt(Math.floor(eased * target)) + suffix;
+          if (p < 1) requestAnimationFrame(step);
         }
-        countIO.unobserve(el);
+        requestAnimationFrame(step);
       }
+      countIO.unobserve(el);
     });
   }, { threshold: 0.5 });
-  counters.forEach(c => countIO.observe(c));
+  counters.forEach(function (c) { countIO.observe(c); });
 
-  function formatNum(n) {
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  /* ═════════════ QUESTION WIZARD ═════════════ */
+  var qForm = document.getElementById('qForm');
+  var blocks = Array.from(qForm.querySelectorAll('.wiz-block'));
+  var total = blocks.length;
+  var cur = 0;
+  var wizLog = document.getElementById('wizLog');
+  var wizDots = document.getElementById('wizDots');
+  var STORAGE_KEY = 'bloom_qa_console';
+  var stored = {};
+  try { stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (_) {}
+
+  function blockName(b) { return (b.dataset.block || '').padStart(2, '0'); }
+
+  function log(line, cls) {
+    var d = document.createElement('div');
+    d.className = cls || 'log-mut';
+    d.textContent = line;
+    wizLog.appendChild(d);
+    wizLog.scrollTop = wizLog.scrollHeight;
   }
 
-  /* ── Horizontal pin scroll (desktop only) ── */
-  const hWrap = document.querySelector('.h-scroll-wrap');
-  const hPin = document.querySelector('.h-scroll-pin');
-  const hTrack = document.querySelector('.h-scroll-track');
-  if (hWrap && hPin && hTrack) {
-    let scrollWidth = 0;
-    function recalcH() {
-      if (!isDesktop()) {
-        hWrap.style.height = '';
-        hTrack.style.transform = '';
-        return;
-      }
-      scrollWidth = hTrack.scrollWidth - window.innerWidth + 40;
-      hWrap.style.height = (window.innerHeight + Math.max(0, scrollWidth)) + 'px';
+  function markDone(blockEl) {
+    blockEl.querySelectorAll('.qfree[data-name]').forEach(function (t) {
+      t.classList.toggle('has-val', t.value.trim().length > 0);
+    });
+    blockEl.querySelectorAll('.qopt-row[data-name]').forEach(function (g) {
+      var any = g.querySelector('input:checked');
+      g.classList.toggle('has-val', !!any);
+    });
+  }
+
+  /* chips */
+  qForm.querySelectorAll('.qopt-row').forEach(function (group) {
+    var chips = Array.from(group.querySelectorAll('.qopt'));
+    var multi = group.dataset.multi === 'true';
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (!multi) chips.forEach(function (c) { c.classList.remove('sel'); });
+        chip.classList.toggle('sel');
+        var cb = chip.querySelector('input');
+        if (cb) cb.checked = chip.classList.contains('sel');
+        markDone(group.closest('.wiz-block'));
+        persist();
+      });
+    });
+  });
+
+  function buildDots() {
+    for (var i = 0; i < total; i++) {
+      var d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'wiz-dot';
+      d.textContent = (i + 1).toString();
+      d.dataset.dot = String(i);
+      (function (idx, dot) {
+        dot.addEventListener('click', function () {
+          if (idx < cur || savedAt(idx)) showBlock(idx, true, true);
+        });
+      })(i, d);
+      wizDots.appendChild(d);
     }
-    recalcH();
-    window.addEventListener('resize', recalcH);
-    window.addEventListener('scroll', () => {
-      if (!isDesktop()) return;
-      const r = hWrap.getBoundingClientRect();
-      if (r.top <= 0 && r.top >= -scrollWidth) {
-        const progress = -r.top / scrollWidth;
-        hTrack.style.transform = 'translate3d(' + (-progress * scrollWidth) + 'px,0,0)';
-      } else if (r.top > 0) {
-        hTrack.style.transform = 'translate3d(0,0,0)';
-      } else {
-        hTrack.style.transform = 'translate3d(' + (-scrollWidth) + 'px,0,0)';
-      }
-    }, { passive: true });
   }
 
-  /* ── Harness: query-param deep-link for headless capture ── */
-  const params = new URLSearchParams(location.search);
-  if (params.has('scroll')) {
-    const v = parseFloat(params.get('scroll'));
-    if (!isNaN(v)) {
-      const max = document.body.scrollHeight - window.innerHeight;
-      window.scrollTo(0, max * v);
+  function savedAt(idx) {
+    return blocks[idx] ? blocks[idx].querySelectorAll('.qfree.has-val, .qopt-row.has-val').length > 0 : false;
+  }
+
+  function collectBlock(b) {
+    var data = {};
+    b.querySelectorAll('.qfree[data-name]').forEach(function (t) { data[t.dataset.name] = t.value.trim(); });
+    b.querySelectorAll('.qopt-row[data-name]').forEach(function (g) {
+      data[g.dataset.name] = Array.from(g.querySelectorAll('input:checked')).map(function (i) { return i.value; });
+    });
+    return data;
+  }
+
+  function applyBlock(b) {
+    var data = stored[b.dataset.block] || {};
+    b.querySelectorAll('.qfree[data-name]').forEach(function (t) {
+      if (typeof data[t.dataset.name] === 'string') t.value = data[t.dataset.name];
+    });
+    b.querySelectorAll('.qopt-row[data-name]').forEach(function (g) {
+      var sel = data[g.dataset.name] || [];
+      g.querySelectorAll('.qopt').forEach(function (c) {
+        var on = sel.indexOf(c.querySelector('input').value) >= 0;
+        c.classList.toggle('sel', on);
+        c.querySelector('input').checked = on;
+      });
+    });
+    markDone(b);
+  }
+
+  function persist() {
+    var curData = collectBlock(blocks[cur]);
+    stored[blocks[cur].dataset.block] = curData;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stored)); } catch (_) {}
+  }
+
+  qForm.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t && t.classList && t.classList.contains('qfree')) { markDone(t.closest('.wiz-block')); persist(); }
+  });
+
+  function render() {
+    blocks.forEach(function (b, i) {
+      b.classList.toggle('on', i === cur);
+      var d = wizDots.children[i];
+      var done = savedAt(i);
+      d.classList.toggle('done', done && i !== cur);
+      d.classList.toggle('cur', i === cur);
+    });
+    var pct = Math.round(((cur + 1) / total) * 100);
+    document.getElementById('wpLabel').textContent = 'Блок ' + (cur + 1) + ' из ' + total;
+    document.getElementById('wpCount').textContent = pct + '%';
+    document.getElementById('wizBar').style.width = pct + '%';
+    document.getElementById('wizPrev').disabled = cur === 0;
+    var contactGrid = document.getElementById('contactGrid');
+    if (contactGrid) contactGrid.style.display = (cur === total - 1) ? 'grid' : 'none';
+    document.getElementById('wizNext').innerHTML = cur === total - 1
+      ? 'Завершить <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-9"/></svg>'
+      : 'Далее <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  }
+
+  function showBlock(i, announce, scroll) {
+    if (i < 0 || i >= total) return;
+    if (announce) log('переход: блок ' + blockName(blocks[i]) + ' [посещён]', 'log-mut');
+    cur = i;
+    render();
+    if (scroll) {
+      var wb = blocks[i];
+      wb.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
     }
   }
-  if (params.get('to')) {
-    const t = document.getElementById(params.get('to'));
-    if (t) t.scrollIntoView();
-  }
 
-  updateActive();
+  document.getElementById('wizPrev').addEventListener('click', function () {
+    log('назад: блок ' + blockName(blocks[Math.max(0, cur - 1)]));
+    showBlock(cur - 1, false, true);
+  });
+
+  qForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    persist();
+    if (cur < total - 1) {
+      log('блок ' + blockName(blocks[cur]) + ' → сохранён', 'log-ok');
+      showBlock(cur + 1, false, true);
+      return;
+    }
+    /* finalize */
+    var all = {};
+    blocks.forEach(function (b) { Object.assign(all, collectBlock(b)); });
+    all.ts = new Date().toISOString();
+    all.contact_name = (document.getElementById('qName').value || '').trim();
+    all.contact = (document.getElementById('qContact').value || '').trim();
+    try { localStorage.setItem('bloom_qa', JSON.stringify(all)); } catch (_) {}
+    log('ответы зафиксированы — формирую смету…', 'log-ok');
+
+    var summary = Object.entries(all)
+      .filter(function (kv) { return ['ts', 'contact_name', 'contact'].indexOf(kv[0]) < 0; })
+      .map(function (kv) { return '• ' + kv[0] + ': ' + (Array.isArray(kv[1]) ? (kv[1].join(', ') || '—') : (kv[1] || '—')); })
+      .join('\n');
+    console.log('[Bloom CRM] Ответы формы:\n\n' + summary + '\n\nКонтакт: ' + (all.contact || '—') + '\n\n(сохранено в localStorage)');
+
+    qForm.style.display = 'none';
+    var fin = document.getElementById('wizFinal');
+    fin.classList.add('on');
+    var msg = document.getElementById('finalMsg');
+    msg.textContent = all.contact_name
+      ? 'Спасибо, ' + all.contact_name + '! Ответы приняты — вернёмся со сметой и планом.'
+      : 'Спасибо! Ответы приняты — вернёмся со сметой и планом.';
+    fin.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  document.getElementById('finalAgain').addEventListener('click', function () {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+    stored = {};
+    qForm.style.display = '';
+    document.getElementById('wizFinal').classList.remove('on');
+    qForm.querySelectorAll('.qfree').forEach(function (t) { t.value = ''; });
+    qForm.querySelectorAll('.qopt').forEach(function (c) { c.classList.remove('sel'); c.querySelector('input').checked = false; });
+    cur = 0;
+    render();
+    showBlock(0, false, true);
+  });
+
+  /* init */
+  blocks.forEach(function (b) { applyBlock(b); });
+  buildDots();
+  render();
+  showBlock(0);
 })();
 </script>
 </body>

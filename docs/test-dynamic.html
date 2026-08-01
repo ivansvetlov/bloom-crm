@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM — тест динамики</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #F6F6F4;
+    --bg-2:      #FFFFFF;
+    --bg-3:      #EFEFEC;
+    --border:    #E5E5E1;
+    --border-2:  #D8D8D3;
+    --ink:       #18181B;
+    --ink-dim:   #3F3F46;
+    --ink-mute:  #8E8E93;
+    --ink-faint: #B4B4B8;
+
+    --terra:     #C76B47;
+    --terra-2:   #B5573A;
+    --terra-soft:#FAEFE8;
+    --sage:      #7C8B6F;
+    --sage-soft: #EFF3EB;
+    --plum:      #6B4865;
+    --plum-soft: #F1EAEE;
+    --amber:     #D9A441;
+    --amber-soft:#F8F0DC;
+
+    --font:  'Inter', system-ui, sans-serif;
+    --mono:  'JetBrains Mono', ui-monospace, monospace;
+    --ease:  cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font); background: var(--bg); color: var(--ink);
+    line-height: 1.6; font-size: 15px; overflow-x: hidden;
+  }
+  ::selection { background: var(--terra); color: #fff; }
+
+  /* ═══════════ GLASS TOPBAR ═══════════ */
+  .glass-top {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px;
+    background: rgba(246,246,244,0.62);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    backdrop-filter: blur(18px) saturate(1.6);
+    border-bottom: 1px solid rgba(216,216,211,0.7);
+  }
+  .glass-top .brand { font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+  .glass-top .brand svg { width: 24px; height: 24px; }
+  .glass-top .chip {
+    font-family: var(--mono); font-size: 0.64rem; font-weight: 600;
+    padding: 8px 14px; border-radius: 999px;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(216,216,211,0.9);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: var(--ink-dim);
+  }
+  .glass-top .chip span { color: var(--sage); }
+
+  /* ═══════════ HERO ═══════════ */
+  .hero {
+    min-height: 88vh; display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 28px 40px; max-width: 1180px; margin: 0 auto;
+  }
+  .hero .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--terra); border: 1px solid var(--terra-soft); background: var(--terra-soft);
+    padding: 8px 14px; border-radius: 999px; width: fit-content;
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    font-weight: 900; letter-spacing: -0.03em; line-height: 1.02;
+    margin: 26px 0 20px;
+  }
+  .hero h1 .accent {
+    background: linear-gradient(100deg, var(--terra) 0%, var(--amber) 60%, var(--plum) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p { max-width: 560px; color: var(--ink-mute); font-size: 1.05rem; }
+  .hero p strong { color: var(--ink); }
+
+  /* ═══════════ MARQUEE ═══════════ */
+  .marquee-wrap { position: relative; padding: 26px 0; overflow: hidden; }
+  .marquee-wrap::before, .marquee-wrap::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 140px; z-index: 2; pointer-events: none;
+  }
+  .marquee-wrap::before { left: 0; background: linear-gradient(90deg, var(--bg), transparent); }
+  .marquee-wrap::after { right: 0; background: linear-gradient(-90deg, var(--bg), transparent); }
+
+  .mq { display: flex; overflow: hidden; width: 100%; }
+  .mq-track { display: flex; flex-shrink: 0; gap: 0; animation: mq var(--dur, 30s) linear infinite; will-change: transform; }
+  .mq.left .mq-track { animation-direction: normal; }
+  .mq.right .mq-track { animation-direction: reverse; }
+  .mq:hover .mq-track { animation-play-state: paused; }
+
+  @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .mq-inner { display: flex; align-items: center; flex-shrink: 0; }
+
+  .mq-item {
+    display: flex; align-items: center; gap: 14px;
+    font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;
+    padding: 0 18px;
+  }
+  .mq-item .star { font-family: var(--mono); color: var(--terra); }
+  .mq-row-1 { background: var(--ink); color: #fff; transform: rotate(-1.2deg); }
+  .mq-row-2 { background: var(--terra); color: #fff; transform: rotate(0.8deg); margin-top: -18px; }
+  .mq-row-3 { background: var(--bg-2); color: var(--ink); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); transform: rotate(-0.6deg); margin-top: -18px; }
+
+  /* ═══════════ STICKY WEEK STACK ═══════════ */
+  .weeks { max-width: 1180px; margin: 0 auto; padding: 90px 28px 40px; }
+  .weeks .sec-head { margin-bottom: 40px; }
+  .sec-num { font-family: var(--mono); font-size: 0.7rem; color: var(--terra); font-weight: 600; letter-spacing: 0.1em; }
+  .sec-tag { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .sec-h { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; letter-spacing: -0.025em; margin: 8px 0; }
+  .sec-lede { color: var(--ink-mute); max-width: 600px; }
+
+  .week-stack { position: relative; margin-top: 30px; }
+
+  .week {
+    position: sticky; top: 88px;
+    margin-bottom: 26px;
+    border-radius: 18px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    box-shadow: 0 18px 50px rgba(24,24,27,0.09);
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+  }
+  .week:hover { box-shadow: 0 24px 60px rgba(24,24,27,0.14); }
+
+  .week .wk-glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(600px 200px at 85% 0%, var(--terra-soft), transparent 60%);
+    opacity: 0.6;
+  }
+
+  .week-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 30px 34px; cursor: pointer; position: relative; z-index: 1;
+  }
+  .week-head .left { display: flex; align-items: center; gap: 22px; }
+  .week-no {
+    font-family: var(--mono); font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 700;
+    letter-spacing: -0.04em; line-height: 1;
+    background: linear-gradient(120deg, var(--terra), var(--amber));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .week-title { font-size: clamp(1.1rem, 2.4vw, 1.5rem); font-weight: 800; letter-spacing: -0.02em; }
+  .week-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-mute); margin-top: 4px; letter-spacing: 0.04em; }
+  .week-arrow {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border-2); background: var(--bg-2);
+    color: var(--ink-dim); font-size: 1rem; flex-shrink: 0;
+    transition: transform 0.35s var(--ease), background 0.2s, color 0.2s;
+  }
+  .week.open .week-arrow { transform: rotate(180deg); background: var(--terra); border-color: var(--terra); color: #fff; }
+
+  .week-body {
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s var(--ease);
+  }
+  .week.open .week-body { grid-template-rows: 1fr; }
+  .week-body > div { overflow: hidden; }
+  .week-content {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 26px;
+    padding: 0 34px 32px; position: relative; z-index: 1;
+  }
+  .wk-list { display: flex; flex-direction: column; gap: 10px; }
+  .wk-list .li { display: flex; gap: 10px; align-items: flex-start; color: var(--ink-dim); font-size: 0.9rem; }
+  .wk-list .li::before { content: '✓'; font-family: var(--mono); font-weight: 700; color: var(--sage); flex-shrink: 0; }
+  .wk-meta { display: flex; flex-direction: column; gap: 10px; }
+  .wk-meta .mk {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--ink-dim);
+  }
+  .wk-meta .mk.terra { border-color: var(--terra-soft); background: var(--terra-soft); color: var(--terra); }
+  .wk-meta .mk.sage { border-color: var(--sage-soft); background: var(--sage-soft); color: var(--sage); }
+  .wk-meta .mk.plum { border-color: var(--plum-soft); background: var(--plum-soft); color: var(--plum); }
+
+  /* ═══════════ AFTER STACK ═══════════ */
+  .after {
+    max-width: 1180px; margin: 0 auto; padding: 120px 28px 40px;
+    position: relative;
+  }
+  .after .glass-card {
+    position: relative;
+    border-radius: 24px; overflow: hidden;
+    background: var(--ink);
+    padding: 64px 40px;
+    display: flex; align-items: center; justify-content: space-between; gap: 30px; flex-wrap: wrap;
+  }
+  .after .glass-card::before {
+    content: ''; position: absolute; inset: -40%;
+    background:
+      radial-gradient(600px 300px at 20% 0%, rgba(199,107,71,0.55), transparent 55%),
+      radial-gradient(500px 300px at 90% 100%, rgba(124,139,111,0.5), transparent 55%);
+    filter: blur(10px);
+  }
+  .after .glass-card h2 { position: relative; z-index: 1; color: #fff; font-size: clamp(1.6rem, 3.4vw, 2.3rem); font-weight: 900; letter-spacing: -0.025em; line-height: 1.1; max-width: 480px; }
+  .after .glass-card p { position: relative; z-index: 1; color: rgba(255,255,255,0.7); margin-top: 12px; max-width: 420px; }
+  .after .cta-btn {
+    position: relative; z-index: 1;
+    font-weight: 700; font-size: 0.95rem; text-decoration: none;
+    background: #fff; color: var(--ink);
+    padding: 16px 30px; border-radius: 12px;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s;
+  }
+  .after .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,0.3); }
+
+  .foot {
+    max-width: 1180px; margin: 60px auto; padding: 0 28px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    font-family: var(--mono); font-size: 0.66rem; color: var(--ink-mute);
+  }
+
+  /* ═══════════ REVEAL ═══════════ */
+  .reveal { opacity: 0; transform: translateY(34px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 760px) {
+    .week-content { grid-template-columns: 1fr; }
+    .glass-top { padding: 12px 18px; }
+    .week-head { padding: 22px 20px; }
+    .week-content { padding: 0 20px 24px; }
+    .week { top: 72px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="glass-top">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2C9 5 9 8 12 11C15 8 15 5 12 2Z" fill="#C76B47" stroke="#C76B47"/>
+      <path d="M12 11C9 8 6 9 5 12C8 14 11 14 12 11Z" fill="#7C8B6F" stroke="#7C8B6F"/>
+      <path d="M12 11C15 8 18 9 19 12C16 14 13 14 12 11Z" fill="#7C8B6F" stroke="#7C8B6F"/>
+      <path d="M12 11V20" stroke="#18181B"/>
+    </svg>
+    Bloom CRM <span style="font-weight:500;color:var(--ink-mute)">· коммерческое предложение</span>
+  </div>
+  <div class="chip"><span>●</span> запуск за 12 недель</div>
+</header>
+
+<section class="hero">
+  <span class="badge">система для цветочной сети</span>
+  <h1>Запускаем ваш кабинет<br><span class="accent">за 12 недель</span></h1>
+  <p>Этап за этапом — от подключения заказов до полного перехода. Всё видно заранее, и вы всегда знаете, что происходит на каждой неделе.</p>
+</section>
+
+<!-- ═══════════ MARQUEE ROWS ═══════════ -->
+<div class="marquee-wrap">
+  <div class="mq left">
+    <div class="mq-track" style="--dur: 26s">
+      <div class="mq-inner">
+        <span class="mq-item">Заказы <span class="star">✦</span></span><span class="mq-item">Flowwow <span class="star">✦</span></span><span class="mq-item">Чаты <span class="star">✦</span></span><span class="mq-item">Аналитика <span class="star">✦</span></span><span class="mq-item">Витрина <span class="star">✦</span></span><span class="mq-item">Курьеры <span class="star">✦</span></span>
+      </div>
+      <div class="mq-inner" aria-hidden="true">
+        <span class="mq-item">Заказы <span class="star">✦</span></span><span class="mq-item">Flowwow <span class="star">✦</span></span><span class="mq-item">Чаты <span class="star">✦</span></span><span class="mq-item">Аналитика <span class="star">✦</span></span><span class="mq-item">Витрина <span class="star">✦</span></span><span class="mq-item">Курьеры <span class="star">✦</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="mq right">
+    <div class="mq-track" style="--dur: 20s">
+      <div class="mq-inner">
+        <span class="mq-item">WhatsApp <span class="star">✦</span></span><span class="mq-item">Telegram <span class="star">✦</span></span><span class="mq-item">MAX <span class="star">✦</span></span><span class="mq-item">Статусы <span class="star">✦</span></span><span class="mq-item">Уведомления <span class="star">✦</span></span><span class="mq-item">Отчёты <span class="star">✦</span></span>
+      </div>
+      <div class="mq-inner" aria-hidden="true">
+        <span class="mq-item">WhatsApp <span class="star">✦</span></span><span class="mq-item">Telegram <span class="star">✦</span></span><span class="mq-item">MAX <span class="star">✦</span></span><span class="mq-item">Статусы <span class="star">✦</span></span><span class="mq-item">Уведомления <span class="star">✦</span></span><span class="mq-item">Отчёты <span class="star">✦</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="mq left">
+    <div class="mq-track" style="--dur: 34s">
+      <div class="mq-inner">
+        <span class="mq-item">Мира 14 <span class="star">✦</span></span><span class="mq-item">Ленина 92 <span class="star">✦</span></span><span class="mq-item">Рижская 8 <span class="star">✦</span></span><span class="mq-item">+12 точек <span class="star">✦</span></span><span class="mq-item">всё под контролем <span class="star">✦</span></span><span class="mq-item">витрина едина <span class="star">✦</span></span>
+      </div>
+      <div class="mq-inner" aria-hidden="true">
+        <span class="mq-item">Мира 14 <span class="star">✦</span></span><span class="mq-item">Ленина 92 <span class="star">✦</span></span><span class="mq-item">Рижская 8 <span class="star">✦</span></span><span class="mq-item">+12 точек <span class="star">✦</span></span><span class="mq-item">всё под контролем <span class="star">✦</span></span><span class="mq-item">витрина едина <span class="star">✦</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ STICKY WEEKS ═══════════ -->
+<section class="weeks">
+  <div class="sec-head reveal">
+    <div style="display:flex;align-items:baseline;gap:14px"><span class="sec-num">01</span><span class="sec-tag">план запуска</span></div>
+    <h2 class="sec-h">12 недель до полного запуска</h2>
+    <p class="sec-lede">Этап за этапом — от подключения заказов до полного перехода. Нажмите на любую карточку, чтобы посмотреть, что происходит на этой неделе.</p>
+  </div>
+
+  <div class="week-stack">
+
+      <div class="week open">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">01</div>
+          <div><div class="week-title">Знакомство и подключение</div>
+          <div class="week-sub">неделя 1 · подключение</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Знакомимся с вашей сетью: магазины, менеджеры, как устроена работа</div>
+            <div class="li">Подключаем заказы из Flowwow и проверяем, что всё приходит вовремя</div>
+            <div class="li">Готовим надёжную основу: сервер и ежедневные резервные копии</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk terra">+ разбор по шагам</div>
+            <div class="mk sage">+ отвечаем на вопросы</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">02</div>
+          <div><div class="week-title">Витрина и товары</div>
+          <div class="week-sub">неделя 2 · каталог</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Переносим товары, фотографии и остатки со всех точек</div>
+            <div class="li">Настраиваем цены, скрытие позиций и доступ к витрине</div>
+            <div class="li">Добавляем прямые продажи — заказы мимо Flowwow</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk terra">+ перенос данных</div>
+            <div class="mk plum">+ карточки товаров</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">03</div>
+          <div><div class="week-title">Все чаты в одном окне</div>
+          <div class="week-sub">неделя 3 · чаты</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Собираем WhatsApp, Telegram и MAX в одно окно</div>
+            <div class="li">Переносим переписку и проверяем, что сообщения доходят</div>
+            <div class="li">Учимся создавать заказ прямо из переписки</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk terra">+ подключение аккаунтов</div>
+            <div class="mk sage">+ пробная неделя в работе</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">04</div>
+          <div><div class="week-title">Права и роли</div>
+          <div class="week-sub">неделя 4 · сотрудники</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Настраиваем роли: менеджер, старший менеджер, директор</div>
+            <div class="li">Ведём журнал: кто и что менял — видно всегда</div>
+            <div class="li">Простые правила для паролей и их восстановления</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk plum">+ роли и доступы</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">05</div>
+          <div><div class="week-title">Оплата и чеки</div>
+          <div class="week-sub">неделя 5 · финансы</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Принимаем оплату картой или отмечаем её вручную</div>
+            <div class="li">Чеки для налоговой — автоматически</div>
+            <div class="li">Бонусы и программа лояльности — по вашему ТЗ</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk terra">+ приём оплаты</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">06</div>
+          <div><div class="week-title">Доставка</div>
+          <div class="week-sub">неделя 6 · логистика</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Выбираем, кто доставляет: свои курьеры, служба или Flowwow</div>
+            <div class="li">Клиент видит статус и получает «заказ в пути»</div>
+            <div class="li">По желанию — трек-номер и карта курьера</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk sage">+ подключение службы доставки</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">07</div>
+          <div><div class="week-title">Уведомления</div>
+          <div class="week-sub">неделя 7 · оповещения</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Уведомления о заказах — в Telegram и ВКонтакте</div>
+            <div class="li">Если заказ не приняли за 3 минуты — напомним</div>
+            <div class="li">Клиент всегда знает, что с его заказом: принят, собран, в пути</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk terra">+ уведомления в мессенджер</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">08</div>
+          <div><div class="week-title">Данные и перенос</div>
+          <div class="week-sub">неделя 8 · перенос данных</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Переносим базу: клиенты, заказы, товары</div>
+            <div class="li">Наводим порядок: убираем повторы и ошибки в номерах</div>
+            <div class="li">Готовим документы по закону о персональных данных</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk plum">+ шаблоны документов</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">09</div>
+          <div><div class="week-title">Параллельный запуск</div>
+          <div class="week-sub">неделя 9 · переход</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Неделю-две работаем на старой и новой системе одновременно</div>
+            <div class="li">Сверяем заказы и статусы в обеих</div>
+            <div class="li">Слушаем менеджеров и поправляем детали</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk sage">+ чек-лист проверки</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">10</div>
+          <div><div class="week-title">Аналитика</div>
+          <div class="week-sub">неделя 10 · отчёты</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Показываем цифры: заказы, выручка, конверсия из чата</div>
+            <div class="li">Топ магазинов и результаты по каналам</div>
+            <div class="li">Отчёты для руководства — одним файлом</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk terra">+ настройка отчётов</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">11</div>
+          <div><div class="week-title">Безопасность</div>
+          <div class="week-sub">неделя 11 · защита</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Резервные копии и план на случай сбоя</div>
+            <div class="li">Исходники хранятся у независимой стороны</div>
+            <div class="li">Сроки реакции и восстановления — в договоре</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk plum">+ договор с гарантиями</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="week reveal">
+      <div class="wk-glow"></div>
+      <div class="week-head">
+        <div class="left">
+          <div class="week-no">12</div>
+          <div><div class="week-title">Запуск и поддержка</div>
+          <div class="week-sub">неделя 12 · запуск</div></div>
+        </div>
+        <div class="week-arrow">⌄</div>
+      </div>
+      <div class="week-body"><div>
+        <div class="week-content">
+          <div class="wk-list">
+            <div class="li">Полностью переходим на новую систему</div>
+            <div class="li">Обучаем менеджеров и оставляем инструкции</div>
+            <div class="li">Дальше — сопровождение и развитие</div>
+          </div>
+          <div class="wk-meta">
+            <div class="mk terra">+ запуск</div>
+            <div class="mk sage">+ поддержка в течение года</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ AFTER STACK ═══════════ -->
+<section class="after reveal">
+  <div class="glass-card">
+    <div>
+      <h2>После запуска<br>мы не исчезаем</h2>
+      <p>Сопровождаем, поддерживаем и развиваем кабинет вместе с вашим бизнесом.</p>
+    </div>
+    <a class="cta-btn" href="index.html">К КП →</a>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>© 2026 Bloom CRM · коммерческое предложение</span>
+  <span><a href="demo.html" style="color:var(--ink-mute)">интерактивное демо →</a></span>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* открытие/закрытие недель */
+  var weeks = Array.prototype.slice.call(document.querySelectorAll('.week'));
+  weeks.forEach(function (w) {
+    w.querySelector('.week-head').addEventListener('click', function () {
+      var wasOpen = w.classList.contains('open');
+      weeks.forEach(function (x) { x.classList.remove('open'); });
+      if (!wasOpen) w.classList.add('open');
+    });
+  });
+
+  /* reveal при скролле */
+  var reveals = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function (r) { io.observe(r); });
+  } else {
+    reveals.forEach(function (r) { r.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>
