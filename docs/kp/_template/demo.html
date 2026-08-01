@@ -526,8 +526,14 @@
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="kanban" id="kanban">
+    <!-- ═════════════ 02 · ORDERS ═════════════ -->
+    <section data-section="orders" style="display:none">
+      <div class="sec-head"><span class="sec-num">02</span><span class="sec-tag">заказы</span></div>
+      <h2 class="sec-h">Доска заказов</h2>
+      <p class="sec-lede">Перетащите карточку, чтобы сменить статус. Заказы с <strong>Маркетплейс</strong> и от постоянных клиентов — в одном месте.</p>
+      <div class="kanban" id="kanban2">
         <div class="kb-col" data-status="new">
           <div class="kb-head">Новый <span class="n">01</span></div>
           <div class="kb-body"></div>
@@ -549,14 +555,6 @@
           <div class="kb-body"></div>
         </div>
       </div>
-    </section>
-
-    <!-- ═════════════ 02 · ORDERS ═════════════ -->
-    <section data-section="orders" style="display:none">
-      <div class="sec-head"><span class="sec-num">02</span><span class="sec-tag">заказы</span></div>
-      <h2 class="sec-h">Доска заказов</h2>
-      <p class="sec-lede">Перетащите карточку, чтобы сменить статус. Заказы с <strong>Маркетплейс</strong> и от постоянных клиентов — в одном месте.</p>
-      <div class="kanban" id="kanban2"></div>
     </section>
 
     <!-- ═════════════ 03 · CHATS ═════════════ -->
@@ -746,7 +744,7 @@
   /* ────────────────────────── CACHED ────────────────────────── */
   var $ = function (sel) { return document.querySelector(sel); };
   var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
-  var kanban1 = $('#kanban');
+  var kanban1 = null;
   var kanban2 = $('#kanban2');
   var termLog = $('#termLog');
   var toastEl = $('#toast');
@@ -776,7 +774,7 @@
   }
 
   function renderAllKanban() {
-    renderKanban(kanban1);
+    if (kanban1) renderKanban(kanban1);
     if (kanban2) renderKanban(kanban2);
     updateStats();
   }
@@ -1056,14 +1054,11 @@
       if (tab) selectChat(tab.getAttribute('data-chat'));
     });
 
-    bindDrag(kanban1);
+    if (kanban1) bindDrag(kanban1);
     if (kanban2) bindDrag(kanban2);
   }
 
   /* ────────────────────────── INIT ────────────────────────── */
-  if (kanban2 && kanban1) {
-    kanban2.innerHTML = kanban1.innerHTML;
-  }
   renderAllKanban();
   renderChats();
   renderChat();
