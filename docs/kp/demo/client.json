@@ -1,13 +1,13 @@
 {
-  "slug": "flowwow",
-  "title": "Bloom CRM — Flowwow + мессенджеры",
-  "client": "Цветочный магазин (Flowwow)",
+  "slug": "demo",
+  "title": "Bloom CRM — демо КП",
+  "client": "Демо / pre-sales",
   "status": "active",
   "created": "2026-08-01",
   "contact": {
     "telegram": "https://t.me/vanyasvetlov",
     "whatsapp": "https://wa.me/79111472928",
-    "max": "https://max.ru/u/..."
+    "max": ""
   },
   "pages": {
     "kp": "index.html",
@@ -17,5 +17,5 @@
     "roles": "test-dynamic.html",
     "security": "security.html"
   },
-  "notes": "Первое КП. Шаблон для следующих клиентов — docs/kp/_template."
+  "notes": "Первое КП под брендом Bloom. Маркетплейс Flowwow в тексте — только как канал заказов, не имя продукта."
 }

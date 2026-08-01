@@ -4,3 +4,10 @@ __pycache__/
 .venv/
 node_modules/
 .env
+
+# local / agent noise
+.playwright-mcp/
+.deploy_repo
+docs/_deploy_github.py
+*.png
+!docs/**/*.png

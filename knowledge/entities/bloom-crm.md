@@ -32,14 +32,12 @@ confidence: high
 ## Публичные артефакты
 | Файл | Назначение |
 |------|------------|
-| `docs/index.html` | КП |
-| `docs/demo.html` | Демо-кабинет |
-| `docs/questions.html` | Опрос 25 вопросов |
-| `docs/security.html` | Безопасность / 152-ФЗ |
-| `docs/test-dynamic.html` | 12 недель внедрения |
+| `docs/index.html` | Хаб КП |
+| `docs/kp/demo/` | Демо-КП (точка входа для заказчика) |
+| `docs/kp/{slug}/` | КП под клиента |
 
-## Домены
-- **Боевой бренд:** `crmbloom.ru` (хаб + `/kp/{slug}/`)
-- Песочница (legacy): `flowww.webtm.ru`
-- Бэкап: GitHub Pages `ivansvetlov.github.io/flowwow-crm`
-- В бренде/домене нет слова flowwow; slug КП может быть `flowwow` (контекст клиента)
+## Домены и имя
+- **Продукт:** Bloom CRM
+- **Боевой домен:** `crmbloom.ru` (хаб + `/kp/{slug}/`)
+- **Репозиторий:** `bloom-crm` (старое имя flowwow-crm — не использовать)
+- **Flowwow** в текстах = внешний маркетплейс-канал, **не** бренд продукта
