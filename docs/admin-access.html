@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM — Админка доступа</title>
+<meta name="description" content="Админ-панель ролей, ACL, точек и аудита доступа Bloom CRM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FBF7F4; --bg-2: #FFFFFF; --bg-3: #F3EEEA;
+    --border: #EDE4DD; --border-2: #E0D5CC;
+    --ink: #1C1917; --ink-dim: #44403C; --ink-mute: #78716C; --ink-faint: #A8A29E;
+    --terra: #E06B4A; --terra-2: #C85A3C; --terra-soft: #FCEBE5;
+    --sage: #6F8F72; --sage-soft: #EAF2EB;
+    --plum: #7A5A74; --plum-soft: #F3EBF1;
+    --amber: #D9A441; --amber-soft: #F8F0DC;
+    --red: #D6493A; --red-soft: #FBEDEB;
+    --blue: #3A7BD5; --blue-soft: #E8F1FB;
+    --font: 'Inter', system-ui, -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --radius: 14px;
+    --sidebar-w: 248px;
+    --topbar-h: 56px;
+    --shadow-sm: 0 2px 10px rgba(28, 25, 23, 0.05);
+  }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: var(--font); background: var(--bg); color: var(--ink);
+    line-height: 1.55; font-size: 14.5px; -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--terra); color: #fff; }
+  button, input, select, textarea { font-family: inherit; }
+  a { color: var(--terra); text-decoration: none; font-weight: 650; }
+  a:hover { text-decoration: underline; }
+
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; width: var(--sidebar-w); z-index: 40;
+    background: var(--bg-2); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 14px 10px;
+  }
+  .sb-brand { display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px; border-bottom: 1px solid var(--border); }
+  .sb-brand .mark {
+    width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(145deg, var(--terra), var(--plum));
+    display: grid; place-items: center; color: #fff; font-weight: 900; font-size: 0.78rem;
+  }
+  .sb-brand .nm { font-weight: 800; font-size: 0.9rem; letter-spacing: -0.02em; }
+  .sb-brand .sub { font-size: 0.68rem; color: var(--ink-faint); font-weight: 650; margin-top: 1px; }
+  .sb-pill {
+    margin: 12px 6px 4px; padding: 8px 10px; border-radius: 10px;
+    background: var(--plum-soft); color: var(--plum); font-size: 0.72rem; font-weight: 750;
+  }
+  .sb-label {
+    font-size: 0.65rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-faint); padding: 14px 10px 6px;
+  }
+  .sb-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
+  .sb-link {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    border: 0; background: transparent; text-align: left; cursor: pointer;
+    padding: 9px 10px; border-radius: 10px; color: var(--ink-mute); font-size: 0.84rem; font-weight: 600;
+  }
+  .sb-link .ix { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-faint); width: 1.4rem; }
+  .sb-link:hover { background: var(--bg-3); color: var(--ink-dim); }
+  .sb-link.on { background: var(--terra-soft); color: var(--terra); }
+  .sb-link.on .ix { color: var(--terra); }
+  .sb-foot { border-top: 1px solid var(--border); padding: 12px 8px 4px; font-size: 0.78rem; color: var(--ink-mute); }
+  .sb-foot a { display: block; margin-top: 6px; }
+
+  .main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    position: sticky; top: 0; z-index: 30; height: var(--topbar-h);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 0 22px; background: rgba(251,247,244,.88); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .crumb { font-size: 0.86rem; color: var(--ink-mute); }
+  .crumb b { color: var(--ink); font-weight: 800; }
+  .crumb .sep { margin: 0 8px; color: var(--ink-faint); }
+  .tb-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.72rem; font-weight: 700; padding: 5px 10px; border-radius: 999px;
+    background: var(--bg-2); border: 1px solid var(--border); color: var(--ink-mute);
+  }
+  .chip.warn { background: var(--amber-soft); border-color: transparent; color: #A07A20; }
+  .chip.ok { background: var(--sage-soft); border-color: transparent; color: var(--sage); }
+  .chip.admin { background: var(--plum-soft); border-color: transparent; color: var(--plum); }
+
+  .content { padding: 20px 22px 48px; max-width: 1240px; }
+  .panel { display: none; }
+  .panel.on { display: block; animation: in .28s var(--ease); }
+  @keyframes in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .h1 { font-size: 1.35rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 4px; }
+  .lead { color: var(--ink-mute); font-size: 0.9rem; margin-bottom: 16px; max-width: 720px; line-height: 1.5; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+  .toolbar input, .toolbar select {
+    border: 1px solid var(--border-2); border-radius: 10px; padding: 9px 12px;
+    background: var(--bg-2); font-size: 0.86rem; outline: none; min-width: 0;
+  }
+  .toolbar input { flex: 1; min-width: 180px; }
+  .toolbar input:focus, .toolbar select:focus { border-color: var(--terra); }
+
+  .btn {
+    border: 1px solid var(--border-2); background: var(--bg-2); color: var(--ink-dim);
+    border-radius: 10px; padding: 9px 14px; font-size: 0.84rem; font-weight: 750;
+    cursor: pointer; transition: .15s;
+  }
+  .btn:hover { border-color: var(--terra); color: var(--terra); }
+  .btn.terra { background: var(--terra); border-color: var(--terra); color: #fff; }
+  .btn.terra:hover { background: var(--terra-2); color: #fff; }
+  .btn.ghost { background: transparent; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;
+  }
+  .kpi {
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; box-shadow: var(--shadow-sm);
+  }
+  .kpi .l { font-size: 0.68rem; font-weight: 750; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-faint); }
+  .kpi .v { font-size: 1.45rem; font-weight: 900; letter-spacing: -0.03em; margin-top: 4px; }
+  .kpi .h { font-size: 0.75rem; color: var(--ink-mute); margin-top: 4px; }
+
+  .card {
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 18px; box-shadow: var(--shadow-sm); margin-bottom: 14px;
+  }
+  .card h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.02em; }
+  .card .hint { font-size: 0.8rem; color: var(--ink-mute); margin-bottom: 12px; line-height: 1.45; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+  table.tbl { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  table.tbl th {
+    text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--ink-faint); font-weight: 750; padding: 10px 10px; border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  table.tbl td {
+    padding: 11px 10px; border-bottom: 1px solid var(--border); color: var(--ink-dim); vertical-align: middle;
+  }
+  table.tbl tr:last-child td { border-bottom: 0; }
+  table.tbl tr:hover td { background: var(--bg-3); }
+  table.tbl tr.on td { background: var(--terra-soft); }
+  table.tbl .nm { font-weight: 800; color: var(--ink); }
+  table.tbl .sub { font-size: 0.72rem; color: var(--ink-mute); margin-top: 2px; }
+
+  .badge {
+    display: inline-flex; align-items: center; font-size: 0.65rem; font-weight: 800;
+    padding: 3px 8px; border-radius: 999px; background: var(--bg-3); color: var(--ink-mute); white-space: nowrap;
+  }
+  .badge.ok { background: var(--sage-soft); color: var(--sage); }
+  .badge.warn { background: var(--amber-soft); color: #A07A20; }
+  .badge.risk { background: var(--red-soft); color: var(--red); }
+  .badge.info { background: var(--blue-soft); color: var(--blue); }
+  .badge.plum { background: var(--plum-soft); color: var(--plum); }
+  .badge.off { background: var(--bg-3); color: var(--ink-faint); }
+
+  .role-card {
+    border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: var(--bg);
+    cursor: pointer; text-align: left; width: 100%; transition: .15s; font-family: inherit;
+  }
+  .role-card:hover, .role-card.on { border-color: var(--terra); box-shadow: var(--shadow-sm); }
+  .role-card.on { background: var(--terra-soft); }
+  .role-card h4 { font-size: 0.9rem; font-weight: 800; margin-bottom: 4px; }
+  .role-card p { font-size: 0.78rem; color: var(--ink-mute); line-height: 1.4; }
+  .role-card .meta { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+  /* ACL matrix */
+  .matrix-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+  table.matrix { width: 100%; border-collapse: collapse; min-width: 780px; font-size: 0.78rem; }
+  table.matrix th, table.matrix td {
+    border: 1px solid var(--border); padding: 8px 6px; text-align: center; vertical-align: middle;
+  }
+  table.matrix th {
+    background: var(--bg); font-size: 0.65rem; text-transform: uppercase; letter-spacing: .03em;
+    color: var(--ink-faint); font-weight: 750;
+  }
+  table.matrix td:first-child, table.matrix th:first-child {
+    text-align: left; font-weight: 750; color: var(--ink); min-width: 140px; padding-left: 12px;
+  }
+  table.matrix .mod { font-size: 0.72rem; color: var(--ink-mute); font-weight: 650; }
+  .lv {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 52px; padding: 4px 6px; border-radius: 8px; border: 1px solid transparent;
+    font-size: 0.68rem; font-weight: 800; cursor: pointer; user-select: none;
+  }
+  .lv:hover { border-color: var(--border-2); }
+  .lv.none { background: var(--bg-3); color: var(--ink-faint); }
+  .lv.own { background: var(--blue-soft); color: var(--blue); }
+  .lv.shop { background: var(--amber-soft); color: #A07A20; }
+  .lv.network { background: var(--sage-soft); color: var(--sage); }
+  .lv.partner { background: var(--plum-soft); color: var(--plum); }
+  .lv.bool-y { background: var(--sage-soft); color: var(--sage); }
+  .lv.bool-n { background: var(--bg-3); color: var(--ink-faint); }
+
+  .shop-grid {
+    display: grid; grid-template-columns: 160px repeat(3, 1fr) 100px; gap: 0;
+    border: 1px solid var(--border); border-radius: 12px; overflow: hidden; font-size: 0.8rem;
+  }
+  .shop-grid > div {
+    padding: 10px 12px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shop-grid > div:nth-child(5n) { border-right: 0; }
+  .shop-grid .hd { background: var(--bg); font-size: 0.68rem; font-weight: 750; color: var(--ink-faint); text-transform: uppercase; }
+  .shop-grid .name { justify-content: flex-start; font-weight: 750; }
+  .chk {
+    width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border-2);
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    font-size: 0.7rem; color: transparent; background: var(--bg-2);
+  }
+  .chk.on { background: var(--sage); border-color: var(--sage); color: #fff; }
+
+  .split { display: grid; grid-template-columns: 1fr minmax(280px, 340px); gap: 14px; align-items: start; }
+  .detail {
+    position: sticky; top: 72px; background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm);
+  }
+  .detail h3 { font-size: 1rem; font-weight: 850; margin-bottom: 4px; }
+  .detail .meta { font-size: 0.78rem; color: var(--ink-mute); margin-bottom: 12px; }
+  .detail .row {
+    display: flex; justify-content: space-between; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid var(--border); font-size: 0.84rem;
+  }
+  .detail .row span { color: var(--ink-mute); font-size: 0.74rem; font-weight: 650; }
+  .detail .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+  .field { margin-bottom: 12px; }
+  .field label {
+    display: block; font-size: 0.68rem; font-weight: 750; text-transform: uppercase;
+    letter-spacing: .04em; color: var(--ink-faint); margin-bottom: 6px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%; border: 1px solid var(--border-2); border-radius: 10px; padding: 9px 12px;
+    background: var(--bg); font-size: 0.86rem; outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--terra); }
+  .field textarea { min-height: 72px; resize: vertical; }
+
+  .toggle-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+  }
+  .toggle-row .t { font-weight: 750; font-size: 0.86rem; }
+  .toggle-row .d { font-size: 0.76rem; color: var(--ink-mute); margin-top: 2px; }
+  .sw {
+    width: 42px; height: 24px; border-radius: 999px; background: var(--border-2);
+    position: relative; cursor: pointer; flex-shrink: 0; transition: .15s;
+  }
+  .sw::after {
+    content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
+    border-radius: 50%; background: #fff; transition: .15s; box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  }
+  .sw.on { background: var(--sage); }
+  .sw.on::after { left: 21px; }
+
+  .audit-item {
+    display: grid; grid-template-columns: 110px 1fr; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem;
+  }
+  .audit-item .when { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-faint); }
+  .audit-item .who { font-weight: 750; }
+  .audit-item .what { color: var(--ink-dim); margin-top: 2px; }
+
+  .callout {
+    padding: 12px 14px; border-radius: 12px; font-size: 0.84rem; line-height: 1.45;
+    background: linear-gradient(135deg, var(--terra-soft), var(--plum-soft));
+    border: 1px solid var(--border); margin-top: 12px; color: var(--ink-dim);
+  }
+  .callout b { color: var(--ink); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+  .toast {
+    position: fixed; bottom: 22px; right: 22px; z-index: 100;
+    background: var(--ink); color: #fff; padding: 12px 16px; border-radius: 12px;
+    font-size: 0.86rem; font-weight: 650; opacity: 0; pointer-events: none;
+    transform: translateY(8px); transition: .25s var(--ease);
+  }
+  .toast.show { opacity: 1; transform: none; }
+
+  @media (max-width: 1000px) {
+    .kpi-grid, .grid-2, .grid-3, .split { grid-template-columns: 1fr; }
+    .detail { position: static; }
+    .shop-grid { grid-template-columns: 120px repeat(3, 1fr) 80px; font-size: 0.72rem; }
+  }
+  @media (max-width: 760px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: none; }
+    .main { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="mark">B</div>
+      <div>
+        <div class="nm">Bloom Admin</div>
+        <div class="sub">Доступ · ACL · аудит</div>
+      </div>
+    </div>
+    <div class="sb-pill">Только access_admin · не кабинет смены</div>
+    <div class="sb-label">Разделы</div>
+    <nav class="sb-nav" id="nav"></nav>
+    <div class="sb-foot">
+      <div>Сеть · 3 точки · демо</div>
+      <a href="demo.html">← Кабинет</a>
+      <a href="admin-access.md">Спека (md)</a>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb"><b>Админка доступа</b><span class="sep">·</span><span id="crumb">Обзор</span></div>
+      <div class="tb-right">
+        <span class="chip admin">Вы: Владелец · network</span>
+        <span class="chip ok">Espo-like ACL</span>
+        <span class="chip warn">Прототип</span>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- 01 OVERVIEW -->
+      <section class="panel on" data-panel="overview">
+        <h1 class="h1">Обзор доступа</h1>
+        <p class="lead">Контур управления правами сети: роли, точки, партнёры, аудит. Отделён от операционного кабинета, чтобы случайно не сломать ACL со смены.</p>
+        <div class="kpi-grid" id="kpis"></div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Модель (кратко)</h3>
+            <p class="hint">User × Roles (merge max) × ShopScope × PartnerFlag. Уровни: none → own → shop → network | partner.</p>
+            <div class="legend">
+              <span class="lv none">none</span>
+              <span class="lv own">own</span>
+              <span class="lv shop">shop</span>
+              <span class="lv network">network</span>
+              <span class="lv partner">partner</span>
+            </div>
+            <div class="callout"><b>Правило:</b> несколько ролей сливаются permissive (как Espo). Партнёр никогда не получает network / чужие ключи / export ПДн.</div>
+          </div>
+          <div class="card">
+            <h3>Последние изменения ACL</h3>
+            <div id="auditPreview"></div>
+            <div class="toolbar" style="margin-top:12px;margin-bottom:0">
+              <button type="button" class="btn" data-go="audit">Весь журнал →</button>
+              <button type="button" class="btn terra" data-go="users">Пригласить →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 USERS -->
+      <section class="panel" data-panel="users">
+        <h1 class="h1">Пользователи</h1>
+        <p class="lead">Инвайт, роли, точки, сброс пароля (Q13: admin reset). Без SMS-2FA в v1.</p>
+        <div class="toolbar">
+          <input type="search" id="userSearch" placeholder="Имя, email, роль…" />
+          <select id="userRoleFilter">
+            <option value="*">Все роли</option>
+          </select>
+          <select id="userStatusFilter">
+            <option value="*">Все статусы</option>
+            <option value="active">Активен</option>
+            <option value="invited">Приглашён</option>
+            <option value="disabled">Отключён</option>
+          </select>
+          <button type="button" class="btn terra" id="btnInvite">+ Пригласить</button>
+        </div>
+        <div class="split">
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="tbl">
+              <thead>
+                <tr><th>Сотрудник</th><th>Роли</th><th>Точки</th><th>Статус</th><th>Вход</th></tr>
+              </thead>
+              <tbody id="usersBody"></tbody>
+            </table>
+          </div>
+          <aside class="detail" id="userDetail">
+            <div style="color:var(--ink-faint)">Выберите пользователя</div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- 03 ROLES -->
+      <section class="panel" data-panel="roles">
+        <h1 class="h1">Роли</h1>
+        <p class="lead">Пресеты сети цветов + кастом. Клик — превью матрицы. Q12: менеджер / старший / директор.</p>
+        <div class="toolbar">
+          <button type="button" class="btn terra" id="btnCloneRole">Клонировать роль</button>
+          <button type="button" class="btn" data-go="matrix">Открыть матрицу →</button>
+        </div>
+        <div class="grid-3" id="rolesGrid"></div>
+        <div class="card" id="rolePreview" style="margin-top:4px">
+          <h3>Превью</h3>
+          <p class="hint">Выберите роль</p>
+        </div>
+      </section>
+
+      <!-- 04 MATRIX -->
+      <section class="panel" data-panel="matrix">
+        <h1 class="h1">Матрица прав</h1>
+        <p class="lead">Модуль × уровень доступа. Клик по ячейке циклит: none → own → shop → network. Для партнёрской роли — partner.</p>
+        <div class="toolbar">
+          <label style="font-size:0.78rem;font-weight:700;color:var(--ink-mute)">Роль</label>
+          <select id="matrixRole"></select>
+          <button type="button" class="btn" id="btnMatrixReset">Сбросить к пресету</button>
+          <button type="button" class="btn terra" id="btnMatrixSave">Сохранить (демо)</button>
+        </div>
+        <div class="legend">
+          <span class="lv none">none</span>
+          <span class="lv own">own · свои</span>
+          <span class="lv shop">shop · точка</span>
+          <span class="lv network">network · сеть</span>
+          <span class="lv partner">partner</span>
+        </div>
+        <div class="matrix-wrap">
+          <table class="matrix" id="matrixTable"></table>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>Особые действия (boolean)</h3>
+          <p class="hint">Поверх level: отмена, цены, ключи, export ПДн…</p>
+          <div class="matrix-wrap">
+            <table class="matrix" id="actionsTable"></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 SHOPS -->
+      <section class="panel" data-panel="shops">
+        <h1 class="h1">Точки и scope</h1>
+        <p class="lead">Membership user ↔ shop. Директор = network (все). Партнёр = ровно одна изолированная точка.</p>
+        <div class="card">
+          <div class="shop-grid" id="shopGrid"></div>
+        </div>
+        <div class="callout"><b>Shop ≠ только ACL:</b> точка — бизнес-сущность (адрес, каталог, ключ API). Здесь только «кто видит записи точки».</div>
+      </section>
+
+      <!-- 06 TEAMS -->
+      <section class="panel" data-panel="teams">
+        <h1 class="h1">Команды / смены</h1>
+        <p class="lead">Опциональный слой Espo Teams: утренняя смена, B2B-группа. Не заменяет shop scope.</p>
+        <div class="grid-2" id="teamsGrid"></div>
+      </section>
+
+      <!-- 07 PARTNERS -->
+      <section class="panel" data-panel="partners">
+        <h1 class="h1">Партнёры и франчайзи</h1>
+        <p class="lead">Q23: изолированный доступ. White-list модулей, запрет network и чужих клиентов.</p>
+        <div class="grid-2" id="partnersGrid"></div>
+        <div class="card">
+          <h3>Жёсткие запреты партнёра</h3>
+          <div class="toggle-row"><div><div class="t">access_admin</div><div class="d">Админка доступа</div></div><div class="sw" data-locked="1"></div></div>
+          <div class="toggle-row"><div><div class="t">marketplace_keys (чужие)</div><div class="d">Ключи других точек сети</div></div><div class="sw" data-locked="1"></div></div>
+          <div class="toggle-row"><div><div class="t">export_pdn сеть</div><div class="d">Выгрузка клиентов всей сети</div></div><div class="sw" data-locked="1"></div></div>
+          <div class="toggle-row"><div><div class="t">orders других точек</div><div class="d">Чужие заказы сети</div></div><div class="sw" data-locked="1"></div></div>
+          <div class="callout"><b>Locked off</b> — нельзя включить даже владельцу партнёра. Только staff сети.</div>
+        </div>
+      </section>
+
+      <!-- 08 AUTH -->
+      <section class="panel" data-panel="auth">
+        <h1 class="h1">Вход и пароли</h1>
+        <p class="lead">Q13: логин+пароль без SMS. Восстановление — admin reset (+ опц. секретный вопрос).</p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Политика пароля</h3>
+            <div class="field"><label>Мин. длина</label><input type="number" value="8" id="pwdLen" /></div>
+            <div class="toggle-row"><div><div class="t">Цифры + буквы</div><div class="d">Обязательная сложность</div></div><div class="sw on" data-sw="pwdComplex"></div></div>
+            <div class="toggle-row"><div><div class="t">Срок жизни пароля</div><div class="d">Не в v1 — выкл</div></div><div class="sw" data-sw="pwdExpiry"></div></div>
+            <div class="toggle-row"><div><div class="t">SMS / 2FA</div><div class="d">Не в v1 (опросник)</div></div><div class="sw" data-sw="pwd2fa"></div></div>
+          </div>
+          <div class="card">
+            <h3>Восстановление</h3>
+            <div class="field">
+              <label>Способ</label>
+              <select id="pwdRecovery">
+                <option value="admin" selected>Сброс администратором сети</option>
+                <option value="secret">Секретный вопрос + admin confirm</option>
+                <option value="email">Email magic link (если email verified)</option>
+              </select>
+            </div>
+            <div class="field"><label>TTL сессии (часы)</label><input type="number" value="12" id="sessTtl" /></div>
+            <div class="toggle-row"><div><div class="t">Один сеанс / устройство</div><div class="d">Выход со старых при новом входе</div></div><div class="sw" data-sw="singleSess"></div></div>
+            <button type="button" class="btn terra" id="btnSaveAuth" style="margin-top:8px">Сохранить политику</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09 API -->
+      <section class="panel" data-panel="api">
+        <h1 class="h1">API и интеграции</h1>
+        <p class="lead">Q7: ключи маркетплейса per-shop. Кто может смотреть / ротировать.</p>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead><tr><th>Секрет</th><th>Точка</th><th>Кто может</th><th>Последняя ротация</th><th></th></tr></thead>
+            <tbody id="apiBody"></tbody>
+          </table>
+        </div>
+        <div class="callout"><b>action marketplace_keys:</b> только owner + директор (по умолчанию). Менеджер точки — нет.</div>
+      </section>
+
+      <!-- 10 FIELDS -->
+      <section class="panel" data-panel="fields">
+        <h1 class="h1">Поля (field-level ACL)</h1>
+        <p class="lead">Маскирование и запрет edit на чувствительных полях — поверх module level.</p>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead>
+              <tr><th>Поле</th><th>Флорист</th><th>Менеджер</th><th>Старший</th><th>Директор</th><th>Партнёр</th></tr>
+            </thead>
+            <tbody id="fieldsBody"></tbody>
+          </table>
+        </div>
+        <div class="legend" style="margin-top:12px">
+          <span class="badge ok">edit</span>
+          <span class="badge info">read</span>
+          <span class="badge warn">mask</span>
+          <span class="badge off">hide</span>
+        </div>
+      </section>
+
+      <!-- 11 AUDIT -->
+      <section class="panel" data-panel="audit">
+        <h1 class="h1">Аудит доступа</h1>
+        <p class="lead">Immutable log: кто менял роли, scope, ключи. Create-only (152‑ФЗ / разбор инцидентов).</p>
+        <div class="toolbar">
+          <input type="search" id="auditSearch" placeholder="Поиск по аудиту…" />
+          <button type="button" class="btn" id="btnExportAudit">Экспорт CSV (stub)</button>
+        </div>
+        <div class="card" id="auditFull"></div>
+      </section>
+
+      <!-- 12 PRESETS -->
+      <section class="panel" data-panel="presets">
+        <h1 class="h1">Пресеты и импорт</h1>
+        <p class="lead">Шаблоны ролей под масштаб (Q20–22) и CSV сотрудников.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Пресет «3 точки · старт»</h3>
+            <p class="hint">Флорист / Менеджер / Старший / Директор / Owner. Как в демо-сети.</p>
+            <button type="button" class="btn terra" data-preset="start">Применить</button>
+          </div>
+          <div class="card">
+            <h3>Пресет «15 точек · рост»</h3>
+            <p class="hint">+ Региональный менеджер, + Партнёр, + Наблюдатель RO.</p>
+            <button type="button" class="btn terra" data-preset="scale">Применить</button>
+          </div>
+          <div class="card">
+            <h3>Импорт CSV</h3>
+            <p class="hint">name,email,role,shops — invite batch.</p>
+            <button type="button" class="btn" id="btnImportCsv">Загрузить (stub)</button>
+          </div>
+          <div class="card">
+            <h3>Документация</h3>
+            <p class="hint">Полная спека модели ACL и acceptance.</p>
+            <a class="btn" href="admin-access.md" style="display:inline-block">admin-access.md</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var NAV = [
+    { id: 'overview', ix: '01', t: 'Обзор' },
+    { id: 'users', ix: '02', t: 'Пользователи' },
+    { id: 'roles', ix: '03', t: 'Роли' },
+    { id: 'matrix', ix: '04', t: 'Матрица прав' },
+    { id: 'shops', ix: '05', t: 'Точки · scope' },
+    { id: 'teams', ix: '06', t: 'Команды' },
+    { id: 'partners', ix: '07', t: 'Партнёры' },
+    { id: 'auth', ix: '08', t: 'Вход · пароли' },
+    { id: 'api', ix: '09', t: 'API · ключи' },
+    { id: 'fields', ix: '10', t: 'Поля ACL' },
+    { id: 'audit', ix: '11', t: 'Аудит' },
+    { id: 'presets', ix: '12', t: 'Пресеты' }
+  ];
+
+  var MODULES = [
+    { id: 'orders', name: 'Заказы' },
+    { id: 'clients', name: 'Клиенты' },
+    { id: 'chats', name: 'Чаты' },
+    { id: 'mail', name: 'Почта' },
+    { id: 'cases', name: 'Обращения' },
+    { id: 'tasks', name: 'Задачи' },
+    { id: 'notes', name: 'Заметки' },
+    { id: 'catalog', name: 'Номенклатура' },
+    { id: 'warehouses', name: 'Склады' },
+    { id: 'invoices', name: 'Счета' },
+    { id: 'reports', name: 'Отчёты' },
+    { id: 'settings_ops', name: 'Настройки точки' },
+    { id: 'access_admin', name: 'Админка доступа' },
+    { id: 'marketplace_keys', name: 'Ключи API' },
+    { id: 'export_pdn', name: 'Export ПДн' }
+  ];
+
+  var ACTIONS = [
+    { id: 'orders.create_manual', name: 'Ручной заказ' },
+    { id: 'orders.cancel', name: 'Отмена заказа' },
+    { id: 'orders.edit_price', name: 'Правка цены' },
+    { id: 'orders.mark_paid', name: 'Отметка «оплачено»' },
+    { id: 'stock.edit', name: 'Правка остатков' },
+    { id: 'stock.sync_marketplace', name: 'Синк маркетплейс' },
+    { id: 'cases.close', name: 'Закрыть обращение' },
+    { id: 'users.invite', name: 'Инвайт users' },
+    { id: 'users.reset_password', name: 'Сброс пароля' },
+    { id: 'roles.edit', name: 'Правка ролей' }
+  ];
+
+  var LEVELS = ['none', 'own', 'shop', 'network'];
+  var LEVELS_P = ['none', 'own', 'shop', 'partner'];
+
+  function presetMatrix(kind) {
+    var m = {};
+    MODULES.forEach(function (mod) { m[mod.id] = 'none'; });
+    if (kind === 'florist') {
+      m.orders = 'shop'; m.tasks = 'own'; m.notes = 'own'; m.catalog = 'shop'; m.warehouses = 'shop';
+    } else if (kind === 'manager') {
+      m.orders = 'shop'; m.clients = 'shop'; m.chats = 'shop'; m.mail = 'shop'; m.cases = 'shop';
+      m.tasks = 'shop'; m.notes = 'shop'; m.catalog = 'shop'; m.warehouses = 'shop'; m.invoices = 'shop';
+      m.reports = 'shop'; m.settings_ops = 'shop';
+    } else if (kind === 'senior') {
+      MODULES.forEach(function (mod) {
+        if (mod.id !== 'access_admin' && mod.id !== 'marketplace_keys' && mod.id !== 'export_pdn') m[mod.id] = 'shop';
+      });
+      m.reports = 'shop'; m.export_pdn = 'shop';
+    } else if (kind === 'director') {
+      MODULES.forEach(function (mod) {
+        m[mod.id] = (mod.id === 'access_admin' || mod.id === 'marketplace_keys') ? 'none' : 'network';
+      });
+      m.export_pdn = 'network'; m.reports = 'network';
+    } else if (kind === 'owner') {
+      MODULES.forEach(function (mod) { m[mod.id] = 'network'; });
+    } else if (kind === 'partner') {
+      m.orders = 'partner'; m.clients = 'partner'; m.chats = 'partner'; m.cases = 'partner';
+      m.tasks = 'partner'; m.catalog = 'partner'; m.warehouses = 'partner'; m.invoices = 'partner';
+      m.reports = 'partner';
+    } else if (kind === 'viewer') {
+      m.orders = 'network'; m.clients = 'network'; m.reports = 'network'; m.invoices = 'network';
+    }
+    return m;
+  }
+
+  function presetActions(kind) {
+    var a = {};
+    ACTIONS.forEach(function (x) { a[x.id] = false; });
+    if (kind === 'florist') {
+      /* none */
+    } else if (kind === 'manager') {
+      a['orders.create_manual'] = true; a['orders.cancel'] = true; a['orders.mark_paid'] = true; a['cases.close'] = true;
+    } else if (kind === 'senior') {
+      ACTIONS.forEach(function (x) {
+        if (x.id.indexOf('users') < 0 && x.id.indexOf('roles') < 0) a[x.id] = true;
+      });
+    } else if (kind === 'director') {
+      ACTIONS.forEach(function (x) { a[x.id] = x.id !== 'roles.edit'; });
+      a['users.invite'] = true; a['users.reset_password'] = true;
+    } else if (kind === 'owner') {
+      ACTIONS.forEach(function (x) { a[x.id] = true; });
+    } else if (kind === 'partner') {
+      a['orders.create_manual'] = true; a['orders.mark_paid'] = true;
+    }
+    return a;
+  }
+
+  var ROLES = [
+    { id: 'florist', name: 'Флорист', desc: 'Сборка на точке, свои задачи. Без отмен и цен.', scope: 'shop', users: 4 },
+    { id: 'manager', name: 'Менеджер', desc: 'Заказы, чаты, клиенты точки. Отмена, ручной заказ.', scope: 'shop', users: 3 },
+    { id: 'senior', name: 'Старший', desc: '+ цены, остатки, обращения, счета точки.', scope: 'shop', users: 2 },
+    { id: 'director', name: 'Директор сети', desc: 'Network read/write, без tech-ключей по умолчанию.', scope: 'network', users: 1 },
+    { id: 'owner', name: 'Владелец / Admin', desc: 'Полный доступ + админка ACL + ключи API.', scope: 'network', users: 1 },
+    { id: 'partner', name: 'Партнёр', desc: 'Изоляция одной точки. Hard deny network.', scope: 'partner', users: 2 },
+    { id: 'viewer', name: 'Наблюдатель', desc: 'Read-only сеть (бух / инвестор).', scope: 'network', users: 1 }
+  ];
+
+  ROLES.forEach(function (r) {
+    r.matrix = presetMatrix(r.id);
+    r.actions = presetActions(r.id);
+  });
+
+  var SHOPS = ['Мира 14', 'Ленина 92', 'Рижская 8'];
+
+  var USERS = [
+    { id: 'u1', name: 'Ольга В.', email: 'olga@bloom.local', roles: ['owner'], shops: SHOPS.slice(), status: 'active', last: 'сегодня 11:02', partner: false },
+    { id: 'u2', name: 'Анна К.', email: 'anna@bloom.local', roles: ['manager', 'senior'], shops: ['Мира 14', 'Ленина 92'], status: 'active', last: 'сегодня 10:40', partner: false },
+    { id: 'u3', name: 'Игорь М.', email: 'igor@bloom.local', roles: ['senior'], shops: ['Мира 14'], status: 'active', last: 'вчера', partner: false },
+    { id: 'u4', name: 'Света П.', email: 'sveta@bloom.local', roles: ['florist'], shops: ['Ленина 92'], status: 'active', last: 'сегодня 09:15', partner: false },
+    { id: 'u5', name: 'Максим Р.', email: 'max@bloom.local', roles: ['manager'], shops: ['Рижская 8'], status: 'active', last: 'сегодня 08:50', partner: false },
+    { id: 'u6', name: 'Партнёр «Флора Юг»', email: 'ops@florayug.example', roles: ['partner'], shops: ['Рижская 8'], status: 'active', last: '2 дня', partner: true },
+    { id: 'u7', name: 'Новый менеджер', email: 'new@bloom.local', roles: ['manager'], shops: ['Мира 14'], status: 'invited', last: '—', partner: false },
+    { id: 'u8', name: 'Бывший флорист', email: 'old@bloom.local', roles: ['florist'], shops: ['Мира 14'], status: 'disabled', last: 'март', partner: false }
+  ];
+
+  var TEAMS = [
+    { id: 't1', name: 'Смена утро · Мира 14', shops: ['Мира 14'], members: ['Анна К.', 'Света П.'] },
+    { id: 't2', name: 'B2B / корпоративы', shops: SHOPS.slice(), members: ['Анна К.', 'Игорь М.'] },
+    { id: 't3', name: 'Пик 8 Марта · standby', shops: SHOPS.slice(), members: ['Ольга В.', 'Анна К.', 'Максим Р.'] }
+  ];
+
+  var PARTNERS = [
+    { id: 'p1', name: 'Флора Юг', shop: 'Рижская 8', users: 2, modules: 'orders, clients, chats, stock', note: 'Franchise lite' },
+    { id: 'p2', name: 'Букет 24', shop: '— (external)', users: 1, modules: 'orders RO', note: 'Только свои заказы маркетплейса' }
+  ];
+
+  var AUDIT = [
+    { when: 'сегодня 11:02', who: 'Ольга В.', what: 'Ротация API-ключа · Мира 14' },
+    { when: 'сегодня 10:15', who: 'Ольга В.', what: 'Invite → new@bloom.local · роль Менеджер · Мира 14' },
+    { when: 'вчера 18:40', who: 'Ольга В.', what: 'Роль «Старший»: stock.edit = on' },
+    { when: 'вчера 12:00', who: 'Система', what: 'Последний admin check: owner ≥ 1 · ok' },
+    { when: '2 дня', who: 'Ольга В.', what: 'Партнёр «Флора Юг»: scope partner locked' },
+    { when: '3 дня', who: 'Ольга В.', what: 'Disable user old@bloom.local' },
+    { when: '5 дней', who: 'Ольга В.', what: 'Сброс пароля · Света П. (admin reset)' }
+  ];
+
+  var API_KEYS = [
+    { name: 'Marketplace · Мира 14', shop: 'Мира 14', who: 'owner, director', rot: 'сегодня 11:02' },
+    { name: 'Marketplace · Ленина 92', shop: 'Ленина 92', who: 'owner, director', rot: 'нед. назад' },
+    { name: 'Marketplace · Рижская 8', shop: 'Рижская 8', who: 'owner + partner local', rot: '2 нед.' },
+    { name: 'Chat platform webhook', shop: 'сеть', who: 'owner', rot: 'мес. назад' }
+  ];
+
+  var FIELD_ACL = [
+    { field: 'client.phone', florist: 'mask', manager: 'read', senior: 'edit', director: 'edit', partner: 'read' },
+    { field: 'client.email', florist: 'hide', manager: 'read', senior: 'edit', director: 'edit', partner: 'read' },
+    { field: 'order.price', florist: 'read', manager: 'read', senior: 'edit', director: 'edit', partner: 'edit' },
+    { field: 'order.cancel_reason', florist: 'hide', manager: 'edit', senior: 'edit', director: 'edit', partner: 'edit' },
+    { field: 'marketplace.api_key', florist: 'hide', manager: 'hide', senior: 'hide', director: 'hide', partner: 'hide' },
+    { field: 'export.clients_csv', florist: 'hide', manager: 'hide', senior: 'read', director: 'edit', partner: 'hide' }
+  ];
+
+  var state = {
+    panel: 'overview',
+    userId: null,
+    roleId: 'manager',
+    matrixRole: 'manager',
+    userQ: '',
+    userRole: '*',
+    userStatus: '*',
+    auditQ: ''
+  };
+
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  function toast(msg) {
+    var el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { el.classList.remove('show'); }, 2200);
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function roleName(id) {
+    var r = ROLES.filter(function (x) { return x.id === id; })[0];
+    return r ? r.name : id;
+  }
+
+  function statusBadge(st) {
+    if (st === 'active') return '<span class="badge ok">активен</span>';
+    if (st === 'invited') return '<span class="badge warn">приглашён</span>';
+    return '<span class="badge off">отключён</span>';
+  }
+
+  function fieldBadge(v) {
+    var map = { edit: 'ok', read: 'info', mask: 'warn', hide: 'off' };
+    return '<span class="badge ' + (map[v] || '') + '">' + esc(v) + '</span>';
+  }
+
+  /* ─── NAV ─── */
+  function renderNav() {
+    $('#nav').innerHTML = NAV.map(function (n) {
+      return '<button type="button" class="sb-link' + (state.panel === n.id ? ' on' : '') + '" data-panel="' + n.id + '">' +
+        '<span class="ix">' + n.ix + '</span>' + esc(n.t) + '</button>';
+    }).join('');
+  }
+
+  function go(id) {
+    state.panel = id;
+    $$('.panel').forEach(function (p) { p.classList.toggle('on', p.getAttribute('data-panel') === id); });
+    renderNav();
+    var n = NAV.filter(function (x) { return x.id === id; })[0];
+    $('#crumb').textContent = n ? n.t : id;
+    if (id === 'users') renderUsers();
+    if (id === 'roles') renderRoles();
+    if (id === 'matrix') renderMatrix();
+    if (id === 'shops') renderShops();
+    if (id === 'teams') renderTeams();
+    if (id === 'partners') renderPartners();
+    if (id === 'api') renderApi();
+    if (id === 'fields') renderFields();
+    if (id === 'audit') renderAudit();
+    if (id === 'overview') renderOverview();
+  }
+
+  /* ─── OVERVIEW ─── */
+  function renderOverview() {
+    var active = USERS.filter(function (u) { return u.status === 'active'; }).length;
+    var inv = USERS.filter(function (u) { return u.status === 'invited'; }).length;
+    $('#kpis').innerHTML =
+      '<div class="kpi"><div class="l">Активные</div><div class="v">' + active + '</div><div class="h">из ' + USERS.length + ' учёток</div></div>' +
+      '<div class="kpi"><div class="l">Инвайты</div><div class="v">' + inv + '</div><div class="h">ждут активации</div></div>' +
+      '<div class="kpi"><div class="l">Роли</div><div class="v">' + ROLES.length + '</div><div class="h">пресеты + custom</div></div>' +
+      '<div class="kpi"><div class="l">Точки</div><div class="v">' + SHOPS.length + '</div><div class="h">scope membership</div></div>';
+    $('#auditPreview').innerHTML = AUDIT.slice(0, 4).map(function (a) {
+      return '<div class="audit-item"><div class="when">' + esc(a.when) + '</div><div><div class="who">' + esc(a.who) + '</div><div class="what">' + esc(a.what) + '</div></div></div>';
+    }).join('');
+  }
+
+  /* ─── USERS ─── */
+  function filteredUsers() {
+    var q = state.userQ.toLowerCase();
+    return USERS.filter(function (u) {
+      if (state.userStatus !== '*' && u.status !== state.userStatus) return false;
+      if (state.userRole !== '*' && u.roles.indexOf(state.userRole) < 0) return false;
+      if (q && (u.name + ' ' + u.email + ' ' + u.roles.join(' ')).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+  }
+
+  function renderUsers() {
+    var sel = $('#userRoleFilter');
+    if (sel && sel.options.length <= 1) {
+      ROLES.forEach(function (r) {
+        var o = document.createElement('option');
+        o.value = r.id; o.textContent = r.name;
+        sel.appendChild(o);
+      });
+    }
+    var body = $('#usersBody');
+    var list = filteredUsers();
+    body.innerHTML = list.map(function (u) {
+      var on = state.userId === u.id ? ' on' : '';
+      return '<tr class="' + on.trim() + '" data-user="' + u.id + '">' +
+        '<td><div class="nm">' + esc(u.name) + '</div><div class="sub">' + esc(u.email) + '</div></td>' +
+        '<td>' + u.roles.map(function (r) { return '<span class="badge plum">' + esc(roleName(r)) + '</span> '; }).join('') +
+          (u.partner ? '<span class="badge warn">partner</span>' : '') + '</td>' +
+        '<td class="sub">' + esc(u.shops.join(', ') || '—') + '</td>' +
+        '<td>' + statusBadge(u.status) + '</td>' +
+        '<td class="sub">' + esc(u.last) + '</td></tr>';
+    }).join('') || '<tr><td colspan="5" style="padding:16px;color:var(--ink-faint)">Нет пользователей</td></tr>';
+    renderUserDetail();
+  }
+
+  function renderUserDetail() {
+    var el = $('#userDetail');
+    var u = USERS.filter(function (x) { return x.id === state.userId; })[0];
+    if (!u) {
+      el.innerHTML = '<div style="color:var(--ink-faint)">Выберите пользователя</div>';
+      return;
+    }
+    el.innerHTML =
+      '<h3>' + esc(u.name) + '</h3>' +
+      '<div class="meta">' + esc(u.email) + ' · ' + statusBadge(u.status) + '</div>' +
+      '<div class="row"><span>Роли</span><b>' + esc(u.roles.map(roleName).join(', ')) + '</b></div>' +
+      '<div class="row"><span>Точки</span><b>' + esc(u.shops.join(', ') || '—') + '</b></div>' +
+      '<div class="row"><span>Партнёр</span><b>' + (u.partner ? 'да' : 'нет') + '</b></div>' +
+      '<div class="row"><span>Последний вход</span><b>' + esc(u.last) + '</b></div>' +
+      '<div class="field" style="margin-top:12px"><label>Роль (демо)</label>' +
+        '<select id="udRole">' + ROLES.map(function (r) {
+          return '<option value="' + r.id + '"' + (u.roles[0] === r.id ? ' selected' : '') + '>' + esc(r.name) + '</option>';
+        }).join('') + '</select></div>' +
+      '<div class="actions">' +
+        '<button type="button" class="btn terra" id="udSaveRole">Сохранить роль</button>' +
+        '<button type="button" class="btn" id="udReset">Сброс пароля</button>' +
+        '<button type="button" class="btn ghost" id="udToggle">' + (u.status === 'disabled' ? 'Включить' : 'Отключить') + '</button>' +
+      '</div>';
+    $('#udSaveRole').onclick = function () {
+      u.roles = [$('#udRole').value];
+      AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Роль → ' + roleName(u.roles[0]) + ' · ' + u.email });
+      renderUsers();
+      toast('Роль обновлена (демо)');
+    };
+    $('#udReset').onclick = function () {
+      AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Сброс пароля · ' + u.email + ' (admin reset)' });
+      toast('Пароль сброшен · ссылка 48ч (stub)');
+    };
+    $('#udToggle').onclick = function () {
+      if (u.roles.indexOf('owner') >= 0 && u.status === 'active') {
+        var owners = USERS.filter(function (x) { return x.roles.indexOf('owner') >= 0 && x.status === 'active'; });
+        if (owners.length <= 1) { toast('Нельзя отключить последнего owner'); return; }
+      }
+      u.status = u.status === 'disabled' ? 'active' : 'disabled';
+      AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: (u.status === 'disabled' ? 'Disable' : 'Enable') + ' · ' + u.email });
+      renderUsers();
+      toast(u.status === 'disabled' ? 'Отключён' : 'Включён');
+    };
+  }
+
+  /* ─── ROLES ─── */
+  function renderRoles() {
+    $('#rolesGrid').innerHTML = ROLES.map(function (r) {
+      return '<button type="button" class="role-card' + (state.roleId === r.id ? ' on' : '') + '" data-role="' + r.id + '">' +
+        '<h4>' + esc(r.name) + '</h4><p>' + esc(r.desc) + '</p>' +
+        '<div class="meta"><span class="badge info">' + esc(r.scope) + '</span>' +
+        '<span class="badge">' + r.users + ' users</span></div></button>';
+    }).join('');
+    var r = ROLES.filter(function (x) { return x.id === state.roleId; })[0];
+    if (!r) return;
+    var mods = MODULES.filter(function (m) { return r.matrix[m.id] && r.matrix[m.id] !== 'none'; })
+      .map(function (m) { return m.name + '·' + r.matrix[m.id]; }).slice(0, 8).join(', ');
+    var acts = ACTIONS.filter(function (a) { return r.actions[a.id]; }).map(function (a) { return a.name; }).join(', ') || '—';
+    $('#rolePreview').innerHTML =
+      '<h3>' + esc(r.name) + '</h3>' +
+      '<p class="hint">' + esc(r.desc) + '</p>' +
+      '<div class="row" style="border:0;padding:4px 0"><span style="color:var(--ink-mute)">Модули</span></div>' +
+      '<div style="font-size:0.84rem;color:var(--ink-dim);margin-bottom:10px">' + esc(mods || 'нет') + '</div>' +
+      '<div class="row" style="border:0;padding:4px 0"><span style="color:var(--ink-mute)">Действия</span></div>' +
+      '<div style="font-size:0.84rem;color:var(--ink-dim)">' + esc(acts) + '</div>' +
+      '<div class="actions"><button type="button" class="btn terra" id="btnOpenMatrixRole">Править матрицу</button></div>';
+    $('#btnOpenMatrixRole').onclick = function () {
+      state.matrixRole = r.id;
+      go('matrix');
+    };
+  }
+
+  /* ─── MATRIX ─── */
+  function renderMatrix() {
+    var sel = $('#matrixRole');
+    sel.innerHTML = ROLES.map(function (r) {
+      return '<option value="' + r.id + '"' + (state.matrixRole === r.id ? ' selected' : '') + '>' + esc(r.name) + '</option>';
+    }).join('');
+    var role = ROLES.filter(function (x) { return x.id === state.matrixRole; })[0];
+    if (!role) return;
+    var isPartner = role.id === 'partner';
+    var levels = isPartner ? LEVELS_P : LEVELS;
+
+    var th = '<tr><th>Модуль</th>' + levels.map(function (l) { return '<th>' + l + '</th>'; }).join('') + '<th>Текущий</th></tr>';
+    var rows = MODULES.map(function (m) {
+      var cur = role.matrix[m.id] || 'none';
+      var cells = levels.map(function (l) {
+        var on = cur === l ? ' style="outline:2px solid var(--terra);outline-offset:-2px"' : '';
+        return '<td><span class="lv ' + l + '" data-mod="' + m.id + '" data-lv="' + l + '"' + on + '>' + l + '</span></td>';
+      }).join('');
+      return '<tr><td><div>' + esc(m.name) + '</div><div class="mod">' + esc(m.id) + '</div></td>' + cells +
+        '<td><span class="lv ' + cur + '">' + cur + '</span></td></tr>';
+    }).join('');
+    $('#matrixTable').innerHTML = th + rows;
+
+    var ath = '<tr><th>Действие</th><th>Разрешено</th></tr>';
+    var arows = ACTIONS.map(function (a) {
+      var on = !!role.actions[a.id];
+      return '<tr><td style="text-align:left;padding-left:12px"><div>' + esc(a.name) + '</div><div class="mod">' + esc(a.id) + '</div></td>' +
+        '<td><span class="lv ' + (on ? 'bool-y' : 'bool-n') + '" data-act="' + a.id + '">' + (on ? 'да' : 'нет') + '</span></td></tr>';
+    }).join('');
+    $('#actionsTable').innerHTML = ath + arows;
+  }
+
+  function cycleLevel(mod) {
+    var role = ROLES.filter(function (x) { return x.id === state.matrixRole; })[0];
+    if (!role) return;
+    var levels = role.id === 'partner' ? LEVELS_P : LEVELS;
+    var cur = role.matrix[mod] || 'none';
+    var i = levels.indexOf(cur);
+    role.matrix[mod] = levels[(i + 1) % levels.length];
+    renderMatrix();
+  }
+
+  /* ─── SHOPS ─── */
+  function renderShops() {
+    var head = '<div class="hd name">Сотрудник</div>' +
+      SHOPS.map(function (s) { return '<div class="hd">' + esc(s) + '</div>'; }).join('') +
+      '<div class="hd">Network</div>';
+    var rows = USERS.filter(function (u) { return u.status !== 'disabled'; }).map(function (u) {
+      var net = u.roles.some(function (r) { return r === 'owner' || r === 'director' || r === 'viewer'; });
+      return '<div class="name">' + esc(u.name) + '</div>' +
+        SHOPS.map(function (s) {
+          var on = u.shops.indexOf(s) >= 0 || net;
+          return '<div><span class="chk' + (on ? ' on' : '') + '" data-uid="' + u.id + '" data-shop="' + esc(s) + '">✓</span></div>';
+        }).join('') +
+        '<div><span class="chk' + (net ? ' on' : '') + '" data-uid="' + u.id + '" data-shop="*" title="network">✓</span></div>';
+    }).join('');
+    $('#shopGrid').innerHTML = head + rows;
+  }
+
+  /* ─── TEAMS ─── */
+  function renderTeams() {
+    $('#teamsGrid').innerHTML = TEAMS.map(function (t) {
+      return '<div class="card"><h3>' + esc(t.name) + '</h3>' +
+        '<p class="hint">Точки: ' + esc(t.shops.join(', ')) + '</p>' +
+        '<div>' + t.members.map(function (m) { return '<span class="badge info" style="margin:0 4px 4px 0">' + esc(m) + '</span>'; }).join('') + '</div>' +
+        '<div class="actions" style="margin-top:10px"><button type="button" class="btn" data-team-edit="' + t.id + '">Состав</button></div></div>';
+    }).join('') +
+      '<div class="card"><h3>+ Команда</h3><p class="hint">Смена или кросс-точечная группа (B2B).</p>' +
+      '<button type="button" class="btn terra" id="btnAddTeam">Создать</button></div>';
+  }
+
+  /* ─── PARTNERS ─── */
+  function renderPartners() {
+    $('#partnersGrid').innerHTML = PARTNERS.map(function (p) {
+      return '<div class="card"><h3>' + esc(p.name) + '</h3>' +
+        '<div class="row"><span>Точка</span><b>' + esc(p.shop) + '</b></div>' +
+        '<div class="row"><span>Users</span><b>' + p.users + '</b></div>' +
+        '<div class="row"><span>Модули</span><b style="text-align:right;font-size:0.8rem">' + esc(p.modules) + '</b></div>' +
+        '<p class="hint" style="margin-top:10px">' + esc(p.note) + '</p></div>';
+    }).join('');
+  }
+
+  /* ─── API ─── */
+  function renderApi() {
+    $('#apiBody').innerHTML = API_KEYS.map(function (k) {
+      return '<tr><td class="nm">' + esc(k.name) + '</td><td>' + esc(k.shop) + '</td><td class="sub">' + esc(k.who) + '</td>' +
+        '<td class="sub">' + esc(k.rot) + '</td>' +
+        '<td><button type="button" class="btn" data-rotate="' + esc(k.name) + '">Ротация</button></td></tr>';
+    }).join('');
+  }
+
+  /* ─── FIELDS ─── */
+  function renderFields() {
+    $('#fieldsBody').innerHTML = FIELD_ACL.map(function (f) {
+      return '<tr><td class="nm" style="font-family:var(--mono);font-size:0.78rem">' + esc(f.field) + '</td>' +
+        '<td>' + fieldBadge(f.florist) + '</td>' +
+        '<td>' + fieldBadge(f.manager) + '</td>' +
+        '<td>' + fieldBadge(f.senior) + '</td>' +
+        '<td>' + fieldBadge(f.director) + '</td>' +
+        '<td>' + fieldBadge(f.partner) + '</td></tr>';
+    }).join('');
+  }
+
+  /* ─── AUDIT ─── */
+  function renderAudit() {
+    var q = state.auditQ.toLowerCase();
+    var list = AUDIT.filter(function (a) {
+      return !q || (a.who + ' ' + a.what).toLowerCase().indexOf(q) >= 0;
+    });
+    $('#auditFull').innerHTML = list.map(function (a) {
+      return '<div class="audit-item"><div class="when">' + esc(a.when) + '</div><div><div class="who">' + esc(a.who) + '</div><div class="what">' + esc(a.what) + '</div></div></div>';
+    }).join('') || '<div style="color:var(--ink-faint)">Пусто</div>';
+  }
+
+  /* ─── EVENTS ─── */
+  document.addEventListener('click', function (e) {
+    var nav = e.target.closest('[data-panel]');
+    if (nav && nav.getAttribute('data-panel') && nav.classList.contains('sb-link')) {
+      go(nav.getAttribute('data-panel'));
+      return;
+    }
+    var g = e.target.closest('[data-go]');
+    if (g) { go(g.getAttribute('data-go')); return; }
+
+    var ur = e.target.closest('[data-user]');
+    if (ur) { state.userId = ur.getAttribute('data-user'); renderUsers(); return; }
+
+    var rc = e.target.closest('[data-role]');
+    if (rc) { state.roleId = rc.getAttribute('data-role'); renderRoles(); return; }
+
+    var lv = e.target.closest('[data-mod][data-lv]');
+    if (lv) {
+      var role = ROLES.filter(function (x) { return x.id === state.matrixRole; })[0];
+      if (role) {
+        role.matrix[lv.getAttribute('data-mod')] = lv.getAttribute('data-lv');
+        renderMatrix();
+        toast(lv.getAttribute('data-mod') + ' → ' + lv.getAttribute('data-lv'));
+      }
+      return;
+    }
+    var act = e.target.closest('[data-act]');
+    if (act) {
+      var role2 = ROLES.filter(function (x) { return x.id === state.matrixRole; })[0];
+      if (role2) {
+        var id = act.getAttribute('data-act');
+        role2.actions[id] = !role2.actions[id];
+        renderMatrix();
+        toast(id + ' → ' + (role2.actions[id] ? 'да' : 'нет'));
+      }
+      return;
+    }
+
+    var chk = e.target.closest('.chk[data-uid]');
+    if (chk) {
+      var uid = chk.getAttribute('data-uid');
+      var shop = chk.getAttribute('data-shop');
+      var u = USERS.filter(function (x) { return x.id === uid; })[0];
+      if (!u) return;
+      if (shop === '*') {
+        toast('Network задаётся ролью director/owner/viewer');
+        return;
+      }
+      var i = u.shops.indexOf(shop);
+      if (i >= 0) u.shops.splice(i, 1);
+      else u.shops.push(shop);
+      AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Scope ' + u.email + ' · ' + shop });
+      renderShops();
+      toast('Scope обновлён');
+      return;
+    }
+
+    var rot = e.target.closest('[data-rotate]');
+    if (rot) {
+      AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Ротация · ' + rot.getAttribute('data-rotate') });
+      toast('Ключ ротирован (stub)');
+      return;
+    }
+
+    var pr = e.target.closest('[data-preset]');
+    if (pr) {
+      toast('Пресет «' + pr.getAttribute('data-preset') + '» применён (демо)');
+      AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Пресет ролей · ' + pr.getAttribute('data-preset') });
+      return;
+    }
+
+    var sw = e.target.closest('.sw[data-sw]');
+    if (sw) { sw.classList.toggle('on'); toast('Политика (демо)'); return; }
+
+    var locked = e.target.closest('.sw[data-locked]');
+    if (locked) { toast('Запрет партнёра · нельзя включить'); return; }
+
+    var te = e.target.closest('[data-team-edit]');
+    if (te) { toast('Состав команды (stub)'); return; }
+  });
+
+  $('#userSearch').addEventListener('input', function () { state.userQ = this.value; renderUsers(); });
+  $('#userRoleFilter').addEventListener('change', function () { state.userRole = this.value; renderUsers(); });
+  $('#userStatusFilter').addEventListener('change', function () { state.userStatus = this.value; renderUsers(); });
+  $('#matrixRole').addEventListener('change', function () { state.matrixRole = this.value; renderMatrix(); });
+  $('#auditSearch').addEventListener('input', function () { state.auditQ = this.value; renderAudit(); });
+
+  $('#btnInvite').addEventListener('click', function () {
+    var id = 'u' + (USERS.length + 1);
+    USERS.unshift({
+      id: id, name: 'Новый сотрудник', email: 'invite' + USERS.length + '@bloom.local',
+      roles: ['manager'], shops: ['Мира 14'], status: 'invited', last: '—', partner: false
+    });
+    state.userId = id;
+    AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Invite · ' + USERS[0].email + ' · Менеджер' });
+    renderUsers();
+    toast('Инвайт создан · magic link 48ч');
+  });
+
+  $('#btnCloneRole').addEventListener('click', function () {
+    var src = ROLES.filter(function (x) { return x.id === state.roleId; })[0] || ROLES[0];
+    var id = src.id + '_copy';
+    if (ROLES.some(function (r) { return r.id === id; })) id = id + Date.now();
+    ROLES.push({
+      id: id, name: src.name + ' (копия)', desc: 'Клон · ' + src.desc, scope: src.scope, users: 0,
+      matrix: JSON.parse(JSON.stringify(src.matrix)),
+      actions: JSON.parse(JSON.stringify(src.actions))
+    });
+    state.roleId = id;
+    renderRoles();
+    toast('Роль клонирована');
+  });
+
+  $('#btnMatrixSave').addEventListener('click', function () {
+    AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Матрица сохранена · ' + roleName(state.matrixRole) });
+    toast('Матрица сохранена (демо)');
+  });
+  $('#btnMatrixReset').addEventListener('click', function () {
+    var r = ROLES.filter(function (x) { return x.id === state.matrixRole; })[0];
+    if (!r) return;
+    var base = r.id.replace(/_copy.*/, '');
+    if (!presetMatrix(base) || Object.keys(presetMatrix(base)).every(function (k) { return presetMatrix(base)[k] === 'none'; }) && base.indexOf('copy') >= 0) {
+      /* keep */
+    }
+    var key = ['florist', 'manager', 'senior', 'director', 'owner', 'partner', 'viewer'].indexOf(base) >= 0 ? base : 'manager';
+    r.matrix = presetMatrix(key);
+    r.actions = presetActions(key);
+    renderMatrix();
+    toast('Сброс к пресету «' + key + '»');
+  });
+
+  $('#btnSaveAuth').addEventListener('click', function () {
+    AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Политика входа · recovery=' + $('#pwdRecovery').value });
+    toast('Политика входа сохранена');
+  });
+  $('#btnExportAudit').addEventListener('click', function () { toast('CSV аудита (stub)'); });
+  $('#btnImportCsv').addEventListener('click', function () { toast('Импорт CSV (stub)'); });
+  document.addEventListener('click', function (e) {
+    if (e.target.id === 'btnAddTeam') {
+      TEAMS.push({ id: 't' + (TEAMS.length + 1), name: 'Новая команда', shops: ['Мира 14'], members: [] });
+      renderTeams();
+      toast('Команда создана');
+    }
+  });
+
+  // init
+  renderNav();
+  go('overview');
+})();
+</script>
+</body>
+</html>

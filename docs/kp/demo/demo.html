@@ -4100,7 +4100,8 @@
       html += setRow('Сейчас в демо', 'Анна К. · менеджер · ' + esc(state.shop === '*' ? 'сеть' : state.shop), setTag('ok', 'scope'));
       html += setRow('Пользователи', 'Игорь М. (Мира 14) · Света П. (флорист) · директор (все)', '');
       html += '</div>';
-      html += '<div class="set-max"><b>Максимум:</b> 4-уровневый ACL, изоляция по магазину, сброс пароля админом, без SMS-2FA в v1.</div>';
+      html += '<div class="set-actions" style="margin-bottom:10px"><a class="btn terra" href="admin-access.html" style="display:inline-block;text-decoration:none">Открыть админку доступа →</a></div>';
+      html += '<div class="set-max"><b>Максимум:</b> 4-уровневый ACL, изоляция по магазину, сброс пароля админом, без SMS-2FA в v1. Полная матрица — в отдельной админке.</div>';
     } else if (sec.id === 'pay') {
       html += '<div class="set-block"><h4>Лояльность · Q14</h4>';
       html += setRow('ТЗ по бонусам', '<b>Отдельный документ</b> — ждём от заказчика (критично для схемы БД)', setTag('warn', 'блокер'));
