@@ -311,7 +311,7 @@
         <div class="sub">Доступ · ACL · аудит</div>
       </div>
     </div>
-    <div class="sb-pill">Только access_admin · не кабинет смены</div>
+    <div class="sb-pill">Только для владельца сети · не кабинет смены</div>
     <div class="sb-label">Разделы</div>
     <nav class="sb-nav" id="nav"></nav>
     <div class="sb-foot">
@@ -326,8 +326,8 @@
       <div class="crumb"><b>Админка доступа</b><span class="sep">·</span><span id="crumb">Обзор</span></div>
       <div class="tb-right">
         <span class="chip admin">Вы: Владелец · network</span>
-        <span class="chip ok">Espo-like ACL</span>
-        <span class="chip warn">Прототип</span>
+        <span class="chip ok">Права по ролям</span>
+        <span class="chip warn">Демо</span>
       </div>
     </header>
 
@@ -335,12 +335,12 @@
       <!-- 01 OVERVIEW -->
       <section class="panel on" data-panel="overview">
         <h1 class="h1">Обзор доступа</h1>
-        <p class="lead">Контур управления правами сети: роли, точки, партнёры, аудит. Отделён от операционного кабинета, чтобы случайно не сломать ACL со смены.</p>
+        <p class="lead">Роли, точки, партнёры и журнал изменений. Отдельно от кабинета смены — чтобы случайно не сменить права во время работы.</p>
         <div class="kpi-grid" id="kpis"></div>
         <div class="grid-2">
           <div class="card">
-            <h3>Модель (кратко)</h3>
-            <p class="hint">User × Roles (merge max) × ShopScope × PartnerFlag. Уровни: none → own → shop → network | partner.</p>
+            <h3>Как устроены права</h3>
+            <p class="hint">Сотрудник · роли · точки · признак партнёра. Уровни: нет · свои · точка · сеть · партнёр.</p>
             <div class="legend">
               <span class="lv none">none</span>
               <span class="lv own">own</span>
@@ -348,7 +348,7 @@
               <span class="lv network">network</span>
               <span class="lv partner">partner</span>
             </div>
-            <div class="callout"><b>Правило:</b> несколько ролей сливаются permissive (как Espo). Партнёр никогда не получает network / чужие ключи / export ПДн.</div>
+            <div class="callout"><b>Правило:</b> несколько ролей складываются в пользу большего доступа. Партнёр не видит сеть, чужие ключи и выгрузку всех клиентов.</div>
           </div>
           <div class="card">
             <h3>Последние изменения ACL</h3>
@@ -440,7 +440,7 @@
       <!-- 05 SHOPS -->
       <section class="panel" data-panel="shops">
         <h1 class="h1">Точки и scope</h1>
-        <p class="lead">Membership user ↔ shop. Директор = network (все). Партнёр = ровно одна изолированная точка.</p>
+        <p class="lead">К каким точкам допущен сотрудник. Директор — вся сеть. Партнёр — только своя точка.</p>
         <div class="card">
           <div class="shop-grid" id="shopGrid"></div>
         </div>
@@ -450,18 +450,18 @@
       <!-- 06 TEAMS -->
       <section class="panel" data-panel="teams">
         <h1 class="h1">Команды / смены</h1>
-        <p class="lead">Опциональный слой Espo Teams: утренняя смена, B2B-группа. Не заменяет shop scope.</p>
+        <p class="lead">Смены и рабочие группы. Не заменяют доступ к точкам.</p>
         <div class="grid-2" id="teamsGrid"></div>
       </section>
 
       <!-- 07 PARTNERS -->
       <section class="panel" data-panel="partners">
         <h1 class="h1">Партнёры и франчайзи</h1>
-        <p class="lead">Q23: изолированный доступ. White-list модулей, запрет network и чужих клиентов.</p>
+        <p class="lead">Изолированный доступ партнёра: только свои модули, без сети и чужих клиентов.</p>
         <div class="grid-2" id="partnersGrid"></div>
         <div class="card">
           <h3>Жёсткие запреты партнёра</h3>
-          <div class="toggle-row"><div><div class="t">access_admin</div><div class="d">Админка доступа</div></div><div class="sw" data-locked="1"></div></div>
+          <div class="toggle-row"><div><div class="t">Админка доступа</div><div class="d">Управление ролями и правами</div></div><div class="sw" data-locked="1"></div></div>
           <div class="toggle-row"><div><div class="t">marketplace_keys (чужие)</div><div class="d">Ключи других точек сети</div></div><div class="sw" data-locked="1"></div></div>
           <div class="toggle-row"><div><div class="t">export_pdn сеть</div><div class="d">Выгрузка клиентов всей сети</div></div><div class="sw" data-locked="1"></div></div>
           <div class="toggle-row"><div><div class="t">orders других точек</div><div class="d">Чужие заказы сети</div></div><div class="sw" data-locked="1"></div></div>
@@ -472,7 +472,7 @@
       <!-- 08 AUTH -->
       <section class="panel" data-panel="auth">
         <h1 class="h1">Вход и пароли</h1>
-        <p class="lead">Q13: логин+пароль без SMS. Восстановление — admin reset (+ опц. секретный вопрос).</p>
+        <p class="lead">Вход по логину и паролю. Восстановление — сброс администратором (или секретный вопрос).</p>
         <div class="grid-2">
           <div class="card">
             <h3>Политика пароля</h3>
@@ -501,20 +501,20 @@
       <!-- 09 API -->
       <section class="panel" data-panel="api">
         <h1 class="h1">API и интеграции</h1>
-        <p class="lead">Q7: ключи маркетплейса per-shop. Кто может смотреть / ротировать.</p>
+        <p class="lead">Ключи маркетплейса по точкам. Кто может смотреть и обновлять.</p>
         <div class="card" style="padding:0;overflow:hidden">
           <table class="tbl">
             <thead><tr><th>Секрет</th><th>Точка</th><th>Кто может</th><th>Последняя ротация</th><th></th></tr></thead>
             <tbody id="apiBody"></tbody>
           </table>
         </div>
-        <div class="callout"><b>action marketplace_keys:</b> только owner + директор (по умолчанию). Менеджер точки — нет.</div>
+        <div class="callout"><b>Ключи маркетплейса:</b> только владелец и директор. Менеджер точки — нет.</div>
       </section>
 
       <!-- 10 FIELDS -->
       <section class="panel" data-panel="fields">
         <h1 class="h1">Поля (field-level ACL)</h1>
-        <p class="lead">Маскирование и запрет edit на чувствительных полях — поверх module level.</p>
+        <p class="lead">Скрытие и запрет правок на чувствительных полях.</p>
         <div class="card" style="padding:0;overflow:hidden">
           <table class="tbl">
             <thead>
@@ -534,10 +534,10 @@
       <!-- 11 AUDIT -->
       <section class="panel" data-panel="audit">
         <h1 class="h1">Аудит доступа</h1>
-        <p class="lead">Immutable log: кто менял роли, scope, ключи. Create-only (152‑ФЗ / разбор инцидентов).</p>
+        <p class="lead">Кто менял роли, точки и ключи. Записи только добавляются.</p>
         <div class="toolbar">
           <input type="search" id="auditSearch" placeholder="Поиск по аудиту…" />
-          <button type="button" class="btn" id="btnExportAudit">Экспорт CSV (stub)</button>
+          <button type="button" class="btn" id="btnExportAudit">Экспорт CSV</button>
         </div>
         <div class="card" id="auditFull"></div>
       </section>
@@ -545,7 +545,7 @@
       <!-- 12 PRESETS -->
       <section class="panel" data-panel="presets">
         <h1 class="h1">Пресеты и импорт</h1>
-        <p class="lead">Шаблоны ролей под масштаб (Q20–22) и CSV сотрудников.</p>
+        <p class="lead">Шаблоны ролей под размер сети и импорт сотрудников из CSV.</p>
         <div class="grid-2">
           <div class="card">
             <h3>Пресет «3 точки · старт»</h3>
@@ -560,7 +560,7 @@
           <div class="card">
             <h3>Импорт CSV</h3>
             <p class="hint">name,email,role,shops — invite batch.</p>
-            <button type="button" class="btn" id="btnImportCsv">Загрузить (stub)</button>
+            <button type="button" class="btn" id="btnImportCsv">Загрузить</button>
           </div>
           <div class="card">
             <h3>Документация</h3>
@@ -687,7 +687,7 @@
     { id: 'senior', name: 'Старший', desc: '+ цены, остатки, обращения, счета точки.', scope: 'shop', users: 2 },
     { id: 'director', name: 'Директор сети', desc: 'Network read/write, без tech-ключей по умолчанию.', scope: 'network', users: 1 },
     { id: 'owner', name: 'Владелец / Admin', desc: 'Полный доступ + админка ACL + ключи API.', scope: 'network', users: 1 },
-    { id: 'partner', name: 'Партнёр', desc: 'Изоляция одной точки. Hard deny network.', scope: 'partner', users: 2 },
+    { id: 'partner', name: 'Партнёр', desc: 'Изоляция одной точки. без доступа к сети.', scope: 'partner', users: 2 },
     { id: 'viewer', name: 'Наблюдатель', desc: 'Read-only сеть (бух / инвестор).', scope: 'network', users: 1 }
   ];
 
@@ -823,7 +823,7 @@
       '<div class="kpi"><div class="l">Активные</div><div class="v">' + active + '</div><div class="h">из ' + USERS.length + ' учёток</div></div>' +
       '<div class="kpi"><div class="l">Инвайты</div><div class="v">' + inv + '</div><div class="h">ждут активации</div></div>' +
       '<div class="kpi"><div class="l">Роли</div><div class="v">' + ROLES.length + '</div><div class="h">пресеты + custom</div></div>' +
-      '<div class="kpi"><div class="l">Точки</div><div class="v">' + SHOPS.length + '</div><div class="h">scope membership</div></div>';
+      '<div class="kpi"><div class="l">Точки</div><div class="v">' + SHOPS.length + '</div><div class="h">доступы к точкам</div></div>';
     $('#auditPreview').innerHTML = AUDIT.slice(0, 4).map(function (a) {
       return '<div class="audit-item"><div class="when">' + esc(a.when) + '</div><div><div class="who">' + esc(a.who) + '</div><div class="what">' + esc(a.what) + '</div></div></div>';
     }).join('');
@@ -895,7 +895,7 @@
     };
     $('#udReset').onclick = function () {
       AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Сброс пароля · ' + u.email + ' (admin reset)' });
-      toast('Пароль сброшен · ссылка 48ч (stub)');
+      toast('Пароль сброшен · ссылка на 48 часов');
     };
     $('#udToggle').onclick = function () {
       if (u.roles.indexOf('owner') >= 0 && u.status === 'active') {
@@ -1110,7 +1110,7 @@
     var rot = e.target.closest('[data-rotate]');
     if (rot) {
       AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Ротация · ' + rot.getAttribute('data-rotate') });
-      toast('Ключ ротирован (stub)');
+      toast('Ключ обновлён');
       return;
     }
 
@@ -1128,7 +1128,7 @@
     if (locked) { toast('Запрет партнёра · нельзя включить'); return; }
 
     var te = e.target.closest('[data-team-edit]');
-    if (te) { toast('Состав команды (stub)'); return; }
+    if (te) { toast('Состав команды'); return; }
   });
 
   $('#userSearch').addEventListener('input', function () { state.userQ = this.value; renderUsers(); });
@@ -1185,8 +1185,8 @@
     AUDIT.unshift({ when: 'сейчас', who: 'Ольга В.', what: 'Политика входа · recovery=' + $('#pwdRecovery').value });
     toast('Политика входа сохранена');
   });
-  $('#btnExportAudit').addEventListener('click', function () { toast('CSV аудита (stub)'); });
-  $('#btnImportCsv').addEventListener('click', function () { toast('Импорт CSV (stub)'); });
+  $('#btnExportAudit').addEventListener('click', function () { toast('CSV аудита'); });
+  $('#btnImportCsv').addEventListener('click', function () { toast('Импорт CSV'); });
   document.addEventListener('click', function (e) {
     if (e.target.id === 'btnAddTeam') {
       TEAMS.push({ id: 't' + (TEAMS.length + 1), name: 'Новая команда', shops: ['Мира 14'], members: [] });
@@ -1203,7 +1203,7 @@
   if (window.BloomAuth) {
     BloomAuth.requireAuth({
       title: 'Вход в админку доступа',
-      subtitle: 'Только access_admin · test login',
+      subtitle: 'Вход только для администратора сети',
       userbarParent: '.tb-right',
       onReady: function () { bootAdmin(); }
     });
