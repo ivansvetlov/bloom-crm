@@ -842,6 +842,22 @@
   .tg-contact .cc-body { padding: 12px 14px; overflow-y: auto; flex: 1; font-size: 0.84rem; color: var(--ink-dim); }
   .tg-contact .cc-row { margin-bottom: 10px; }
   .tg-contact .cc-row b { display: block; font-size: 0.72rem; color: var(--ink-faint); margin-bottom: 2px; }
+  .tg-contact .cc-select {
+    width: 100%; border: 1px solid var(--border-2); border-radius: 10px;
+    padding: 8px 10px; font-family: var(--font); font-size: 0.84rem; font-weight: 650;
+    background: var(--bg); color: var(--ink); outline: none; cursor: pointer;
+  }
+  .tg-contact .cc-select:focus { border-color: var(--terra); }
+  .tg-contact .cc-assign-block {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 10px; margin-bottom: 12px;
+  }
+  .tg-contact .cc-assign-block .ttl {
+    font-size: 0.72rem; font-weight: 800; color: var(--ink-faint); text-transform: uppercase;
+    letter-spacing: 0.04em; margin-bottom: 8px;
+  }
+  .tg-contact .cc-assign-block .cc-row { margin-bottom: 8px; }
+  .tg-contact .cc-assign-block .cc-row:last-child { margin-bottom: 0; }
   .tg-contact .cc-actions { padding: 12px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
   .tg-contact .btn { width: 100%; justify-content: center; }
 
@@ -1892,8 +1908,8 @@
  <option value="resolved">Решён</option>
  </select>
  <button type="button" class="btn" id="btnNoteMode" title="Private note">📝 Заметка</button>
- <button type="button" class="btn" id="btnAssignMe" title="Assign">Назначить мне</button>
- <button type="button" class="btn" id="btnUnassign" title="Unassign">Снять</button>
+ <button type="button" class="btn" id="btnAssignMe" title="Назначить себе">Мне</button>
+ <button type="button" class="btn" id="btnUnassign" title="Снять менеджера">Снять</button>
  <button type="button" class="btn" id="btnSnooze" title="Snooze">Отложить</button>
  <button type="button" class="btn" id="btnPrio" title="Priority">!</button>
  <button type="button" class="btn" id="btnCanned" title="Canned replies">Шаблоны</button>
@@ -2254,7 +2270,7 @@
  <th>Наименование</th>
  <th>Группа</th>
  <th>Склад</th>
- <th>На сайте (API)</th>
+ <th>На сайте</th>
  <th>Цена</th>
  <th></th>
  </tr>
@@ -3688,6 +3704,58 @@
  renderContact();
   }
 
+  var CHAT_MANAGERS = ['Анна К.', 'Игорь М.', 'Света П.', 'Максим Р.'];
+  var CHAT_SHOPS = ['Мира 14', 'Ленина 92', 'Рижская 8'];
+
+  function syncClientFromChat(c) {
+    if (!c || typeof clients === 'undefined') return;
+    var cl = clients.filter(function (x) {
+      return x.name === c.name || (c.phone && x.phone === c.phone);
+    })[0];
+    if (!cl) return;
+    if (c.shop) cl.shop = c.shop;
+    // optional: store last manager on client for product demos
+    cl.manager = c.assignee || cl.manager || null;
+  }
+
+  function assignChatManager(name, opts) {
+    opts = opts || {};
+    var c = chats[state.chatIdx];
+    if (!c) return;
+    var prev = c.assignee || '—';
+    c.assignee = name || null;
+    if (c.assignee && c.status === 'resolved') c.status = 'open';
+    var note = c.assignee
+      ? ('Назначен менеджер: ' + c.assignee + (prev && prev !== '—' && prev !== c.assignee ? ' (было: ' + prev + ')' : ''))
+      : 'Менеджер снят';
+    c.msgs.push({ me: false, note: true, text: note });
+    syncClientFromChat(c);
+    renderChats();
+    renderChat();
+    renderContact();
+    updateInboxCounts();
+    if (!opts.silent) toast(c.assignee ? ('Менеджер: ' + c.assignee) : 'Без менеджера');
+  }
+
+  function assignChatShop(shop, opts) {
+    opts = opts || {};
+    var c = chats[state.chatIdx];
+    if (!c || !shop) return;
+    var prev = c.shop || '—';
+    if (prev === shop && !opts.force) return;
+    c.shop = shop;
+    c.msgs.push({
+      me: false,
+      note: true,
+      text: 'Диалог передан на точку: ' + shop + (prev !== '—' && prev !== shop ? ' (было: ' + prev + ')' : '')
+    });
+    syncClientFromChat(c);
+    renderChats();
+    renderChat();
+    renderContact();
+    if (!opts.silent) toast('Точка: ' + shop);
+  }
+
   function renderContact() {
  var el = $('#tgContactBody');
  if (!el) return;
@@ -3696,12 +3764,23 @@
  var linked = state.orders.filter(function (o) {
  return (c.orderIds || []).indexOf(o.id) >= 0 || (o.channel !== 'fw' && o.shop === c.shop && o.channel === c.channel);
  }).slice(0, 4);
+ var mgrOpts = '<option value="">— не назначен —</option>' + CHAT_MANAGERS.map(function (m) {
+   return '<option value="' + esc(m) + '"' + (c.assignee === m ? ' selected' : '') + '>' + esc(m) + '</option>';
+ }).join('');
+ var shopOpts = CHAT_SHOPS.map(function (s) {
+   return '<option value="' + esc(s) + '"' + (c.shop === s ? ' selected' : '') + '>' + esc(s) + '</option>';
+ }).join('');
  el.innerHTML =
  '<div class="cc-row"><b>Имя</b>' + esc(c.name) + '</div>' +
  '<div class="cc-row"><b>Канал</b>' + CH_NAMES[c.channel] + '</div>' +
- '<div class="cc-row"><b>Точка</b>' + esc(c.shop) + '</div>' +
+ '<div class="cc-assign-block">' +
+   '<div class="ttl">Назначение</div>' +
+   '<div class="cc-row"><b>Магазин / точка</b>' +
+     '<select class="cc-select" id="chatAssignShop">' + shopOpts + '</select></div>' +
+   '<div class="cc-row"><b>Менеджер</b>' +
+     '<select class="cc-select" id="chatAssignMgr">' + mgrOpts + '</select></div>' +
+ '</div>' +
  '<div class="cc-row"><b>Статус</b>' + chatStatusLabel(c.status || 'open') + '</div>' +
- '<div class="cc-row"><b>Ответственный</b>' + esc(c.assignee || '— не назначен') + '</div>' +
  '<div class="cc-row"><b>Приоритет</b>' + (c.priority ? '⚡ срочно' : 'обычный') + '</div>' +
  '<div class="cc-row"><b>Метки</b>' + ((c.labels && c.labels.length) ? c.labels.map(function (t) {
  return '<span class="cw-label tag">' + esc(t) + '</span>';
@@ -3709,6 +3788,19 @@
  '<div class="cc-row"><b>Заказы</b>' + (linked.length ? linked.map(function (o) {
  return '<div style="margin-top:4px"><a href="#" data-open-order="' + o.id + '" style="color:var(--terra);font-weight:700">' + o.id + '</a> · ' + esc(o.name) + '</div>';
  }).join('') : 'нет связанных') + '</div>';
+
+ var shopSel = $('#chatAssignShop');
+ if (shopSel) {
+   shopSel.onchange = function () {
+     assignChatShop(this.value);
+   };
+ }
+ var mgrSel = $('#chatAssignMgr');
+ if (mgrSel) {
+   mgrSel.onchange = function () {
+     assignChatManager(this.value || null);
+   };
+ }
   }
 
   function selectChat(id) {
@@ -4539,22 +4631,11 @@
  });
  var ba = $('#btnAssignMe');
  if (ba) ba.addEventListener('click', function () {
- var c = chats[state.chatIdx];
- if (!c) return;
- c.assignee = state.assignee;
- if (c.status === 'resolved') c.status = 'open';
- c.msgs.push({ me: false, note: true, text: 'Назначено: ' + state.assignee });
- renderChats(); renderChat();
- toast('Назначено: ' + state.assignee);
+   assignChatManager(state.assignee || 'Анна К.');
  });
  var bu = $('#btnUnassign');
  if (bu) bu.addEventListener('click', function () {
- var c = chats[state.chatIdx];
- if (!c) return;
- c.assignee = null;
- c.msgs.push({ me: false, note: true, text: 'Снято назначение' });
- renderChats(); renderChat();
- toast('Без назначения');
+   assignChatManager(null);
  });
  var bs = $('#btnSnooze');
  if (bs) bs.addEventListener('click', function () {
