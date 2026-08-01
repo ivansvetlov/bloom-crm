@@ -9,11 +9,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ═══════════════ BLOOM × FLOWWOW DEMO ═══════════════ */
+  /* ═══════════════ BLOOM × MARKETPLACE DEMO ═══════════════ */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    /* Bloom × Flowwow hybrid: soft coral marketplace + warm neutrals */
+    /* Bloom × Marketplace hybrid: soft coral marketplace + warm neutrals */
     --bg:        #FBF7F4;
     --bg-2:      #FFFFFF;
     --bg-3:      #F3EEEA;
@@ -24,7 +24,7 @@
     --ink-mute:  #78716C;
     --ink-faint: #A8A29E;
 
-    --terra:     #E06B4A;      /* Flowwow coral */
+    --terra:     #E06B4A;      /* marketplace coral */
     --terra-2:   #C85A3C;
     --terra-soft:#FCEBE5;
     --sage:      #6F8F72;
@@ -453,7 +453,7 @@
 
   <div class="sb-foot">
     <div class="row"><span class="dot online"></span> Магазин открыт</div>
-    <div class="row"><span class="dot ok"></span> Flowwow подключён</div>
+    <div class="row"><span class="dot ok"></span> Маркетплейс подключён</div>
     <div class="row"><span class="dot warn"></span> Примеры заказов</div>
   </div>
 </aside>
@@ -464,7 +464,7 @@
   <header class="topbar">
     <div class="crumb"><b>Кабинет</b><span class="sep">·</span><span>Демо</span></div>
     <div class="tb-chips">
-      <span class="chip sage"><span class="dot online"></span>Flowwow · подключено</span>
+      <span class="chip sage"><span class="dot online"></span>Маркетплейс · подключено</span>
       <span class="chip hide-m">₽ · Россия</span>
       <button class="chip terra" data-action="newOrder">+ Новый заказ</button>
     </div>
@@ -517,7 +517,7 @@
           <div class="feed" id="termLog">
             <div class="feed-item">
               <div class="ic ok">✓</div>
-              <div class="txt"><b>Flowwow подключён</b> — новые заказы появляются в кабинете<span class="when">только что</span></div>
+              <div class="txt"><b>Маркетплейс подключён</b> — новые заказы появляются в кабинете<span class="when">только что</span></div>
             </div>
             <div class="feed-item">
               <div class="ic">💬</div>
@@ -559,7 +559,7 @@
     <section data-section="orders" style="display:none">
       <div class="sec-head"><span class="sec-num">02</span><span class="sec-tag">заказы</span></div>
       <h2 class="sec-h">Доска заказов</h2>
-      <p class="sec-lede">Перетащите карточку, чтобы сменить статус. Заказы с <strong>Flowwow</strong> и от постоянных клиентов — в одном месте.</p>
+      <p class="sec-lede">Перетащите карточку, чтобы сменить статус. Заказы с <strong>Маркетплейс</strong> и от постоянных клиентов — в одном месте.</p>
       <div class="kanban" id="kanban2"></div>
     </section>
 
@@ -652,7 +652,7 @@
         <option value="wa">WhatsApp</option>
         <option value="tg">Telegram</option>
         <option value="max">MAX</option>
-        <option value="fw">Flowwow</option>
+        <option value="fw">Маркетплейс</option>
       </select>
     </div>
     <div class="field-wrap">
@@ -691,7 +691,7 @@
     new: 'Новый', accepted: 'Принят', assembled: 'Собран',
     delivering: 'В доставке', done: 'Доставлен'
   };
-  var CH_NAMES = { wa: 'WhatsApp', tg: 'Telegram', max: 'MAX', fw: 'Flowwow' };
+  var CH_NAMES = { wa: 'WhatsApp', tg: 'Telegram', max: 'MAX', fw: 'Маркетплейс' };
   var SHOP_N = { 'Мира 14': 1, 'Ленина 92': 2, 'Рижская 8': 3 };
 
   var seed = [
@@ -886,7 +886,7 @@
     renderAllKanban();
     log('<b>' + esc(order.name) + '</b> — ' + NAMES[from] + ' → <span class="o">' + NAMES[status] + '</span>', status === 'done' ? 'ok' : '');
     if (status === 'done') {
-      log('Статус ушёл в <b>Flowwow</b> — клиент видит «доставлен»', 'ok');
+      log('Статус ушёл в <b>Маркетплейс</b> — клиент видит «доставлен»', 'ok');
       toast('Заказ доставлен');
     } else {
       toast('Статус: ' + NAMES[status]);
@@ -997,7 +997,7 @@
   /* ────────────────────────── BAR CHART ────────────────────────── */
   function renderChart() {
     var data = [
-      { label: 'Flowwow', value: 62, color: 'var(--terra)' },
+      { label: 'Маркетплейс', value: 62, color: 'var(--terra)' },
       { label: 'WhatsApp', value: 24, color: 'var(--sage)' },
       { label: 'Telegram', value: 9, color: 'var(--plum)' },
       { label: 'MAX', value: 5, color: 'var(--amber)' }
@@ -1026,7 +1026,7 @@
     if (termLog) {
       termLog.innerHTML =
         '<div class="feed-item"><div class="ic ok">✓</div><div class="txt"><b>Начали сначала</b> — заказы и чаты как в начале дня<span class="when">только что</span></div></div>' +
-        '<div class="feed-item"><div class="ic ok">✓</div><div class="txt"><b>Flowwow подключён</b> — новые заказы появляются в кабинете<span class="when">сегодня</span></div></div>' +
+        '<div class="feed-item"><div class="ic ok">✓</div><div class="txt"><b>Маркетплейс подключён</b> — новые заказы появляются в кабинете<span class="when">сегодня</span></div></div>' +
         '<div class="feed-item"><div class="ic">💬</div><div class="txt"><b>Чаты собраны</b> — WhatsApp, Telegram и MAX в одном окне<span class="when">сегодня</span></div></div>';
     }
     toast('Начали сначала');

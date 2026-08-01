@@ -1,7 +1,7 @@
 # Домен crmbloom.ru
 
 **Боевой бренд-домен продукта:** `https://crmbloom.ru`  
-Продукт называется **Bloom CRM**, не flowwow / flowwow-crm.
+Продукт называется **Bloom CRM**, не маркетплейс / маркетплейс-crm.
 
 | Назначение | URL |
 |---|---|
@@ -28,7 +28,7 @@ WEB="$HOME/crmbloom.ru/public_html"
 # find ~ -maxdepth 4 -type d -name public_html
 
 cd /tmp && rm -rf bloom-crm-master crm.zip
-# если репо ещё flowwow-crm — замените имя архива/URL
+# если репо ещё маркетплейс-crm — замените имя архива/URL
 curl -fsSL -o crm.zip https://github.com/ivansvetlov/bloom-crm/archive/refs/heads/master.zip \
   || curl -fsSL -o crm.zip https://github.com/ivansvetlov/flowwow-crm/archive/refs/heads/master.zip
 unzip -qo crm.zip
