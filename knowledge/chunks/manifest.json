@@ -1,0 +1,223 @@
+{
+  "version": "1.0.0",
+  "built": "2026-08-01",
+  "project": "flowwow-crm",
+  "product": "Bloom CRM",
+  "chunk_count": 68,
+  "sources": [
+    {
+      "source_id": "tz",
+      "title": "ТЗ заказчика",
+      "kind": "spec",
+      "path": "docs/tz.md",
+      "chunks": 6,
+      "chars": 4496
+    },
+    {
+      "source_id": "questions",
+      "title": "Вопросы заказчику",
+      "kind": "spec",
+      "path": "docs/questions.md",
+      "chunks": 3,
+      "chars": 2262
+    },
+    {
+      "source_id": "arch",
+      "title": "Architecture plan",
+      "kind": "architecture",
+      "path": "docs/research/crm-course/ARCHITECTURE_PLAN.md",
+      "chunks": 11,
+      "chars": 7005
+    },
+    {
+      "source_id": "course-map",
+      "title": "Course content map",
+      "kind": "research",
+      "path": "docs/research/crm-course/CONTENT_MAP.md",
+      "chunks": 8,
+      "chars": 5106
+    },
+    {
+      "source_id": "courier",
+      "title": "Courier UX research",
+      "kind": "research",
+      "path": "docs/research/courier-ux-everest-hybrid.md",
+      "chunks": 12,
+      "chars": 8219
+    },
+    {
+      "source_id": "schema",
+      "title": "Wiki schema",
+      "kind": "wiki",
+      "path": "knowledge/SCHEMA.md",
+      "chunks": 3,
+      "chars": 1754
+    },
+    {
+      "source_id": "wiki-index",
+      "title": "Wiki index",
+      "kind": "wiki",
+      "path": "knowledge/index.md",
+      "chunks": 2,
+      "chars": 1371
+    },
+    {
+      "source_id": "wiki-bloom-crm",
+      "title": "bloom-crm",
+      "kind": "wiki",
+      "path": "knowledge/entities/bloom-crm.md",
+      "chunks": 2,
+      "chars": 1183
+    },
+    {
+      "source_id": "wiki-flowwow",
+      "title": "flowwow",
+      "kind": "wiki",
+      "path": "knowledge/entities/flowwow.md",
+      "chunks": 1,
+      "chars": 582
+    },
+    {
+      "source_id": "wiki-messengers",
+      "title": "messengers",
+      "kind": "wiki",
+      "path": "knowledge/entities/messengers.md",
+      "chunks": 2,
+      "chars": 1039
+    },
+    {
+      "source_id": "wiki-architecture-stack",
+      "title": "architecture-stack",
+      "kind": "wiki",
+      "path": "knowledge/concepts/architecture-stack.md",
+      "chunks": 1,
+      "chars": 665
+    },
+    {
+      "source_id": "wiki-catalog-vitrina",
+      "title": "catalog-vitrina",
+      "kind": "wiki",
+      "path": "knowledge/concepts/catalog-vitrina.md",
+      "chunks": 1,
+      "chars": 430
+    },
+    {
+      "source_id": "wiki-customer-questions",
+      "title": "customer-questions",
+      "kind": "wiki",
+      "path": "knowledge/concepts/customer-questions.md",
+      "chunks": 2,
+      "chars": 920
+    },
+    {
+      "source_id": "wiki-delivery",
+      "title": "delivery",
+      "kind": "wiki",
+      "path": "knowledge/concepts/delivery.md",
+      "chunks": 1,
+      "chars": 379
+    },
+    {
+      "source_id": "wiki-modules-map",
+      "title": "modules-map",
+      "kind": "wiki",
+      "path": "knowledge/concepts/modules-map.md",
+      "chunks": 1,
+      "chars": 613
+    },
+    {
+      "source_id": "wiki-monthly-cost",
+      "title": "monthly-cost",
+      "kind": "wiki",
+      "path": "knowledge/concepts/monthly-cost.md",
+      "chunks": 1,
+      "chars": 646
+    },
+    {
+      "source_id": "wiki-mvp-scope",
+      "title": "mvp-scope",
+      "kind": "wiki",
+      "path": "knowledge/concepts/mvp-scope.md",
+      "chunks": 2,
+      "chars": 978
+    },
+    {
+      "source_id": "wiki-open-questions",
+      "title": "open-questions",
+      "kind": "wiki",
+      "path": "knowledge/concepts/open-questions.md",
+      "chunks": 1,
+      "chars": 686
+    },
+    {
+      "source_id": "wiki-order-lifecycle",
+      "title": "order-lifecycle",
+      "kind": "wiki",
+      "path": "knowledge/concepts/order-lifecycle.md",
+      "chunks": 1,
+      "chars": 794
+    },
+    {
+      "source_id": "wiki-photo-gate",
+      "title": "photo-gate",
+      "kind": "wiki",
+      "path": "knowledge/concepts/photo-gate.md",
+      "chunks": 1,
+      "chars": 338
+    },
+    {
+      "source_id": "wiki-reliability-position",
+      "title": "reliability-position",
+      "kind": "wiki",
+      "path": "knowledge/concepts/reliability-position.md",
+      "chunks": 1,
+      "chars": 713
+    },
+    {
+      "source_id": "wiki-roles-rbac",
+      "title": "roles-rbac",
+      "kind": "wiki",
+      "path": "knowledge/concepts/roles-rbac.md",
+      "chunks": 1,
+      "chars": 605
+    },
+    {
+      "source_id": "wiki-security-152",
+      "title": "security-152",
+      "kind": "wiki",
+      "path": "knowledge/concepts/security-152.md",
+      "chunks": 1,
+      "chars": 448
+    },
+    {
+      "source_id": "wiki-sitemap-ui",
+      "title": "sitemap-ui",
+      "kind": "wiki",
+      "path": "knowledge/concepts/sitemap-ui.md",
+      "chunks": 1,
+      "chars": 582
+    },
+    {
+      "source_id": "wiki-unified-inbox",
+      "title": "unified-inbox",
+      "kind": "wiki",
+      "path": "knowledge/concepts/unified-inbox.md",
+      "chunks": 1,
+      "chars": 514
+    },
+    {
+      "source_id": "wiki-messengers-official-vs-grey",
+      "title": "messengers-official-vs-grey",
+      "kind": "wiki",
+      "path": "knowledge/comparisons/messengers-official-vs-grey.md",
+      "chunks": 1,
+      "chars": 595
+    }
+  ],
+  "files": {
+    "chunks_jsonl": "knowledge/chunks/chunks.jsonl",
+    "sqlite": "knowledge/rag.sqlite",
+    "wiki_index": "knowledge/index.md"
+  },
+  "query": "python knowledge/scripts/query_rag.py \"ваш запрос\""
+}
