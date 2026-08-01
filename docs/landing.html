@@ -916,7 +916,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </a>
       <a class="hero-cta ghost" href="demo.html" style="margin-left:10px">
-        Попробовать демо
+        Ознакомиться с демо
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </a>
 
@@ -1351,258 +1351,21 @@
       </div>
     </section>
 
-    <!-- ═════════════ 11 · SURVEY ═════════════ -->
+    <!-- ═════════════ 11 · SURVEY → questions.html ═════════════ -->
     <section class="block reveal" id="survey">
-      <div class="sec-head"><span class="sec-num">11</span><span class="sec-tag">обсуждение</span></div>
-      <h2 class="sec-h">Несколько <span class="accent">вопросов</span></h2>
-      <p class="sec-lede">Точную смету и сроки назовём после честных ответов — <strong>от них зависят стоимость и гарантии</strong>. 10 блоков, отвечайте своими словами, пустые поля тоже подойдут.</p>
-
-      <div class="panel wizard" id="wizard">
-        <div class="wiz-progress">
-          <div class="wp-row">
-            <span class="wp-label" id="wpLabel">Блок 1 из 10</span>
-            <span class="wp-count" id="wpCount">0%</span>
-          </div>
-          <div class="wiz-bar"><i id="wizBar"></i></div>
-          <div class="wiz-dots" id="wizDots"></div>
+      <div class="epilogue" style="margin-top:0">
+        <div class="closing">Один кабинет — вся <span class="accent">флористика</span>.</div>
+        <p class="sec-lede" style="margin:0 auto 0;text-align:center;max-width:36ch">Точную смету и сроки смогу назвать после ваших ответов</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px">
+          <a class="cta" href="questions.html" style="text-decoration:none;margin-top:0">
+            Ответить на вопросы
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a class="cta" href="demo.html" style="text-decoration:none;margin-top:0;background:transparent;color:var(--ink-dim);border:1px solid var(--border-2)">
+            Ознакомиться с демо
+          </a>
         </div>
-
-        <div class="wiz-log" id="wizLog"></div>
-
-        <form id="qForm" onsubmit="return false;">
-          <div class="wiz-body">
-
-            <!-- БЛОК 1 -->
-            <div class="wiz-block on" data-block="1">
-              <div class="wb-head"><span class="wb-num">1</span><span class="wb-title">Чаты и мессенджеры</span></div>
-              <div class="wb-tag">блок 1/10 · чаты</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>1.</b> Сейчас вы общаетесь с клиентами по WhatsApp с личных номеров менеджеров? В ТЗ написано «подключить личные аккаунты через дешёвую платформу». Поясним, что это значит: мы будем автоматически читать и вести переписку с личных номеров — это неофициальный способ, и WhatsApp может заблокировать такой номер. Понимаете ли вы этот риск и готовы ли к нему? Есть ли запасные номера (план Б)?</div>
-                <textarea class="qfree" data-name="b1q1" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>2.</b> История переписки в WhatsApp хранится только в телефоне менеджера. Если подключаем личные аккаунты, старые диалоги мы не увидим — только те, что начнутся после подключения. Вас это устраивает, или нужно заранее выгрузить историю с телефонов?</div>
-                <textarea class="qfree" data-name="b1q2" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>3.</b> По Telegram в ТЗ указано «личные аккаунты, не боты». Для ботов Telegram даёт официальный и надёжный доступ, а для личных аккаунтов — только неофициальные способы, за которые аккаунт могут заблокировать. Согласны ли вы, чтобы клиенты писали в бота с именем и аватаркой вашего менеджера? Для них это выглядит как обычный чат в Telegram.</div>
-                <textarea class="qfree" data-name="b1q3" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>4.</b> Про MAX: у MAX есть официальный способ подключения для бизнеса (как бот в Telegram) — это надёжно и без риска блокировки. Сколько примерно сообщений в MAX вы получаете?</div>
-                <textarea class="qfree" data-name="b1q4" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>5.</b> Для чатов вы выбрали какую-то платформу (дешёвый вариант). Расскажите о ней: как называется, какие мессенджеры поддерживает, как подключается? Это поможет встроить её в кабинет.</div>
-                <textarea class="qfree" data-name="b1q5" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 2 -->
-            <div class="wiz-block" data-block="2">
-              <div class="wb-head"><span class="wb-num">2</span><span class="wb-title">Заказы Flowwow</span></div>
-              <div class="wb-tag">блок 2/10 · flowwow</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>6.</b> Есть ли у вас технический доступ к данным Flowwow (то, что называют API)? Что он позволяет: только смотреть заказы или ещё менять статусы, отменять заказы, загружать фото, менять цены и остатки товаров?</div>
-                <textarea class="qfree" data-name="b2q6" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>7.</b> У вас один аккаунт Flowwow на все магазины или у каждого магазина свой? От этого зависит, как разделять заказы между филиалами.</div>
-                <div class="qopt-row" data-multi="true" data-name="b2q9">
-                  <label class="qopt"><input type="checkbox" value="Один на все">Один на все</label>
-                  <label class="qopt"><input type="checkbox" value="Свой на каждую точку">Свой на каждую точку</label>
-                </div>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>8.</b> Заказы приходят и мимо Flowwow — напрямую от постоянных клиентов, по телефону или в чатах. Нужно ли, чтобы менеджер мог заводить такие заказы вручную? Что важно указывать: источник заказа, способ оплаты, какой магазин его выполнит?</div>
-                <textarea class="qfree" data-name="b2qDirect" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>9.</b> Куда присылать уведомления о новых заказах — в Telegram, во ВКонтакте или в оба места? И если новый заказ не приняли за 3 минуты, напоминать повторно?</div>
-                <textarea class="qfree" data-name="b2qNotify" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>10.</b> Насколько нужны в кабинете рейтинги магазинов, топ по количеству заказов и отзывы клиентов — обязательно, опционально или не нужно?</div>
-                <textarea class="qfree" data-name="b2qRatings" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 3 -->
-            <div class="wiz-block" data-block="3">
-              <div class="wb-head"><span class="wb-num">3</span><span class="wb-title">Перенос данных и внедрение</span></div>
-              <div class="wb-tag">блок 3/10 · перенос данных</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>11.</b> Откуда взять список клиентов: автоматически из Flowwow, из Excel-файлов менеджера или из другой программы? Сколько примерно клиентов — тысяча, десять тысяч или больше?</div>
-                <textarea class="qfree" data-name="b3q10" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>12.</b> Насколько данные «чистые»? В Excel часто бывают повторы, ошибки в номерах, старые записи. Вы сами наведёте порядок или отдадите как есть?</div>
-                <textarea class="qfree" data-name="b3q11" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>13.</b> Переходим сразу на новую систему или какое-то время поработаем на старой и новой параллельно (неделю-две), чтобы подстраховаться?</div>
-                <textarea class="qfree" data-name="b3q12" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 4 -->
-            <div class="wiz-block" data-block="4">
-              <div class="wb-head"><span class="wb-num">4</span><span class="wb-title">Сотрудники и права доступа</span></div>
-              <div class="wb-tag">блок 4/10 · сотрудники</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>14.</b> Нужны ли разные уровни доступа — менеджер, старший менеджер, директор — или у всех одинаковые права (принимать и отменять заказы, менять цены и остатки)?</div>
-                <textarea class="qfree" data-name="b4q14" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>15.</b> Вход в систему — по логину и паролю, без СМС-подтверждения. Если сотрудник забудет пароль, как ему его восстанавливать: ответить на секретный вопрос или просто попросить вас?</div>
-                <textarea class="qfree" data-name="b4q15" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 5 -->
-            <div class="wiz-block" data-block="5">
-              <div class="wb-head"><span class="wb-num">5</span><span class="wb-title">Бонусы и оплата</span></div>
-              <div class="wb-tag">блок 5/10 · бонусы и оплата</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>16.</b> Система бонусов и лояльности будет отдельным документом (ТЗ). Когда вы его пришлёте? Это важно для устройства базы данных.</div>
-                <textarea class="qfree" data-name="b5q16" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>17.</b> «Привязка банка» — это приём денег от клиентов прямо в кабинете или просто отметка, что клиент оплатил? Какой банк или платёжная система у вас?</div>
-                <textarea class="qfree" data-name="b5q17" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>18.</b> Нужно ли автоматически формировать чеки для налоговой (как в онлайн-кассе)?</div>
-                <textarea class="qfree" data-name="b5q18" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 6 -->
-            <div class="wiz-block" data-block="6">
-              <div class="wb-head"><span class="wb-num">6</span><span class="wb-title">Надёжность и гарантии</span></div>
-              <div class="wb-tag">блок 6/10 · гарантии</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>19.</b> Переживаете, что система сделана частным разработчиком, а не крупной компанией? Объясним, как закрываем этот риск: прописываем в договоре сроки реакции и восстановления, передаём весь код и доступ к базе, настраиваем автоматические резервные копии и следим за работой. Такой вариант устроит?</div>
-                <textarea class="qfree" data-name="b6q19" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>20.</b> Если через год вы решите прекратить сотрудничество — весь код и данные остаются у вас?</div>
-                <textarea class="qfree" data-name="b6q20" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>21.</b> Если с нами что-то случится — есть ли план? Можно положить копию исходников на хранение третьей стороне, например вашему юристу. Подходит такой вариант?</div>
-                <textarea class="qfree" data-name="b6q21" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 7 -->
-            <div class="wiz-block" data-block="7">
-              <div class="wb-head"><span class="wb-num">7</span><span class="wb-title">Личные данные клиентов (закон)</span></div>
-              <div class="wb-tag">блок 7/10 · личные данные</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>22.</b> В системе будут имена и телефоны клиентов, а это персональные данные. По закону нужно: сервера в России, политика конфиденциальности, согласие клиентов, защита данных, журнал действий. Эти документы у вас уже есть, или делаем в рамках проекта?</div>
-                <textarea class="qfree" data-name="b7q22" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 8 -->
-            <div class="wiz-block" data-block="8">
-              <div class="wb-head"><span class="wb-num">8</span><span class="wb-title">Сервера и ежемесячные расходы</span></div>
-              <div class="wb-tag">блок 8/10 · сервера и расходы</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>23.</b> Чтобы точно посчитать месячные расходы, уточним: где разместить сервера (в России, в облаке), сколько места нужно под фото и переписку, нужны ли дополнительные сервисы. Подойдёт ли базовый вариант на Yandex Cloud или Timeweb?</div>
-                <textarea class="qfree" data-name="b8q23" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 9 -->
-            <div class="wiz-block" data-block="9">
-              <div class="wb-head"><span class="wb-num">9</span><span class="wb-title">Объём и масштаб</span></div>
-              <div class="wb-tag">блок 9/10 · масштаб</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>24.</b> Сколько у вас сейчас магазинов (точек)? Сколько планируете через год?</div>
-                <textarea class="qfree" data-name="b9q24" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>25.</b> Сколько менеджеров работает одновременно — 2 человека или 20?</div>
-                <textarea class="qfree" data-name="b9q25" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>26.</b> Сколько заказов в день в пиковые дни (Новый год, 8 Марта) — 20, 200 или 2000? От этого зависит мощность серверов.</div>
-                <textarea class="qfree" data-name="b9q26" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>27.</b> Сколько примерно весит одна фотография букета? Сколько таких фото загружается в день? Это влияет на место на сервере и скорость работы.</div>
-                <textarea class="qfree" data-name="b9q27" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>28.</b> В ТЗ упомянуты «партнёрские точки» — это ваши филиалы, точки Flowwow или что-то другое? Уточните, чтобы правильно настроить структуру.</div>
-                <textarea class="qfree" data-name="b9qPts" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-            <!-- БЛОК 10 -->
-            <div class="wiz-block" data-block="10">
-              <div class="wb-head"><span class="wb-num">10</span><span class="wb-title">Доставка</span></div>
-              <div class="wb-tag">блок 10/10 · доставка</div>
-
-              <div class="wiz-item">
-                <div class="wiz-q"><b>29.</b> Статус «Передан в доставку» — это курьеры Flowwow, ваши собственные курьеры или сторонняя служба доставки?</div>
-                <textarea class="qfree" data-name="b10q28" placeholder="Ваш ответ…"></textarea>
-              </div>
-              <div class="wiz-item">
-                <div class="wiz-q"><b>30.</b> Нужно ли видеть, где находится курьер (трек-номер, карта), или достаточно ставить статус и отправлять клиенту сообщение «заказ в пути»?</div>
-                <textarea class="qfree" data-name="b10q29" placeholder="Ваш ответ…"></textarea>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="contact-grid" id="contactGrid">
-            <div class="field-wrap">
-              <label for="qName">Как к вам обращаться</label>
-              <input class="qfree" id="qName" type="text" placeholder="Имя" data-name="contact_name">
-            </div>
-            <div class="field-wrap">
-              <label for="qContact">Телефон или мессенджер</label>
-              <input class="qfree" id="qContact" type="text" placeholder="+7 … или @username" data-name="contact">
-            </div>
-          </div>
-
-          <div class="wiz-nav">
-            <button type="button" class="wiz-btn ghost" id="wizPrev">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
-              Назад
-            </button>
-            <div class="wiz-err" id="wizErr"></div>
-            <button type="submit" class="wiz-btn primary" id="wizNext">
-              Далее
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </button>
-          </div>
-        </form>
-
-        <!-- ФИНАЛ -->
-        <div class="wiz-final" id="wizFinal">
-          <div class="final-card">
-            <span class="final-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-9"/></svg></span>
-            <h3>Ответы приняты</h3>
-            <p id="finalMsg">Спасибо! Мы получили ваши ответы и вернёмся со сметой и планом.</p>
-            <div class="final-actions">
-              <button class="wiz-btn" id="finalAgain">Заполнить заново</button>
-              <button class="wiz-btn primary" data-to="hero">К началу ↑</button>
-            </div>
-          </div>
-        </div>
+        <div class="signoff" style="margin-top:22px">bloom crm · commercial proposal · 2026</div>
       </div>
     </section>
 
@@ -1610,10 +1373,10 @@
     <section class="epilogue reveal">
       <div class="closing">Один кабинет — вся флористика. <span class="accent">Давайте сделаем</span> надёжно и без сюрпризов.</div>
       <div class="signoff">bloom crm · commercial proposal · 2026</div>
-      <button class="cta" data-to="survey">
-        Обсудить проект
+      <a class="cta" href="questions.html" style="text-decoration:none">
+        Ответить на вопросы
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </button>
+      </a>
     </section>
 
   </main>
@@ -1715,8 +1478,9 @@
   }, { threshold: 0.5 });
   counters.forEach(function (c) { countIO.observe(c); });
 
-  /* ═════════════ QUESTION WIZARD ═════════════ */
+  /* ═════════════ QUESTION WIZARD (live form → questions.html) ═════════════ */
   var qForm = document.getElementById('qForm');
+  if (!qForm) { /* skip */ } else {
   var blocks = Array.from(qForm.querySelectorAll('.wiz-block'));
   var total = blocks.length;
   var cur = 0;
@@ -1905,6 +1669,7 @@
   buildDots();
   render();
   showBlock(0);
+  } // end live wizard
 })();
 </script>
 </body>

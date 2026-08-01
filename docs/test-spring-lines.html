@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom · тест бегущих строк (white sheet)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1F1F1F;
+    --bg: #FFFFFF;
+    --mute: #8A8A8E;
+    --border: #E8E8E6;
+    /* Kutuzova accents (from live CSS) */
+    --k-accent: #DFF247;   /* lime */
+    --k-blue: #202CE3;
+    /* Bloom accents */
+    --terra: #C76B47;
+    --sage: #7C8B6F;
+    --bloom-ink: #18181B;
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  body {
+    font-family: var(--font);
+    background: #fff;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  .bar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(10px);
+  }
+  .bar h1 { font-size: 0.95rem; font-weight: 800; letter-spacing: -0.02em; }
+  .bar p { font-size: 0.78rem; color: var(--mute); }
+  .bar a {
+    font-family: var(--mono); font-size: 0.68rem; font-weight: 600;
+    color: var(--ink); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px;
+  }
+  .bar a:hover { background: #F6F6F4; }
+
+  .sheet { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+  .note {
+    max-width: 640px; margin-bottom: 36px;
+    color: var(--mute); font-size: 0.95rem; line-height: 1.55;
+  }
+  .note strong { color: var(--ink); }
+  .lab-title {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--mute); margin: 48px 0 14px;
+  }
+  .lab-title span { color: var(--ink); font-weight: 700; }
+
+  /* ═══════════ A · KUTUZOVA SPRING LINES (isolated) ═══════════ */
+  .k-stage {
+    position: relative;
+    height: 280px;
+    background: #F4F4F2;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .k-stage .hint {
+    position: absolute; top: 18px; left: 22px; z-index: 5;
+    font-family: var(--mono); font-size: 0.66rem; color: var(--mute);
+  }
+
+  .spring-line {
+    position: absolute;
+    left: 0;
+    transform-origin: center center;
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+    text-transform: uppercase;
+    font-size: clamp(22px, 3.2vw, 32px);
+    line-height: 0.9;
+    width: max-content;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    will-change: transform;
+  }
+  .spring-line-1-part,
+  .spring-line-2-part {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .spring-line-1-part::before,
+  .spring-line-2-part::before {
+    content: "";
+    display: block;
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    background: currentColor;
+    /* star via CSS, no external SVG */
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  }
+  .spring-line-1 {
+    background-color: var(--k-accent);
+    z-index: 2;
+    color: var(--ink);
+    bottom: 100px;
+    animation: springLine 25s linear infinite;
+  }
+  .spring-line-2 {
+    bottom: 50px;
+    background-color: var(--k-blue);
+    color: #fff;
+    z-index: 1;
+    animation: springLine2 25s linear infinite;
+  }
+  @keyframes springLine {
+    0%   { transform: translateX(-10%) rotate(2deg) translateY(0%); }
+    100% { transform: translateX(-50%) rotate(2deg) translateY(-106%); }
+  }
+  @keyframes springLine2 {
+    0%   { transform: translateX(-50%) rotate(-5deg) translateY(0%); }
+    100% { transform: translateX(0%) rotate(-5deg) translateY(-268%); }
+  }
+
+  /* ═══════════ B · BLOOM TWIN (same mechanics, brand colors) ═══════════ */
+  .b-stage {
+    position: relative;
+    height: 280px;
+    background: #FAF8F5;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .b-stage .hint {
+    position: absolute; top: 18px; left: 22px; z-index: 5;
+    font-family: var(--mono); font-size: 0.66rem; color: var(--mute);
+  }
+  .bloom-line-1 {
+    background: var(--terra);
+    color: #fff;
+    bottom: 100px;
+    z-index: 2;
+    animation: springLine 25s linear infinite;
+  }
+  .bloom-line-2 {
+    background: var(--bloom-ink);
+    color: #fff;
+    bottom: 50px;
+    z-index: 1;
+    animation: springLine2 25s linear infinite;
+  }
+  .bloom-line-1 .spring-line-1-part::before,
+  .bloom-line-2 .spring-line-2-part::before {
+    background: currentColor;
+  }
+
+  /* ═══════════ C · OUR CURRENT (from test-dynamic) ═══════════ */
+  .our-stage {
+    background: #F6F6F4;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 0;
+    overflow: hidden;
+  }
+  .marquee-wrap { position: relative; padding: 0; overflow: hidden; }
+  .mq { display: flex; overflow: hidden; width: 100%; }
+  .mq-track {
+    display: flex; flex-shrink: 0;
+    animation: mq var(--dur, 30s) linear infinite;
+    will-change: transform;
+  }
+  .mq.right .mq-track { animation-direction: reverse; }
+  @keyframes mq {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .mq-inner { display: flex; align-items: center; flex-shrink: 0; }
+  .mq-item {
+    display: flex; align-items: center; gap: 14px;
+    font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;
+    padding: 0 18px; font-size: 1rem;
+  }
+  .mq-item .star { font-family: var(--mono); color: var(--terra); }
+  .mq-row-1 { background: var(--bloom-ink); color: #fff; transform: rotate(-1.2deg); padding: 14px 0; }
+  .mq-row-2 { background: var(--terra); color: #fff; transform: rotate(0.8deg); margin-top: -12px; padding: 14px 0; }
+  .mq-row-3 {
+    background: #fff; color: var(--bloom-ink);
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    transform: rotate(-0.6deg); margin-top: -12px; padding: 14px 0;
+  }
+
+  /* ═══════════ D · C language as glass bubbles ═══════════
+     Saturated glass (not pale), full-bleed edges (no side fade).
+     Glass = highlight rim + blur + specular, not low-alpha wash. */
+  .d-stage {
+    position: relative;
+    background: #F6F6F4;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 0 36px;
+    overflow: hidden;
+  }
+  /* no side dissolve */
+
+  .d-wrap {
+    position: relative;
+    padding: 4px 0;
+    contain: layout style;
+  }
+  .d-wrap .mq {
+    overflow: hidden;
+    margin: 0 28px;
+    width: calc(100% - 56px);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+  .d-wrap .mq-track {
+    display: flex;
+    flex-shrink: 0;
+    animation: d-mq var(--dur, 28s) linear infinite;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+  .d-wrap .mq.right .mq-track { animation-direction: reverse; }
+  @keyframes d-mq {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+  }
+
+  /* long glass bubble: solid-ish color + glass chrome */
+  .d-band {
+    position: relative;
+    z-index: 1;
+    padding: 15px 0;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    backdrop-filter: blur(18px) saturate(1.6);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.55) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.06) inset,
+      0 12px 32px rgba(24, 24, 27, 0.12);
+    isolation: isolate;
+  }
+  .d-band .mq-item {
+    position: relative;
+    z-index: 3;
+    font-size: 1.02rem;
+    letter-spacing: -0.025em;
+    padding: 0 20px;
+  }
+  .d-band .mq-item .star {
+    display: inline-block;
+    opacity: 1;
+  }
+
+  .d-row-1 {
+    color: #fff;
+    /* near-solid ink with glass rim, not pale */
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 48%),
+      rgba(24, 24, 27, 0.92);
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: rotate(-1.35deg);
+    z-index: 3;
+  }
+  .d-row-1 .star { color: #E8A070; }
+
+  .d-row-2 {
+    color: #fff;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 50%),
+      rgba(199, 107, 71, 0.9);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: rotate(0.95deg);
+    margin-top: -14px;
+    z-index: 2;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.45) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.08) inset,
+      0 14px 36px rgba(199, 107, 71, 0.28);
+  }
+  .d-row-2 .star { color: #FFE2C8; }
+
+  .d-row-3 {
+    color: var(--bloom-ink);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.55) 100%),
+      rgba(246, 246, 244, 0.88);
+    border-color: rgba(255, 255, 255, 0.85);
+    transform: rotate(-0.7deg);
+    margin-top: -14px;
+    z-index: 1;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 10px 28px rgba(24, 24, 27, 0.08);
+  }
+  .d-row-3 .star { color: var(--terra); }
+
+  .verdict {
+    margin-top: 48px;
+    padding: 22px 24px;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    background: #FAFAF8;
+  }
+  .verdict h2 { font-size: 1rem; font-weight: 800; margin-bottom: 10px; }
+  .verdict ul { margin-left: 1.1em; color: var(--mute); font-size: 0.9rem; line-height: 1.55; }
+  .verdict li { margin: 6px 0; }
+  .verdict li strong { color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spring-line, .mq-track, .d-wrap .mq-track { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div>
+    <h1>Тест бегущих строк · white sheet</h1>
+    <p>A Kutuzova · B spring+Bloom · C current · <strong>D = C + seasoning</strong></p>
+  </div>
+  <a href="test-dynamic.html">← test-dynamic</a>
+</header>
+
+<main class="sheet">
+  <p class="note">
+    Референс: <strong>kutuzovaschool.ru</strong> —
+    <code>#for-who .spring-line-1 / .spring-line-2</code>.
+    Ключевое отличие от наших: <strong>absolute + rotate в keyframes + translateY</strong>
+    (полосы «плывут» и слегка уезжают по диагонали), а не просто горизонтальный track.
+  </p>
+
+  <!-- A -->
+  <div class="lab-title"><span>A</span> · как у Кутузовой (цвета 1:1)</div>
+  <div class="k-stage" id="for-who-demo">
+    <div class="hint">spring-line-1 lime · spring-line-2 blue · rotate ±</div>
+
+    <div class="spring-line spring-line-1">
+      <span class="spring-line-1-part">Поддержка</span>
+      <span class="spring-line-1-part">Дизайн</span>
+      <span class="spring-line-1-part">Рост</span>
+      <span class="spring-line-1-part">Поддержка</span>
+      <span class="spring-line-1-part">Дизайн</span>
+      <span class="spring-line-1-part">Рост</span>
+      <span class="spring-line-1-part">Поддержка</span>
+      <span class="spring-line-1-part">Дизайн</span>
+      <span class="spring-line-1-part">Рост</span>
+      <span class="spring-line-1-part">Поддержка</span>
+      <span class="spring-line-1-part">Дизайн</span>
+      <span class="spring-line-1-part">Рост</span>
+      <span class="spring-line-1-part">Поддержка</span>
+      <span class="spring-line-1-part">Дизайн</span>
+      <span class="spring-line-1-part">Рост</span>
+      <span class="spring-line-1-part">Поддержка</span>
+      <span class="spring-line-1-part">Дизайн</span>
+      <span class="spring-line-1-part">Рост</span>
+    </div>
+
+    <div class="spring-line spring-line-2">
+      <span class="spring-line-2-part">Поддержка</span>
+      <span class="spring-line-2-part">Дизайн</span>
+      <span class="spring-line-2-part">Рост</span>
+      <span class="spring-line-2-part">Поддержка</span>
+      <span class="spring-line-2-part">Дизайн</span>
+      <span class="spring-line-2-part">Рост</span>
+      <span class="spring-line-2-part">Поддержка</span>
+      <span class="spring-line-2-part">Дизайн</span>
+      <span class="spring-line-2-part">Рост</span>
+      <span class="spring-line-2-part">Поддержка</span>
+      <span class="spring-line-2-part">Дизайн</span>
+      <span class="spring-line-2-part">Рост</span>
+      <span class="spring-line-2-part">Поддержка</span>
+      <span class="spring-line-2-part">Дизайн</span>
+      <span class="spring-line-2-part">Рост</span>
+      <span class="spring-line-2-part">Поддержка</span>
+      <span class="spring-line-2-part">Дизайн</span>
+      <span class="spring-line-2-part">Рост</span>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="lab-title"><span>B</span> · та же механика, палитра Bloom (terra + ink)</div>
+  <div class="b-stage">
+    <div class="hint">слова под CRM · без «Дизайн/Рост»</div>
+
+    <div class="spring-line bloom-line-1">
+      <span class="spring-line-1-part">Заказы</span>
+      <span class="spring-line-1-part">Flowwow</span>
+      <span class="spring-line-1-part">Чаты</span>
+      <span class="spring-line-1-part">Витрина</span>
+      <span class="spring-line-1-part">Доставка</span>
+      <span class="spring-line-1-part">Заказы</span>
+      <span class="spring-line-1-part">Flowwow</span>
+      <span class="spring-line-1-part">Чаты</span>
+      <span class="spring-line-1-part">Витрина</span>
+      <span class="spring-line-1-part">Доставка</span>
+      <span class="spring-line-1-part">Заказы</span>
+      <span class="spring-line-1-part">Flowwow</span>
+      <span class="spring-line-1-part">Чаты</span>
+      <span class="spring-line-1-part">Витрина</span>
+      <span class="spring-line-1-part">Доставка</span>
+      <span class="spring-line-1-part">Заказы</span>
+      <span class="spring-line-1-part">Flowwow</span>
+      <span class="spring-line-1-part">Чаты</span>
+    </div>
+
+    <div class="spring-line bloom-line-2">
+      <span class="spring-line-2-part">WhatsApp</span>
+      <span class="spring-line-2-part">Telegram</span>
+      <span class="spring-line-2-part">MAX</span>
+      <span class="spring-line-2-part">Аналитика</span>
+      <span class="spring-line-2-part">Статусы</span>
+      <span class="spring-line-2-part">WhatsApp</span>
+      <span class="spring-line-2-part">Telegram</span>
+      <span class="spring-line-2-part">MAX</span>
+      <span class="spring-line-2-part">Аналитика</span>
+      <span class="spring-line-2-part">Статусы</span>
+      <span class="spring-line-2-part">WhatsApp</span>
+      <span class="spring-line-2-part">Telegram</span>
+      <span class="spring-line-2-part">MAX</span>
+      <span class="spring-line-2-part">Аналитика</span>
+      <span class="spring-line-2-part">Статусы</span>
+      <span class="spring-line-2-part">WhatsApp</span>
+      <span class="spring-line-2-part">Telegram</span>
+      <span class="spring-line-2-part">MAX</span>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="lab-title"><span>C</span> · как сейчас в test-dynamic (3 полосы, горизонтальный track)</div>
+  <div class="our-stage">
+    <div class="marquee-wrap">
+      <div class="mq left mq-row-1">
+        <div class="mq-track" style="--dur: 26s">
+          <div class="mq-inner">
+            <span class="mq-item">Заказы <span class="star">✦</span></span>
+            <span class="mq-item">Flowwow <span class="star">✦</span></span>
+            <span class="mq-item">Чаты <span class="star">✦</span></span>
+            <span class="mq-item">Аналитика <span class="star">✦</span></span>
+            <span class="mq-item">Витрина <span class="star">✦</span></span>
+            <span class="mq-item">Курьеры <span class="star">✦</span></span>
+          </div>
+          <div class="mq-inner" aria-hidden="true">
+            <span class="mq-item">Заказы <span class="star">✦</span></span>
+            <span class="mq-item">Flowwow <span class="star">✦</span></span>
+            <span class="mq-item">Чаты <span class="star">✦</span></span>
+            <span class="mq-item">Аналитика <span class="star">✦</span></span>
+            <span class="mq-item">Витрина <span class="star">✦</span></span>
+            <span class="mq-item">Курьеры <span class="star">✦</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="mq right mq-row-2">
+        <div class="mq-track" style="--dur: 20s">
+          <div class="mq-inner">
+            <span class="mq-item">WhatsApp <span class="star">✦</span></span>
+            <span class="mq-item">Telegram <span class="star">✦</span></span>
+            <span class="mq-item">MAX <span class="star">✦</span></span>
+            <span class="mq-item">Статусы <span class="star">✦</span></span>
+            <span class="mq-item">Уведомления <span class="star">✦</span></span>
+            <span class="mq-item">Отчёты <span class="star">✦</span></span>
+          </div>
+          <div class="mq-inner" aria-hidden="true">
+            <span class="mq-item">WhatsApp <span class="star">✦</span></span>
+            <span class="mq-item">Telegram <span class="star">✦</span></span>
+            <span class="mq-item">MAX <span class="star">✦</span></span>
+            <span class="mq-item">Статусы <span class="star">✦</span></span>
+            <span class="mq-item">Уведомления <span class="star">✦</span></span>
+            <span class="mq-item">Отчёты <span class="star">✦</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="mq left mq-row-3">
+        <div class="mq-track" style="--dur: 34s">
+          <div class="mq-inner">
+            <span class="mq-item">Мира 14 <span class="star">✦</span></span>
+            <span class="mq-item">Ленина 92 <span class="star">✦</span></span>
+            <span class="mq-item">Рижская 8 <span class="star">✦</span></span>
+            <span class="mq-item">+12 точек <span class="star">✦</span></span>
+            <span class="mq-item">всё под контролем <span class="star">✦</span></span>
+            <span class="mq-item">витрина едина <span class="star">✦</span></span>
+          </div>
+          <div class="mq-inner" aria-hidden="true">
+            <span class="mq-item">Мира 14 <span class="star">✦</span></span>
+            <span class="mq-item">Ленина 92 <span class="star">✦</span></span>
+            <span class="mq-item">Рижская 8 <span class="star">✦</span></span>
+            <span class="mq-item">+12 точек <span class="star">✦</span></span>
+            <span class="mq-item">всё под контролем <span class="star">✦</span></span>
+            <span class="mq-item">витрина едина <span class="star">✦</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D -->
+  <div class="lab-title"><span>D</span> · язык C · длинные полупрозрачные пузыри (без лагов на hover)</div>
+  <div class="d-stage">
+    <div class="d-wrap">
+      <div class="mq left d-band d-row-1">
+        <div class="mq-track" style="--dur: 24s">
+          <div class="mq-inner">
+            <span class="mq-item">Заказы <span class="star">✦</span></span>
+            <span class="mq-item">Flowwow <span class="star">✦</span></span>
+            <span class="mq-item">Чаты <span class="star">✦</span></span>
+            <span class="mq-item">Аналитика <span class="star">✦</span></span>
+            <span class="mq-item">Витрина <span class="star">✦</span></span>
+            <span class="mq-item">Курьеры <span class="star">✦</span></span>
+          </div>
+          <div class="mq-inner" aria-hidden="true">
+            <span class="mq-item">Заказы <span class="star">✦</span></span>
+            <span class="mq-item">Flowwow <span class="star">✦</span></span>
+            <span class="mq-item">Чаты <span class="star">✦</span></span>
+            <span class="mq-item">Аналитика <span class="star">✦</span></span>
+            <span class="mq-item">Витрина <span class="star">✦</span></span>
+            <span class="mq-item">Курьеры <span class="star">✦</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="mq right d-band d-row-2">
+        <div class="mq-track" style="--dur: 18s">
+          <div class="mq-inner">
+            <span class="mq-item">WhatsApp <span class="star">✦</span></span>
+            <span class="mq-item">Telegram <span class="star">✦</span></span>
+            <span class="mq-item">MAX <span class="star">✦</span></span>
+            <span class="mq-item">Статусы <span class="star">✦</span></span>
+            <span class="mq-item">Уведомления <span class="star">✦</span></span>
+            <span class="mq-item">Отчёты <span class="star">✦</span></span>
+          </div>
+          <div class="mq-inner" aria-hidden="true">
+            <span class="mq-item">WhatsApp <span class="star">✦</span></span>
+            <span class="mq-item">Telegram <span class="star">✦</span></span>
+            <span class="mq-item">MAX <span class="star">✦</span></span>
+            <span class="mq-item">Статусы <span class="star">✦</span></span>
+            <span class="mq-item">Уведомления <span class="star">✦</span></span>
+            <span class="mq-item">Отчёты <span class="star">✦</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="mq left d-band d-row-3">
+        <div class="mq-track" style="--dur: 30s">
+          <div class="mq-inner">
+            <span class="mq-item">Мира 14 <span class="star">✦</span></span>
+            <span class="mq-item">Ленина 92 <span class="star">✦</span></span>
+            <span class="mq-item">Рижская 8 <span class="star">✦</span></span>
+            <span class="mq-item">+12 точек <span class="star">✦</span></span>
+            <span class="mq-item">всё под контролем <span class="star">✦</span></span>
+            <span class="mq-item">витрина едина <span class="star">✦</span></span>
+          </div>
+          <div class="mq-inner" aria-hidden="true">
+            <span class="mq-item">Мира 14 <span class="star">✦</span></span>
+            <span class="mq-item">Ленина 92 <span class="star">✦</span></span>
+            <span class="mq-item">Рижская 8 <span class="star">✦</span></span>
+            <span class="mq-item">+12 точек <span class="star">✦</span></span>
+            <span class="mq-item">всё под контролем <span class="star">✦</span></span>
+            <span class="mq-item">витрина едина <span class="star">✦</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <h2>Короткий разбор</h2>
+    <ul>
+      <li><strong>D</strong> — pill-пузыри с <em>glass chrome</em> (блик + rim + blur), цвет насыщенный, без бледной прозрачности и без dissolve по бокам.</li>
+      <li><strong>A/B (spring)</strong> — «дороже» и живее: наклон в keyframes + вертикальный дрейф. Хорошо как разделитель секций (между hero и неделями / между неделями и CTA).</li>
+      <li><strong>C (наши)</strong> — спокойнее, читаемее, уже в бренде. Чуть «лендинговее», меньше «школьного» вау.</li>
+      <li>Если нравится C — бери <strong>D</strong> в test-dynamic: узнаваемый Bloom, чуть больше жизни, без чужого lime/blue spring.</li>
+      <li>Не мешать spring-line <em>внутри</em> sticky-карточек недель — только между блоками, иначе шум.</li>
+    </ul>
+  </div>
+</main>
+
+</body>
+</html>
