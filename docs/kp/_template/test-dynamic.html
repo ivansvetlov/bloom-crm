@@ -318,6 +318,10 @@
     align-items: stretch;
   }
   .wk-visual > * { flex: 1; min-height: 200px; }
+  .wk-visual.has-cta {
+    flex-direction: column;
+    gap: 16px;
+  }
 
   .ui-mock {
     border-radius: 14px;
@@ -2144,10 +2148,9 @@
             </div>
             <div class="wk-meta">
               <div class="mk plum">+ договор с гарантиями</div>
-              <a class="mk terra" href="security.html" style="text-decoration:none">открыть страницу защиты →</a>
             </div>
           </div>
-          <div class="wk-visual">
+          <div class="wk-visual has-cta">
             <div class="ui-mock">
               <div class="chrome"><i></i><i></i><i></i><span>защита покупателя + SLA · bloom</span></div>
               <div class="pane">
@@ -2174,9 +2177,9 @@
                     </div>
                   </div>
                 </div>
-                <a href="security.html" class="pdp-cta" style="display:flex;text-decoration:none;margin-top:4px;text-align:center;justify-content:center">Подробнее о защите →</a>
               </div>
             </div>
+            <a href="security.html" class="wk-bottom-cta">Подробнее о защите →</a>
           </div>
         </div>
       </div></div>

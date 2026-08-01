@@ -318,6 +318,50 @@
     align-items: stretch;
   }
   .wk-visual > * { flex: 1; min-height: 200px; }
+  .wk-visual.has-cta {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .wk-visual.has-cta > .ui-mock {
+    flex: 1 1 auto;
+    min-height: 180px;
+  }
+  .wk-visual.has-cta > .wk-bottom-cta {
+    flex: 0 0 auto;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-sizing: border-box;
+    padding: 16px 28px;
+    min-height: 54px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #e06b4a 0%, #c45c3e 55%, #a84832 100%);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.98rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    text-align: center;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.22) inset,
+      0 10px 28px rgba(196, 92, 62, 0.38);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  }
+  .wk-visual.has-cta > .wk-bottom-cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.28) inset,
+      0 14px 32px rgba(196, 92, 62, 0.48);
+  }
+  .wk-visual.has-cta > .wk-bottom-cta:active {
+    transform: translateY(0);
+    filter: brightness(0.98);
+  }
 
   .ui-mock {
     border-radius: 14px;
@@ -2144,10 +2188,9 @@
             </div>
             <div class="wk-meta">
               <div class="mk plum">+ договор с гарантиями</div>
-              <a class="mk terra" href="security.html" style="text-decoration:none">открыть страницу защиты →</a>
             </div>
           </div>
-          <div class="wk-visual">
+          <div class="wk-visual has-cta">
             <div class="ui-mock">
               <div class="chrome"><i></i><i></i><i></i><span>защита покупателя + SLA · bloom</span></div>
               <div class="pane">
@@ -2174,9 +2217,9 @@
                     </div>
                   </div>
                 </div>
-                <a href="security.html" class="pdp-cta" style="display:flex;text-decoration:none;margin-top:4px;text-align:center;justify-content:center">Подробнее о защите →</a>
               </div>
             </div>
+            <a href="security.html" class="wk-bottom-cta">Подробнее о защите →</a>
           </div>
         </div>
       </div></div>
