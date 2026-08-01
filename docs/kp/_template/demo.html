@@ -482,10 +482,6 @@
 
     <!-- ═════════════ 01 · OVERVIEW ═════════════ -->
     <section data-section="overview">
-      <div class="sec-head"><span class="sec-num">01</span><span class="sec-tag">сегодня</span></div>
-      <h2 class="sec-h">Как идёт день</h2>
-      <p class="sec-lede">Сегодня <strong id="ovDay"></strong>. Цифры меняются, когда вы двигаете заказы по статусам.</p>
-
       <div class="stat-grid">
         <div class="stat">
           <div class="stat-label">Новые заказы</div>
@@ -755,9 +751,6 @@
   var termLog = $('#termLog');
   var toastEl = $('#toast');
   var toastTimer = null;
-
-  var dayText = new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
-  $('#ovDay').textContent = dayText;
 
   /* ────────────────────────── RENDER: KANBAN ────────────────────────── */
   function cardHtml(o) {
