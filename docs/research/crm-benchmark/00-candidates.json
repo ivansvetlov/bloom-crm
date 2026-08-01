@@ -1,0 +1,56 @@
+[
+  {
+    "id": "erpnext",
+    "name": "ERPNext",
+    "repo": "https://github.com/frappe/erpnext",
+    "stars": 37494,
+    "type": "web",
+    "stack": "Python (Frappe) / Vue (Frappe UI) / MariaDB",
+    "relevance": "Multi-company ERP with sales orders, stock, shipping, CRM module — strongest open ops model for multi-shop flower fulfillment."
+  },
+  {
+    "id": "dolibarr",
+    "name": "Dolibarr",
+    "repo": "https://github.com/Dolibarr/dolibarr",
+    "stars": 7466,
+    "type": "web",
+    "stack": "PHP / JavaScript / MySQL|MariaDB|PostgreSQL",
+    "relevance": "Shop-scale ERP/CRM: customer orders, warehouses, POS, invoices; multi-company via module — practical retail order/status reference."
+  },
+  {
+    "id": "chatwoot",
+    "name": "Chatwoot",
+    "repo": "https://github.com/chatwoot/chatwoot",
+    "stars": 35293,
+    "type": "web",
+    "stack": "Ruby on Rails / Vue.js / PostgreSQL / Redis",
+    "relevance": "Omni-channel desk (WhatsApp, Telegram, email, social) — best open reference for Bloom WA/TG/MAX unified inbox."
+  },
+  {
+    "id": "twenty",
+    "name": "Twenty",
+    "repo": "https://github.com/twentyhq/twenty",
+    "stars": 54026,
+    "type": "web",
+    "stack": "TypeScript / NestJS / React / PostgreSQL / Redis",
+    "relevance": "Modern Salesforce-class CRM: custom objects, workflows, multi-workspace, rich UI — top benchmark for CRM UX and status modeling."
+  },
+  {
+    "id": "krayin",
+    "name": "Krayin CRM",
+    "repo": "https://github.com/krayin/laravel-crm",
+    "stars": 23571,
+    "type": "web",
+    "stack": "Laravel (PHP) / Vue.js / MySQL",
+    "relevance": "Lifecycle CRM with modular design, multi-tenant SaaS path, and WhatsApp/VoIP extensions — multi-entity + messaging patterns."
+  },
+  {
+    "id": "espocrm",
+    "name": "EspoCRM",
+    "repo": "https://github.com/espocrm/espocrm",
+    "stars": 3183,
+    "type": "web",
+    "stack": "PHP REST API / SPA (JS/TS) / MySQL|MariaDB|PostgreSQL",
+    "relevance": "Mature customizable CRM (entities, workflows, cases, email, kanban) — blueprint for order/status entity modeling without full ERP."
+  }
+]

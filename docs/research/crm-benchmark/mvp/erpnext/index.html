@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ERPNext structure MVP · Bloom research</title>
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --surface: #ffffff;
+      --sidebar: #1a1a2e;
+      --sidebar-hover: #252542;
+      --sidebar-active: #2d2d52;
+      --accent: #2490ef;
+      --accent-soft: #e8f4fd;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #10b981;
+      --success-bg: #d1fae5;
+      --warning: #f59e0b;
+      --warning-bg: #fef3c7;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --info: #3b82f6;
+      --info-bg: #dbeafe;
+      --purple: #8b5cf6;
+      --purple-bg: #ede9fe;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+      --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    /* —— Sidebar (Desk-like) —— */
+    .sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: var(--sidebar);
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      z-index: 20;
+    }
+    .sidebar-brand {
+      padding: 18px 16px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-mark {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2490ef, #8b5cf6);
+      display: grid; place-items: center;
+      font-weight: 700; color: #fff; font-size: 13px;
+    }
+    .brand-text { font-weight: 600; font-size: 15px; letter-spacing: -.02em; }
+    .brand-sub { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+
+    .sidebar-search {
+      padding: 12px 12px 8px;
+    }
+    .sidebar-search input {
+      width: 100%;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #e2e8f0;
+      font-size: 13px;
+      outline: none;
+    }
+    .sidebar-search input::placeholder { color: #64748b; }
+
+    .nav-section {
+      padding: 8px 8px 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .nav-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #64748b;
+      padding: 10px 10px 6px;
+      font-weight: 600;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #cbd5e1;
+      font-size: 13.5px;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      transition: background .12s;
+    }
+    .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+    .nav-item.active {
+      background: var(--sidebar-active);
+      color: #fff;
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+    .nav-item .icon {
+      width: 20px; text-align: center; opacity: .85; font-size: 14px;
+    }
+    .nav-item.stub { opacity: .55; }
+    .nav-item .badge-stub {
+      margin-left: auto;
+      font-size: 10px;
+      background: rgba(255,255,255,.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #94a3b8;
+    }
+
+    .sidebar-footer {
+      padding: 12px 14px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    /* —— Main —— */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      height: 100vh;
+    }
+    .topbar {
+      height: 52px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .breadcrumb strong { color: var(--text); font-weight: 600; }
+    .breadcrumb .sep { opacity: .4; }
+    .topbar-spacer { flex: 1; }
+    .mvp-badge {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #5b21b6;
+      background: linear-gradient(90deg, #ede9fe, #e0e7ff);
+      border: 1px solid #c4b5fd;
+      padding: 5px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+      letter-spacing: .01em;
+    }
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #dbeafe;
+      color: #1d4ed8;
+      display: grid; place-items: center;
+      font-weight: 700; font-size: 12px;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px 28px;
+    }
+
+    .page { display: none; animation: fade .18s ease; }
+    .page.active { display: block; }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      line-height: 1.2;
+    }
+    .page-header .subtitle {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .page-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .12s, border-color .12s, box-shadow .12s;
+      font-family: inherit;
+    }
+    .btn:hover { background: #f9fafb; border-color: #d1d5db; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #1a7fd4; border-color: #1a7fd4; }
+    .btn-success {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+    .btn-success:hover { background: #059669; }
+    .btn-warning {
+      background: var(--warning);
+      border-color: var(--warning);
+      color: #fff;
+    }
+    .btn-danger {
+      background: #fff;
+      border-color: #fca5a5;
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: var(--danger-bg); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--accent);
+    }
+    .btn-ghost:hover { background: var(--accent-soft); }
+
+    /* Cards / KPI */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .kpi-card .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .kpi-card .value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+    .kpi-card .delta {
+      font-size: 11.5px;
+      margin-top: 4px;
+      color: var(--success);
+    }
+    .kpi-card .delta.down { color: var(--danger); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .card-head {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-head h2 {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .card-body { padding: 0; }
+
+    /* Table */
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table.data th {
+      text-align: left;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 10px 14px;
+      background: #f9fafb;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.data td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    table.data tr:last-child td { border-bottom: none; }
+    table.data tbody tr {
+      cursor: pointer;
+      transition: background .1s;
+    }
+    table.data tbody tr:hover { background: #f8fafc; }
+    table.data tbody tr.selected { background: var(--accent-soft); }
+    .linkish {
+      color: var(--accent);
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .linkish:hover { text-decoration: underline; }
+    .muted { color: var(--text-muted); }
+    .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12.5px; }
+
+    /* Status pills */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .pill-draft { background: #f3f4f6; color: #4b5563; }
+    .pill-open { background: var(--info-bg); color: #1d4ed8; }
+    .pill-progress { background: var(--warning-bg); color: #b45309; }
+    .pill-done { background: var(--success-bg); color: #047857; }
+    .pill-cancel { background: var(--danger-bg); color: #b91c1c; }
+    .pill-hold { background: var(--purple-bg); color: #6d28d9; }
+    .pill-active { background: var(--success-bg); color: #047857; }
+    .pill-inactive { background: #f3f4f6; color: #6b7280; }
+
+    /* Filters bar */
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .filters input, .filters select {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 13px;
+      background: var(--surface);
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+    }
+    .filters input:focus, .filters select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(36,144,239,.15);
+    }
+    .filters input { min-width: 200px; }
+
+    /* Detail form layout (ERPNext form-ish) */
+    .form-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .form-layout { grid-template-columns: 1fr; }
+      .sidebar { width: 64px; min-width: 64px; }
+      .brand-text, .brand-sub, .nav-label, .nav-item span:not(.icon),
+      .nav-item .badge-stub, .sidebar-footer, .sidebar-search { display: none; }
+      .nav-item { justify-content: center; padding: 12px; }
+    }
+    .form-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+    .form-section-title {
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: #fafafa;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 20px;
+      padding: 16px;
+    }
+    .form-grid.full { grid-template-columns: 1fr; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .field .val {
+      font-size: 14px;
+      font-weight: 500;
+      min-height: 22px;
+    }
+    .field .val.em { color: var(--accent); cursor: pointer; }
+
+    .sidebar-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      position: sticky;
+      top: 0;
+    }
+    .sidebar-panel h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .status-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .status-flow .btn { width: 100%; justify-content: center; text-align: center; }
+    .toast-area {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: #111827;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      box-shadow: var(--shadow-md);
+      animation: slideIn .2s ease;
+      max-width: 320px;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .timeline {
+      list-style: none;
+      padding: 0 0 0 4px;
+    }
+    .timeline li {
+      position: relative;
+      padding: 0 0 14px 18px;
+      border-left: 2px solid var(--border);
+      font-size: 12.5px;
+    }
+    .timeline li:last-child { border-left-color: transparent; padding-bottom: 0; }
+    .timeline li::before {
+      content: "";
+      position: absolute;
+      left: -5px; top: 4px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .timeline .t-time { color: var(--text-muted); font-size: 11px; }
+
+    .items-table td, .items-table th { font-size: 13px; }
+    .qty-badge {
+      display: inline-block;
+      min-width: 28px;
+      text-align: center;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #f3f4f6;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .qty-badge.low { background: var(--warning-bg); color: #b45309; }
+    .qty-badge.out { background: var(--danger-bg); color: #b91c1c; }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .module-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: box-shadow .15s, border-color .15s;
+      box-shadow: var(--shadow);
+    }
+    .module-tile:hover {
+      border-color: #bfdbfe;
+      box-shadow: var(--shadow-md);
+    }
+    .module-tile .m-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: grid; place-items: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+      background: var(--accent-soft);
+    }
+    .module-tile h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .module-tile p { font-size: 12px; color: var(--text-muted); }
+
+    .empty-stub {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-stub h2 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+    .empty-stub p { max-width: 420px; margin: 0 auto 16px; font-size: 13.5px; }
+
+    .site-footer {
+      text-align: center;
+      padding: 8px 16px 16px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .site-footer em { font-style: normal; color: #9ca3af; }
+
+    .list-meta { font-size: 12px; color: var(--text-muted); }
+
+    .status-history {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">FW</div>
+      <div>
+        <div class="brand-text">ERPNext Desk</div>
+        <div class="brand-sub">Bloom structure study</div>
+      </div>
+    </div>
+    <div class="sidebar-search">
+      <input type="search" placeholder="Поиск (Awesome Bar)…" id="awesomeBar" autocomplete="off" />
+    </div>
+    <nav class="nav-section" id="mainNav">
+      <div class="nav-label">Рабочий стол</div>
+      <button type="button" class="nav-item active" data-route="dashboard">
+        <span class="icon">⌂</span><span>Dashboard</span>
+      </button>
+
+      <div class="nav-label">CRM</div>
+      <button type="button" class="nav-item" data-route="customers">
+        <span class="icon">👥</span><span>Клиенты</span>
+      </button>
+      <button type="button" class="nav-item" data-route="leads">
+        <span class="icon">◎</span><span>Лиды</span>
+      </button>
+
+      <div class="nav-label">Selling</div>
+      <button type="button" class="nav-item" data-route="orders">
+        <span class="icon">📋</span><span>Заказы (Sales Order)</span>
+      </button>
+      <button type="button" class="nav-item" data-route="order-detail" id="navOrderDetail" style="display:none">
+        <span class="icon">→</span><span>SO detail</span>
+      </button>
+
+      <div class="nav-label">Stock</div>
+      <button type="button" class="nav-item" data-route="items">
+        <span class="icon">📦</span><span>Номенклатура</span>
+      </button>
+
+      <div class="nav-label">Модули (stubs)</div>
+      <button type="button" class="nav-item stub" data-route="buying">
+        <span class="icon">🛒</span><span>Buying</span>
+        <span class="badge-stub">stub</span>
+      </button>
+      <button type="button" class="nav-item stub" data-route="accounting">
+        <span class="icon">₽</span><span>Accounting</span>
+        <span class="badge-stub">stub</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      Модульная desk-навигация как в ERPNext.<br />
+      Только структура · mock data.
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="breadcrumb" id="breadcrumb">
+        <span>Home</span><span class="sep">/</span><strong>Dashboard</strong>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="mvp-badge">MVP · ERPNext structure → web</div>
+      <div class="user-chip">
+        <div class="avatar">B</div>
+        <span>Bloom Research</span>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="subtitle">Сводка по продажам, CRM и складу · mock KPI</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn" id="btnRefreshDash">Обновить</button>
+          </div>
+        </div>
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Быстрый доступ (модули)</h2>
+          </div>
+          <div class="card-body" style="padding:16px">
+            <div class="module-grid">
+              <div class="module-tile" data-go="customers">
+                <div class="m-icon">👥</div>
+                <h3>CRM · Клиенты</h3>
+                <p>Customer master, контакты, история заказов</p>
+              </div>
+              <div class="module-tile" data-go="orders">
+                <div class="m-icon">📋</div>
+                <h3>Selling · Sales Order</h3>
+                <p>Заказы, статусы, workflow Submit → Deliver</p>
+              </div>
+              <div class="module-tile" data-go="items">
+                <div class="m-icon">📦</div>
+                <h3>Stock · Item</h3>
+                <p>Номенклатура, остатки, UOM</p>
+              </div>
+              <div class="module-tile" data-go="buying">
+                <div class="m-icon">🛒</div>
+                <h3>Buying</h3>
+                <p>Закупки · stub для Bloom research</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Открытые заказы</h2>
+            <button type="button" class="btn btn-ghost btn-sm" data-go="orders">Все заказы →</button>
+          </div>
+          <div class="card-body">
+            <table class="data" id="dashOrdersTable">
+              <thead>
+                <tr>
+                  <th>№</th><th>Клиент</th><th>Дата</th><th>Сумма</th><th>Статус</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS -->
+      <section class="page" id="page-customers">
+        <div class="page-header">
+          <div>
+            <h1>Клиенты</h1>
+            <p class="subtitle">Customer · CRM module · List view</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-primary" id="btnAddCustomer">+ Новый клиент</button>
+          </div>
+        </div>
+        <div class="filters">
+          <input type="search" id="customerSearch" placeholder="Поиск по имени, городу, телефону…" />
+          <select id="customerFilter">
+            <option value="all">Все статусы</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <span class="list-meta" id="customerCount"></span>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <table class="data" id="customersTable">
+              <thead>
+                <tr>
+                  <th>Клиент</th>
+                  <th>Тип</th>
+                  <th>Город</th>
+                  <th>Телефон</th>
+                  <th>Заказов</th>
+                  <th>Статус</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEADS (light) -->
+      <section class="page" id="page-leads">
+        <div class="page-header">
+          <div>
+            <h1>Лиды</h1>
+            <p class="subtitle">Lead · CRM · упрощённый list</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <table class="data" id="leadsTable">
+              <thead>
+                <tr>
+                  <th>Лид</th><th>Источник</th><th>Статус</th><th>Ответственный</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="linkish">ИП Ромашка</td><td>Website</td><td><span class="pill pill-open">Open</span></td><td>Менеджер А.</td></tr>
+                <tr><td class="linkish">Цветы24</td><td>Referral</td><td><span class="pill pill-progress">Replied</span></td><td>Менеджер Б.</td></tr>
+                <tr><td class="linkish">Event Decor</td><td>Cold Call</td><td><span class="pill pill-done">Converted</span></td><td>Менеджер А.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ORDERS LIST -->
+      <section class="page" id="page-orders">
+        <div class="page-header">
+          <div>
+            <h1>Заказы (Sales Order)</h1>
+            <p class="subtitle">Selling · document list · клик → form / workflow</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-primary" id="btnNewOrder">+ Sales Order</button>
+          </div>
+        </div>
+        <div class="filters">
+          <input type="search" id="orderSearch" placeholder="Поиск SO-… / клиент…" />
+          <select id="orderStatusFilter">
+            <option value="all">Все статусы</option>
+            <option value="Draft">Draft</option>
+            <option value="To Deliver and Bill">To Deliver and Bill</option>
+            <option value="To Deliver">To Deliver</option>
+            <option value="To Bill">To Bill</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="On Hold">On Hold</option>
+          </select>
+          <span class="list-meta" id="orderCount"></span>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <table class="data" id="ordersTable">
+              <thead>
+                <tr>
+                  <th>Документ</th>
+                  <th>Клиент</th>
+                  <th>Дата</th>
+                  <th>Доставка</th>
+                  <th>Сумма</th>
+                  <th>Статус</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ORDER DETAIL -->
+      <section class="page" id="page-order-detail">
+        <div class="page-header">
+          <div>
+            <h1 id="odTitle">Sales Order</h1>
+            <p class="subtitle" id="odSubtitle">Selling · Form view · status workflow</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn" data-go="orders">← К списку</button>
+            <button type="button" class="btn" id="btnPrint">Печать</button>
+          </div>
+        </div>
+        <div class="form-layout">
+          <div>
+            <div class="form-section">
+              <div class="form-section-title">Основное</div>
+              <div class="form-grid">
+                <div class="field">
+                  <label>Customer</label>
+                  <div class="val em" id="odCustomer">—</div>
+                </div>
+                <div class="field">
+                  <label>Status</label>
+                  <div class="val" id="odStatus">—</div>
+                </div>
+                <div class="field">
+                  <label>Transaction Date</label>
+                  <div class="val" id="odDate">—</div>
+                </div>
+                <div class="field">
+                  <label>Delivery Date</label>
+                  <div class="val" id="odDelivery">—</div>
+                </div>
+                <div class="field">
+                  <label>Company</label>
+                  <div class="val">Bloom Demo LLC</div>
+                </div>
+                <div class="field">
+                  <label>Currency</label>
+                  <div class="val">RUB</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-section">
+              <div class="form-section-title">Позиции (items)</div>
+              <table class="data items-table" id="odItems">
+                <thead>
+                  <tr>
+                    <th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div style="padding:12px 16px;text-align:right;border-top:1px solid var(--border)">
+                <strong>Grand Total: <span id="odTotal" class="mono">0</span> ₽</strong>
+              </div>
+            </div>
+            <div class="form-section">
+              <div class="form-section-title">Доставка / комментарий</div>
+              <div class="form-grid full">
+                <div class="field">
+                  <label>Shipping Address</label>
+                  <div class="val" id="odAddress">—</div>
+                </div>
+                <div class="field">
+                  <label>Notes</label>
+                  <div class="val muted" id="odNotes">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <aside class="sidebar-panel">
+            <h3>Workflow · статусы</h3>
+            <div class="status-flow" id="odActions"></div>
+            <div class="status-history" id="odHistory"></div>
+            <h3 style="margin-top:18px">Activity</h3>
+            <ul class="timeline" id="odTimeline"></ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ITEMS / STOCK -->
+      <section class="page" id="page-items">
+        <div class="page-header">
+          <div>
+            <h1>Номенклатура</h1>
+            <p class="subtitle">Stock · Item · list + остатки (mock)</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-primary" id="btnAddItem">+ Item</button>
+          </div>
+        </div>
+        <div class="filters">
+          <input type="search" id="itemSearch" placeholder="Поиск SKU / название…" />
+          <select id="itemGroupFilter">
+            <option value="all">Все группы</option>
+            <option value="Букеты">Букеты</option>
+            <option value="Цветы">Цветы</option>
+            <option value="Упаковка">Упаковка</option>
+            <option value="Услуги">Услуги</option>
+          </select>
+          <span class="list-meta" id="itemCount"></span>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <table class="data" id="itemsTable">
+              <thead>
+                <tr>
+                  <th>Код</th>
+                  <th>Название</th>
+                  <th>Группа</th>
+                  <th>UOM</th>
+                  <th>Остаток</th>
+                  <th>Цена</th>
+                  <th>Статус</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- BUYING STUB -->
+      <section class="page" id="page-buying">
+        <div class="empty-stub">
+          <h2>Buying · stub</h2>
+          <p>
+            Модуль закупок ERPNext (Purchase Order, Supplier, Receipt).
+            В MVP не раскрыт — важен как сосед Selling/Stock в desk-структуре.
+            Для Bloom: поставщики цветов, приёмка, multi-shop stock.
+          </p>
+          <button type="button" class="btn btn-primary" data-go="dashboard">На Dashboard</button>
+        </div>
+      </section>
+
+      <!-- ACCOUNTING STUB -->
+      <section class="page" id="page-accounting">
+        <div class="empty-stub">
+          <h2>Accounting · stub</h2>
+          <p>
+            Счета, платежи, GL. В ERPNext — полный финансовый контур после Sales Invoice.
+            Для Bloom research: оплаты marketplace vs direct, dual money status.
+          </p>
+          <button type="button" class="btn btn-primary" data-go="dashboard">На Dashboard</button>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <em>Structural study for Bloom CRM · ERPNext desk modules as reference · not a product clone</em>
+      </footer>
+    </div>
+  </div>
+
+  <div class="toast-area" id="toasts"></div>
+
+  <script>
+    /* ========== Mock state (ERPNext-inspired) ========== */
+    const STATE = {
+      customers: [
+        { id: "CUST-001", name: "ООО «Алые паруса»", type: "Company", city: "Москва", phone: "+7 495 100-20-30", orders: 12, status: "Active" },
+        { id: "CUST-002", name: "ИП Смирнова А.В.", type: "Individual", city: "СПб", phone: "+7 812 555-01-02", orders: 5, status: "Active" },
+        { id: "CUST-003", name: "Event Pro", type: "Company", city: "Казань", phone: "+7 843 200-11-22", orders: 3, status: "Active" },
+        { id: "CUST-004", name: "FlowWow Partner Shop", type: "Company", city: "Москва", phone: "+7 999 111-22-33", orders: 48, status: "Active" },
+        { id: "CUST-005", name: "Кафе «Тюльпан»", type: "Company", city: "Екатеринбург", phone: "+7 343 300-40-50", orders: 0, status: "Inactive" },
+        { id: "CUST-006", name: "Мария К.", type: "Individual", city: "Новосибирск", phone: "+7 913 000-00-01", orders: 2, status: "Active" },
+      ],
+      items: [
+        { code: "BQ-ROSE-25", name: "Букет «25 роз»", group: "Букеты", uom: "шт", qty: 18, rate: 4500, status: "Active" },
+        { code: "BQ-MIX-PREM", name: "Микс Premium", group: "Букеты", uom: "шт", qty: 7, rate: 7200, status: "Active" },
+        { code: "FL-ROSE-RED", name: "Роза красная 60см", group: "Цветы", uom: "шт", qty: 240, rate: 120, status: "Active" },
+        { code: "FL-TULIP", name: "Тюльпан микс", group: "Цветы", uom: "шт", qty: 3, rate: 90, status: "Active" },
+        { code: "PK-BOX-M", name: "Коробка M", group: "Упаковка", uom: "шт", qty: 55, rate: 350, status: "Active" },
+        { code: "PK-RIBBON", name: "Лента атлас", group: "Упаковка", uom: "м", qty: 0, rate: 40, status: "Active" },
+        { code: "SVC-DELIV", name: "Доставка город", group: "Услуги", uom: "усл", qty: 999, rate: 500, status: "Active" },
+        { code: "BQ-SPRING", name: "Весенний набор", group: "Букеты", uom: "шт", qty: 12, rate: 3900, status: "Disabled" },
+      ],
+      orders: [
+        {
+          id: "SO-2026-0014",
+          customerId: "CUST-004",
+          customer: "FlowWow Partner Shop",
+          date: "2026-08-01",
+          delivery: "2026-08-01",
+          status: "To Deliver and Bill",
+          address: "Москва, ул. Цветочная, 12, витрина 3",
+          notes: "Marketplace order · dual channel intake",
+          items: [
+            { code: "BQ-ROSE-25", name: "Букет «25 роз»", qty: 2, rate: 4500 },
+            { code: "SVC-DELIV", name: "Доставка город", qty: 1, rate: 500 },
+          ],
+          history: [
+            { at: "2026-08-01 09:12", text: "Создан Draft" },
+            { at: "2026-08-01 09:15", text: "Submit → To Deliver and Bill" },
+          ],
+        },
+        {
+          id: "SO-2026-0013",
+          customerId: "CUST-001",
+          customer: "ООО «Алые паруса»",
+          date: "2026-07-31",
+          delivery: "2026-08-02",
+          status: "To Deliver",
+          address: "Москва, Ленинский пр-т, 45, офис 210",
+          notes: "Корпоратив · согласовать время с ресепшен",
+          items: [
+            { code: "BQ-MIX-PREM", name: "Микс Premium", qty: 5, rate: 7200 },
+            { code: "PK-BOX-M", name: "Коробка M", qty: 5, rate: 350 },
+          ],
+          history: [
+            { at: "2026-07-31 14:00", text: "Draft" },
+            { at: "2026-07-31 14:20", text: "Submit" },
+            { at: "2026-07-31 16:00", text: "Частично выставлен счёт → To Deliver" },
+          ],
+        },
+        {
+          id: "SO-2026-0012",
+          customerId: "CUST-002",
+          customer: "ИП Смирнова А.В.",
+          date: "2026-07-30",
+          delivery: "2026-07-30",
+          status: "Completed",
+          address: "СПб, Невский 100",
+          notes: "Доставлено",
+          items: [
+            { code: "BQ-ROSE-25", name: "Букет «25 роз»", qty: 1, rate: 4500 },
+          ],
+          history: [
+            { at: "2026-07-30 10:00", text: "Draft → Submit" },
+            { at: "2026-07-30 12:40", text: "Deliver + Bill → Completed" },
+          ],
+        },
+        {
+          id: "SO-2026-0011",
+          customerId: "CUST-003",
+          customer: "Event Pro",
+          date: "2026-07-29",
+          delivery: "2026-08-05",
+          status: "On Hold",
+          address: "Казань, Кремлёвская 1",
+          notes: "Ждём подтверждение площадки",
+          items: [
+            { code: "FL-ROSE-RED", name: "Роза красная 60см", qty: 100, rate: 120 },
+            { code: "SVC-DELIV", name: "Доставка город", qty: 1, rate: 500 },
+          ],
+          history: [
+            { at: "2026-07-29 11:00", text: "Submit" },
+            { at: "2026-07-29 18:00", text: "Hold" },
+          ],
+        },
+        {
+          id: "SO-2026-0010",
+          customerId: "CUST-006",
+          customer: "Мария К.",
+          date: "2026-07-28",
+          delivery: "2026-07-28",
+          status: "Draft",
+          address: "Новосибирск, Красный пр-т 1",
+          notes: "Клиент уточняет состав",
+          items: [
+            { code: "BQ-SPRING", name: "Весенний набор", qty: 1, rate: 3900 },
+          ],
+          history: [
+            { at: "2026-07-28 19:30", text: "Создан Draft" },
+          ],
+        },
+        {
+          id: "SO-2026-0009",
+          customerId: "CUST-001",
+          customer: "ООО «Алые паруса»",
+          date: "2026-07-25",
+          delivery: "2026-07-26",
+          status: "Cancelled",
+          address: "Москва",
+          notes: "Отмена клиентом",
+          items: [
+            { code: "BQ-MIX-PREM", name: "Микс Premium", qty: 2, rate: 7200 },
+          ],
+          history: [
+            { at: "2026-07-25 09:00", text: "Submit" },
+            { at: "2026-07-25 15:00", text: "Cancelled" },
+          ],
+        },
+      ],
+      selectedOrderId: "SO-2026-0014",
+      route: "dashboard",
+    };
+
+    const STATUS_META = {
+      "Draft": { pill: "pill-draft", label: "Draft" },
+      "To Deliver and Bill": { pill: "pill-open", label: "To Deliver and Bill" },
+      "To Deliver": { pill: "pill-progress", label: "To Deliver" },
+      "To Bill": { pill: "pill-progress", label: "To Bill" },
+      "Completed": { pill: "pill-done", label: "Completed" },
+      "Cancelled": { pill: "pill-cancel", label: "Cancelled" },
+      "On Hold": { pill: "pill-hold", label: "On Hold" },
+    };
+
+    /* Workflow transitions (simplified ERPNext SO) */
+    const TRANSITIONS = {
+      "Draft": [
+        { to: "To Deliver and Bill", label: "Submit", cls: "btn-primary" },
+        { to: "Cancelled", label: "Cancel", cls: "btn-danger" },
+      ],
+      "To Deliver and Bill": [
+        { to: "To Bill", label: "Deliver", cls: "btn-success" },
+        { to: "To Deliver", label: "Create Invoice", cls: "btn-primary" },
+        { to: "Completed", label: "Deliver + Bill", cls: "btn-success" },
+        { to: "On Hold", label: "Hold", cls: "" },
+        { to: "Cancelled", label: "Cancel", cls: "btn-danger" },
+      ],
+      "To Deliver": [
+        { to: "Completed", label: "Deliver", cls: "btn-success" },
+        { to: "On Hold", label: "Hold", cls: "" },
+        { to: "Cancelled", label: "Cancel", cls: "btn-danger" },
+      ],
+      "To Bill": [
+        { to: "Completed", label: "Create Invoice / Bill", cls: "btn-primary" },
+        { to: "On Hold", label: "Hold", cls: "" },
+      ],
+      "On Hold": [
+        { to: "To Deliver and Bill", label: "Resume", cls: "btn-primary" },
+        { to: "Cancelled", label: "Cancel", cls: "btn-danger" },
+      ],
+      "Completed": [],
+      "Cancelled": [],
+    };
+
+    /* ========== Utils ========== */
+    function money(n) {
+      return new Intl.NumberFormat("ru-RU").format(n);
+    }
+    function orderTotal(o) {
+      return o.items.reduce((s, i) => s + i.qty * i.rate, 0);
+    }
+    function statusPill(status) {
+      const m = STATUS_META[status] || { pill: "pill-draft", label: status };
+      return `<span class="pill ${m.pill}">${m.label}</span>`;
+    }
+    function nowStamp() {
+      const d = new Date();
+      const p = (n) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+    function toast(msg) {
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.textContent = msg;
+      document.getElementById("toasts").appendChild(el);
+      setTimeout(() => el.remove(), 2800);
+    }
+
+    /* ========== Routing ========== */
+    const BREADCRUMBS = {
+      dashboard: ["Home", "Dashboard"],
+      customers: ["CRM", "Клиенты"],
+      leads: ["CRM", "Лиды"],
+      orders: ["Selling", "Sales Order"],
+      "order-detail": ["Selling", "Sales Order", "Form"],
+      items: ["Stock", "Item"],
+      buying: ["Buying", "Stub"],
+      accounting: ["Accounting", "Stub"],
+    };
+
+    function navigate(route, opts = {}) {
+      STATE.route = route;
+      if (opts.orderId) STATE.selectedOrderId = opts.orderId;
+
+      document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
+      const page = document.getElementById("page-" + route);
+      if (page) page.classList.add("active");
+
+      document.querySelectorAll(".nav-item").forEach((n) => {
+        n.classList.toggle("active", n.dataset.route === route);
+      });
+
+      const crumbs = BREADCRUMBS[route] || ["Home"];
+      const bc = document.getElementById("breadcrumb");
+      bc.innerHTML = crumbs
+        .map((c, i) =>
+          i < crumbs.length - 1
+            ? `<span>${c}</span><span class="sep">/</span>`
+            : `<strong>${c === "Form" ? STATE.selectedOrderId : c}</strong>`
+        )
+        .join("");
+
+      if (route === "dashboard") renderDashboard();
+      if (route === "customers") renderCustomers();
+      if (route === "orders") renderOrders();
+      if (route === "order-detail") renderOrderDetail();
+      if (route === "items") renderItems();
+
+      window.scrollTo(0, 0);
+      document.querySelector(".content").scrollTop = 0;
+    }
+
+    /* ========== Renderers ========== */
+    function renderDashboard() {
+      const open = STATE.orders.filter((o) =>
+        ["To Deliver and Bill", "To Deliver", "To Bill", "On Hold", "Draft"].includes(o.status)
+      );
+      const completed = STATE.orders.filter((o) => o.status === "Completed");
+      const rev = completed.reduce((s, o) => s + orderTotal(o), 0);
+      const lowStock = STATE.items.filter((i) => i.qty > 0 && i.qty < 10).length;
+      const out = STATE.items.filter((i) => i.qty === 0).length;
+
+      document.getElementById("kpiGrid").innerHTML = `
+        <div class="kpi-card"><div class="label">Открытые SO</div><div class="value">${open.length}</div><div class="delta">в работе</div></div>
+        <div class="kpi-card"><div class="label">Клиенты Active</div><div class="value">${STATE.customers.filter(c=>c.status==="Active").length}</div><div class="delta">из ${STATE.customers.length}</div></div>
+        <div class="kpi-card"><div class="label">Выручка (Completed)</div><div class="value" style="font-size:18px">${money(rev)} ₽</div><div class="delta">mock</div></div>
+        <div class="kpi-card"><div class="label">SKU low / out</div><div class="value">${lowStock} / ${out}</div><div class="delta ${out ? "down" : ""}">склад</div></div>
+      `;
+
+      const tbody = document.querySelector("#dashOrdersTable tbody");
+      tbody.innerHTML = open.slice(0, 5).map((o) => `
+        <tr data-order="${o.id}">
+          <td class="linkish mono">${o.id}</td>
+          <td>${o.customer}</td>
+          <td class="muted">${o.date}</td>
+          <td class="mono">${money(orderTotal(o))} ₽</td>
+          <td>${statusPill(o.status)}</td>
+        </tr>
+      `).join("") || `<tr><td colspan="5" class="muted" style="padding:20px;text-align:center">Нет открытых заказов</td></tr>`;
+
+      tbody.querySelectorAll("tr[data-order]").forEach((tr) => {
+        tr.addEventListener("click", () => navigate("order-detail", { orderId: tr.dataset.order }));
+      });
+    }
+
+    function renderCustomers() {
+      const q = (document.getElementById("customerSearch").value || "").toLowerCase();
+      const st = document.getElementById("customerFilter").value;
+      let rows = STATE.customers.filter((c) => {
+        const hit = !q || [c.name, c.city, c.phone, c.id].join(" ").toLowerCase().includes(q);
+        const ok = st === "all" || c.status === st;
+        return hit && ok;
+      });
+      document.getElementById("customerCount").textContent = `${rows.length} записей`;
+      const tbody = document.querySelector("#customersTable tbody");
+      tbody.innerHTML = rows.map((c) => `
+        <tr>
+          <td><span class="linkish">${c.name}</span><div class="muted mono" style="font-size:11px">${c.id}</div></td>
+          <td>${c.type}</td>
+          <td>${c.city}</td>
+          <td class="mono">${c.phone}</td>
+          <td class="mono">${c.orders}</td>
+          <td><span class="pill ${c.status === "Active" ? "pill-active" : "pill-inactive"}">${c.status}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    function renderOrders() {
+      const q = (document.getElementById("orderSearch").value || "").toLowerCase();
+      const st = document.getElementById("orderStatusFilter").value;
+      let rows = STATE.orders.filter((o) => {
+        const hit = !q || [o.id, o.customer].join(" ").toLowerCase().includes(q);
+        const ok = st === "all" || o.status === st;
+        return hit && ok;
+      });
+      document.getElementById("orderCount").textContent = `${rows.length} документов`;
+      const tbody = document.querySelector("#ordersTable tbody");
+      tbody.innerHTML = rows.map((o) => `
+        <tr data-order="${o.id}" class="${o.id === STATE.selectedOrderId ? "selected" : ""}">
+          <td class="linkish mono">${o.id}</td>
+          <td>${o.customer}</td>
+          <td class="muted">${o.date}</td>
+          <td class="muted">${o.delivery}</td>
+          <td class="mono">${money(orderTotal(o))} ₽</td>
+          <td>${statusPill(o.status)}</td>
+        </tr>
+      `).join("");
+      tbody.querySelectorAll("tr[data-order]").forEach((tr) => {
+        tr.addEventListener("click", () => navigate("order-detail", { orderId: tr.dataset.order }));
+      });
+    }
+
+    function renderOrderDetail() {
+      const o = STATE.orders.find((x) => x.id === STATE.selectedOrderId) || STATE.orders[0];
+      if (!o) return;
+      STATE.selectedOrderId = o.id;
+
+      document.getElementById("odTitle").textContent = o.id;
+      document.getElementById("odSubtitle").textContent = `Selling · Form · ${o.status}`;
+      document.getElementById("odCustomer").textContent = o.customer;
+      document.getElementById("odCustomer").onclick = () => navigate("customers");
+      document.getElementById("odStatus").innerHTML = statusPill(o.status);
+      document.getElementById("odDate").textContent = o.date;
+      document.getElementById("odDelivery").textContent = o.delivery;
+      document.getElementById("odAddress").textContent = o.address;
+      document.getElementById("odNotes").textContent = o.notes || "—";
+      document.getElementById("odTotal").textContent = money(orderTotal(o));
+
+      const itb = document.querySelector("#odItems tbody");
+      itb.innerHTML = o.items.map((i) => `
+        <tr>
+          <td><span class="linkish" data-go="items">${i.name}</span><div class="muted mono" style="font-size:11px">${i.code}</div></td>
+          <td class="mono">${i.qty}</td>
+          <td class="mono">${money(i.rate)}</td>
+          <td class="mono">${money(i.qty * i.rate)}</td>
+        </tr>
+      `).join("");
+      itb.querySelectorAll("[data-go]").forEach((el) => {
+        el.addEventListener("click", (e) => { e.stopPropagation(); navigate(el.dataset.go); });
+      });
+
+      const actions = TRANSITIONS[o.status] || [];
+      const act = document.getElementById("odActions");
+      if (!actions.length) {
+        act.innerHTML = `<p class="muted" style="font-size:12.5px">Терминальный статус — переходы недоступны.</p>`;
+      } else {
+        act.innerHTML = actions.map((a, idx) =>
+          `<button type="button" class="btn ${a.cls}" data-to="${a.to}">${a.label}</button>`
+        ).join("");
+        act.querySelectorAll("button[data-to]").forEach((btn) => {
+          btn.addEventListener("click", () => changeOrderStatus(o.id, btn.dataset.to, btn.textContent));
+        });
+      }
+
+      document.getElementById("odHistory").innerHTML =
+        `<strong style="color:var(--text)">История статусов</strong><br>` +
+        o.history.map((h) => `<div class="t-time" style="margin-top:4px">${h.at} — ${h.text}</div>`).join("");
+
+      document.getElementById("odTimeline").innerHTML = [...o.history].reverse().map((h) =>
+        `<li><div>${h.text}</div><div class="t-time">${h.at}</div></li>`
+      ).join("");
+    }
+
+    function changeOrderStatus(id, to, actionLabel) {
+      const o = STATE.orders.find((x) => x.id === id);
+      if (!o) return;
+      const from = o.status;
+      o.status = to;
+      o.history.push({ at: nowStamp(), text: `${actionLabel}: ${from} → ${to}` });
+      toast(`${o.id}: ${from} → ${to}`);
+      renderOrderDetail();
+    }
+
+    function renderItems() {
+      const q = (document.getElementById("itemSearch").value || "").toLowerCase();
+      const g = document.getElementById("itemGroupFilter").value;
+      let rows = STATE.items.filter((i) => {
+        const hit = !q || [i.code, i.name].join(" ").toLowerCase().includes(q);
+        const ok = g === "all" || i.group === g;
+        return hit && ok;
+      });
+      document.getElementById("itemCount").textContent = `${rows.length} позиций`;
+      const tbody = document.querySelector("#itemsTable tbody");
+      tbody.innerHTML = rows.map((i) => {
+        let qb = "qty-badge";
+        if (i.qty === 0) qb += " out";
+        else if (i.qty < 10) qb += " low";
+        return `
+          <tr>
+            <td class="mono linkish">${i.code}</td>
+            <td>${i.name}</td>
+            <td>${i.group}</td>
+            <td class="muted">${i.uom}</td>
+            <td><span class="${qb}">${i.qty}</span></td>
+            <td class="mono">${money(i.rate)} ₽</td>
+            <td><span class="pill ${i.status === "Active" ? "pill-active" : "pill-inactive"}">${i.status}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    /* ========== Events ========== */
+    document.getElementById("mainNav").addEventListener("click", (e) => {
+      const btn = e.target.closest(".nav-item");
+      if (!btn || !btn.dataset.route) return;
+      navigate(btn.dataset.route);
+    });
+
+    document.body.addEventListener("click", (e) => {
+      const go = e.target.closest("[data-go]");
+      if (go && go.dataset.go) {
+        e.preventDefault();
+        navigate(go.dataset.go);
+      }
+    });
+
+    document.getElementById("customerSearch").addEventListener("input", renderCustomers);
+    document.getElementById("customerFilter").addEventListener("change", renderCustomers);
+    document.getElementById("orderSearch").addEventListener("input", renderOrders);
+    document.getElementById("orderStatusFilter").addEventListener("change", renderOrders);
+    document.getElementById("itemSearch").addEventListener("input", renderItems);
+    document.getElementById("itemGroupFilter").addEventListener("change", renderItems);
+
+    document.getElementById("btnRefreshDash").addEventListener("click", () => {
+      renderDashboard();
+      toast("Dashboard обновлён");
+    });
+
+    document.getElementById("btnAddCustomer").addEventListener("click", () => {
+      const n = STATE.customers.length + 1;
+      STATE.customers.unshift({
+        id: `CUST-${String(n).padStart(3, "0")}`,
+        name: `Новый клиент ${n}`,
+        type: "Company",
+        city: "Москва",
+        phone: "+7 900 000-00-00",
+        orders: 0,
+        status: "Active",
+      });
+      renderCustomers();
+      toast("Клиент добавлен (mock)");
+    });
+
+    document.getElementById("btnNewOrder").addEventListener("click", () => {
+      const n = STATE.orders.length + 1;
+      const id = `SO-2026-${String(1000 + n).slice(1)}`;
+      const o = {
+        id,
+        customerId: "CUST-002",
+        customer: "ИП Смирнова А.В.",
+        date: "2026-08-01",
+        delivery: "2026-08-02",
+        status: "Draft",
+        address: "—",
+        notes: "Создано из MVP",
+        items: [{ code: "BQ-ROSE-25", name: "Букет «25 роз»", qty: 1, rate: 4500 }],
+        history: [{ at: nowStamp(), text: "Создан Draft" }],
+      };
+      STATE.orders.unshift(o);
+      toast(`${id} создан`);
+      navigate("order-detail", { orderId: id });
+    });
+
+    document.getElementById("btnAddItem").addEventListener("click", () => {
+      const n = STATE.items.length + 1;
+      STATE.items.unshift({
+        code: `SKU-NEW-${n}`,
+        name: `Новая позиция ${n}`,
+        group: "Букеты",
+        uom: "шт",
+        qty: 10,
+        rate: 1000,
+        status: "Active",
+      });
+      renderItems();
+      toast("Item добавлен (mock)");
+    });
+
+    document.getElementById("btnPrint").addEventListener("click", () => {
+      toast("Печать: mock (нет PDF)");
+    });
+
+    document.getElementById("awesomeBar").addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      const q = e.target.value.toLowerCase().trim();
+      if (!q) return;
+      if (q.includes("so-") || q.includes("заказ") || q.includes("order")) {
+        const o = STATE.orders.find((x) => x.id.toLowerCase().includes(q.replace("заказ", "").trim()) || q.includes("so"));
+        if (o) { navigate("order-detail", { orderId: o.id }); e.target.value = ""; return; }
+        navigate("orders");
+      } else if (q.includes("клиент") || q.includes("customer") || q.includes("cust")) {
+        navigate("customers");
+      } else if (q.includes("item") || q.includes("склад") || q.includes("stock") || q.includes("bq-")) {
+        navigate("items");
+      } else if (q.includes("lead") || q.includes("лид")) {
+        navigate("leads");
+      } else {
+        navigate("dashboard");
+      }
+      e.target.value = "";
+      toast("Awesome Bar → " + STATE.route);
+    });
+
+    /* init */
+    navigate("dashboard");
+  </script>
+</body>
+</html>

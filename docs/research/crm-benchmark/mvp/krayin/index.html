@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krayin CRM · structure MVP · krayin</title>
+<meta name="description" content="Clickable structure MVP of Krayin Laravel CRM IA for Bloom research. Offline shell: Dashboard, Leads kanban, Quotes, Mail, Settings.">
+<style>
+  /* ═══════════════ KRAYIN STRUCTURE MVP ═══════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #F4F5F8;
+    --bg-2:      #FFFFFF;
+    --bg-3:      #EEF0F5;
+    --border:    #E3E6EE;
+    --border-2:  #D0D5E2;
+    --ink:       #1A1D26;
+    --ink-dim:   #3D4454;
+    --ink-mute:  #6B7285;
+    --ink-faint: #9AA1B2;
+
+    /* Krayin-adjacent: indigo / violet sales CRM */
+    --brand:     #4F46E5;
+    --brand-2:   #4338CA;
+    --brand-soft:#EEF2FF;
+    --brand-dark:#1E1B4B;
+    --sidebar:   #111827;
+    --sidebar-2: #1F2937;
+    --sidebar-h: #9CA3AF;
+    --sidebar-a: #E5E7EB;
+
+    --green:     #059669;
+    --green-soft:#ECFDF5;
+    --amber:     #D97706;
+    --amber-soft:#FFFBEB;
+    --red:       #DC2626;
+    --red-soft:  #FEF2F2;
+    --cyan:      #0891B2;
+    --cyan-soft: #ECFEFF;
+    --pink:      #DB2777;
+    --pink-soft: #FDF2F8;
+
+    --font:    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono:    ui-monospace, "SF Mono", Consolas, monospace;
+    --ease:    cubic-bezier(0.16, 1, 0.3, 1);
+    --radius:  10px;
+    --radius-sm: 6px;
+    --sidebar-w: 240px;
+    --topbar-h: 56px;
+    --shadow:  0 8px 24px rgba(17, 24, 39, 0.08);
+    --shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.06);
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: none; background: none; }
+  a { color: inherit; text-decoration: none; }
+  ul { list-style: none; }
+  table { border-collapse: collapse; width: 100%; }
+
+  .app { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; z-index: 40;
+    width: var(--sidebar-w);
+    background: var(--sidebar);
+    color: var(--sidebar-h);
+    display: flex; flex-direction: column;
+    border-right: 1px solid #0B1220;
+  }
+  .sidebar-brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .sidebar-logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    display: grid; place-items: center;
+    color: #fff; font-weight: 800; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .sidebar-brand h1 {
+    font-size: 15px; font-weight: 700; color: #F9FAFB; letter-spacing: -0.02em;
+  }
+  .sidebar-brand small {
+    display: block; font-size: 11px; color: #6B7280; font-weight: 500; margin-top: 1px;
+  }
+  .nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+  .nav-section {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #4B5563;
+    padding: 10px 10px 6px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    color: var(--sidebar-h);
+    font-size: 13.5px; font-weight: 500;
+    transition: background .15s, color .15s;
+    margin-bottom: 2px;
+    text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--sidebar-a); }
+  .nav-item.active {
+    background: rgba(99, 102, 241, 0.18);
+    color: #C7D2FE;
+  }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.9; }
+  .nav-item .count {
+    margin-left: auto;
+    font-size: 11px; font-weight: 600;
+    background: rgba(255,255,255,0.08);
+    color: #D1D5DB;
+    padding: 1px 7px; border-radius: 999px;
+  }
+  .nav-item.active .count { background: rgba(99,102,241,0.35); color: #E0E7FF; }
+  .sidebar-foot {
+    padding: 12px 14px 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 11px; color: #4B5563;
+  }
+
+  /* ── Main ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .topbar {
+    position: sticky; top: 0; z-index: 30;
+    height: var(--topbar-h);
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 20px;
+  }
+  .topbar-title {
+    font-size: 15px; font-weight: 700; color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .topbar-sub { font-size: 12px; color: var(--ink-mute); }
+  .topbar-spacer { flex: 1; }
+  .badge-mvp {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #EEF2FF, #F5F3FF);
+    color: #4338CA;
+    border: 1px solid #C7D2FE;
+    white-space: nowrap;
+  }
+  .badge-mvp::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #6366F1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 34px; padding: 0 12px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    border: 1px solid transparent;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-2); }
+  .btn-ghost {
+    background: var(--bg-2);
+    border-color: var(--border);
+    color: var(--ink-dim);
+  }
+  .btn-ghost:hover { background: var(--bg-3); border-color: var(--border-2); }
+  .btn-sm { height: 30px; padding: 0 10px; font-size: 12px; }
+  .search {
+    display: flex; align-items: center; gap: 8px;
+    height: 34px; padding: 0 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    min-width: 200px;
+    color: var(--ink-mute);
+  }
+  .search input {
+    border: 0; outline: 0; background: transparent;
+    width: 100%; color: var(--ink); font-size: 13px;
+  }
+  .search input::placeholder { color: var(--ink-faint); }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #818CF8, #A78BFA);
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: grid; place-items: center;
+  }
+
+  .content { padding: 20px; flex: 1; }
+
+  /* ── Views ── */
+  .view { display: none; animation: fade .2s var(--ease); }
+  .view.active { display: block; }
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ── Cards / stats ── */
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  @media (max-width: 1100px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) {
+    .grid-4 { grid-template-columns: 1fr; }
+    .sidebar { transform: translateX(-100%); }
+    .main { margin-left: 0; }
+  }
+  .stat {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-label { font-size: 12px; color: var(--ink-mute); font-weight: 500; }
+  .stat-value {
+    font-size: 24px; font-weight: 800; letter-spacing: -0.03em;
+    margin-top: 4px; color: var(--ink);
+  }
+  .stat-meta { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+  .stat-meta.up { color: var(--green); }
+  .stat-meta.down { color: var(--red); }
+
+  .panel {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .panel-h {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-h h3 { font-size: 13.5px; font-weight: 700; }
+  .panel-h .spacer { flex: 1; }
+  .panel-b { padding: 14px 16px; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 980px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .seg {
+    display: inline-flex;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .seg button {
+    height: 28px; padding: 0 12px;
+    border-radius: 6px;
+    font-size: 12.5px; font-weight: 600;
+    color: var(--ink-mute);
+  }
+  .seg button.active {
+    background: var(--brand-soft);
+    color: var(--brand-2);
+  }
+
+  /* ── Kanban ── */
+  .kanban {
+    display: flex; gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    min-height: calc(100vh - 160px);
+    align-items: flex-start;
+  }
+  .col {
+    flex: 0 0 260px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex; flex-direction: column;
+    max-height: calc(100vh - 160px);
+  }
+  .col-h {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+    border-radius: var(--radius) var(--radius) 0 0;
+    position: sticky; top: 0;
+  }
+  .col-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .col-h h4 { font-size: 12.5px; font-weight: 700; }
+  .col-h .n {
+    margin-left: auto;
+    font-size: 11px; font-weight: 700;
+    color: var(--ink-mute);
+    background: var(--bg-3);
+    padding: 1px 7px; border-radius: 999px;
+  }
+  .col-body {
+    padding: 10px;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 12px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: border-color .15s, box-shadow .15s, transform .15s;
+    text-align: left;
+    width: 100%;
+  }
+  .card:hover {
+    border-color: #A5B4FC;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.12);
+    transform: translateY(-1px);
+  }
+  .card-title {
+    font-size: 13px; font-weight: 650; color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.35;
+  }
+  .card-org { font-size: 11.5px; color: var(--ink-mute); margin-bottom: 8px; }
+  .card-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .card-value { font-size: 12.5px; font-weight: 700; color: var(--ink-dim); }
+  .chip {
+    display: inline-flex; align-items: center;
+    font-size: 10.5px; font-weight: 650;
+    padding: 2px 7px; border-radius: 999px;
+    background: var(--bg-3); color: var(--ink-mute);
+  }
+  .chip.source { background: var(--brand-soft); color: var(--brand-2); }
+  .chip.hot { background: var(--red-soft); color: var(--red); }
+  .chip.warm { background: var(--amber-soft); color: var(--amber); }
+  .chip.cold { background: var(--cyan-soft); color: var(--cyan); }
+  .card-owner {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 8px; font-size: 11px; color: var(--ink-mute);
+  }
+  .card-owner .mini {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #C7D2FE; color: #3730A3;
+    font-size: 9px; font-weight: 700;
+    display: grid; place-items: center;
+  }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; }
+  table.data th {
+    text-align: left;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--ink-mute);
+    padding: 10px 14px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  table.data td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  table.data tr:last-child td { border-bottom: 0; }
+  table.data tbody tr {
+    cursor: pointer;
+    transition: background .12s;
+  }
+  table.data tbody tr:hover { background: #F8F9FC; }
+  .status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11.5px; font-weight: 650;
+    padding: 3px 8px; border-radius: 999px;
+  }
+  .status::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+  }
+  .st-draft { background: var(--bg-3); color: var(--ink-mute); }
+  .st-sent { background: var(--brand-soft); color: var(--brand-2); }
+  .st-accepted { background: var(--green-soft); color: var(--green); }
+  .st-declined { background: var(--red-soft); color: var(--red); }
+  .st-expired { background: var(--amber-soft); color: var(--amber); }
+
+  /* ── Lead detail ── */
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 14px;
+  }
+  @media (max-width: 980px) { .detail-layout { grid-template-columns: 1fr; } }
+  .detail-head {
+    display: flex; align-items: flex-start; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .detail-head h2 {
+    font-size: 20px; font-weight: 800; letter-spacing: -0.03em;
+  }
+  .detail-head p { color: var(--ink-mute); font-size: 13px; margin-top: 2px; }
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+  }
+  .field label {
+    display: block;
+    font-size: 11px; font-weight: 650;
+    color: var(--ink-mute);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .field .val { font-size: 13.5px; font-weight: 550; color: var(--ink); }
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: 10px;
+    position: relative;
+    padding-bottom: 14px;
+  }
+  .tl-item:not(:last-child) .tl-dot::after {
+    content: "";
+    position: absolute;
+    left: 7px; top: 16px; bottom: 0;
+    width: 2px; background: var(--border);
+  }
+  .tl-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--brand-soft);
+    border: 2px solid var(--brand);
+    margin-top: 2px;
+    position: relative;
+  }
+  .tl-body { min-width: 0; }
+  .tl-title { font-size: 13px; font-weight: 600; }
+  .tl-meta { font-size: 11.5px; color: var(--ink-mute); margin-top: 2px; }
+
+  /* ── Mail ── */
+  .mail-layout {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    min-height: 480px;
+  }
+  .mail-folders {
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    padding: 12px 8px;
+  }
+  .mail-folder {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-size: 13px; font-weight: 550;
+    color: var(--ink-dim);
+    text-align: left;
+  }
+  .mail-folder:hover { background: var(--bg-3); }
+  .mail-folder.active {
+    background: var(--brand-soft);
+    color: var(--brand-2);
+  }
+  .mail-folder .n { margin-left: auto; font-size: 11px; color: var(--ink-faint); }
+  .mail-list { border-right: 1px solid var(--border); max-height: 560px; overflow-y: auto; }
+  .mail-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  .mail-row:hover, .mail-row.active { background: #F8F9FC; }
+  .mail-row.unread .mail-from { font-weight: 750; }
+  .mail-from { font-size: 13px; }
+  .mail-subj { font-size: 12.5px; color: var(--ink-dim); grid-column: 1 / -1; }
+  .mail-date { font-size: 11px; color: var(--ink-faint); }
+  .mail-preview {
+    padding: 18px 20px;
+    color: var(--ink-dim);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  .mail-preview h3 { font-size: 16px; color: var(--ink); margin-bottom: 8px; }
+  .mail-preview .meta { font-size: 12px; color: var(--ink-mute); margin-bottom: 16px; }
+
+  /* ── Settings ── */
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .settings-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .settings-card:hover {
+    border-color: #A5B4FC;
+    box-shadow: var(--shadow-sm);
+  }
+  .settings-card .ico {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: var(--brand-soft);
+    color: var(--brand);
+    display: grid; place-items: center;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  .settings-card h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 4px; }
+  .settings-card p { font-size: 12px; color: var(--ink-mute); line-height: 1.4; }
+
+  .stub-note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: var(--amber-soft);
+    border: 1px solid #FDE68A;
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: #92400E;
+  }
+
+  .toast {
+    position: fixed; bottom: 20px; right: 20px; z-index: 100;
+    background: var(--sidebar);
+    color: #F9FAFB;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 550;
+    box-shadow: var(--shadow);
+    opacity: 0; pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: none; }
+
+  .empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 13px;
+  }
+
+  .bar-chart {
+    display: flex; align-items: flex-end; gap: 8px;
+    height: 140px; padding-top: 8px;
+  }
+  .bar-col {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%;
+    justify-content: flex-end;
+  }
+  .bar {
+    width: 100%; max-width: 36px;
+    border-radius: 6px 6px 2px 2px;
+    background: linear-gradient(180deg, #818CF8, #4F46E5);
+    min-height: 4px;
+  }
+  .bar-col span { font-size: 10px; color: var(--ink-faint); font-weight: 600; }
+
+  .list-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .list-row:last-child { border-bottom: 0; }
+  .list-row .name { font-weight: 600; font-size: 13px; }
+  .list-row .sub { font-size: 11.5px; color: var(--ink-mute); }
+  .list-row .amt { margin-left: auto; font-weight: 700; font-size: 13px; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12.5px; font-weight: 600;
+    color: var(--brand);
+    margin-bottom: 10px;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .pipeline-select {
+    height: 34px; padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-2);
+    font-size: 13px; font-weight: 550;
+    color: var(--ink-dim);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" aria-label="Krayin navigation">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo">K</div>
+      <div>
+        <h1>Krayin CRM</h1>
+        <small>structure MVP · id: krayin</small>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">Sales</div>
+      <button class="nav-item active" data-route="dashboard" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v4h6V4h-6z"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-route="leads" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Leads
+        <span class="count" id="nav-leads-count">12</span>
+      </button>
+      <button class="nav-item" data-route="quotes" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        Quotes
+        <span class="count">6</span>
+      </button>
+      <button class="nav-item" data-route="mail" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+        Mail
+        <span class="count">4</span>
+      </button>
+      <div class="nav-section">System</div>
+      <button class="nav-item" data-route="settings" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      Bloom research · offline shell<br>
+      Laravel CRM IA (Webkul / MIT)
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+        <div class="topbar-sub" id="topbar-sub">Обзор воронки и KPI</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <span class="badge-mvp" title="Structure prototype for Bloom benchmark">MVP · Krayin structure → web</span>
+      <div class="search" title="Stub search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="search" placeholder="Поиск…" id="global-search" autocomplete="off">
+      </div>
+      <button class="btn btn-primary btn-sm" type="button" id="btn-quick-add">+ Lead</button>
+      <div class="avatar" title="Admin">AD</div>
+    </header>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="view active" id="view-dashboard" data-title="Dashboard" data-sub="Обзор воронки и KPI">
+        <div class="grid-4">
+          <div class="stat">
+            <div class="stat-label">Leads started</div>
+            <div class="stat-value">48</div>
+            <div class="stat-meta up">↑ 12% за 30 дней</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Open leads</div>
+            <div class="stat-value" id="stat-open">10</div>
+            <div class="stat-meta">в активных стадиях</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Won revenue</div>
+            <div class="stat-value">₽ 1.24M</div>
+            <div class="stat-meta up">↑ 8% vs prev</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Avg. deal age</div>
+            <div class="stat-value">9.4д</div>
+            <div class="stat-meta down">↓ быстрее на 1.2д</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-h">
+              <h3>Leads by stage · Default Pipeline</h3>
+              <div class="spacer"></div>
+              <button class="btn btn-ghost btn-sm" type="button" data-route="leads">Открыть kanban</button>
+            </div>
+            <div class="panel-b">
+              <div class="bar-chart" id="stage-bars"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Top leads</h3></div>
+            <div class="panel-b" id="top-leads"></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:14px">
+          <div class="panel-h">
+            <h3>Recent quotes</h3>
+            <div class="spacer"></div>
+            <button class="btn btn-ghost btn-sm" type="button" data-route="quotes">Все quotes</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data" id="dash-quotes-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Person / Org</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Expired</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEADS KANBAN -->
+      <section class="view" id="view-leads" data-title="Leads" data-sub="Pipeline kanban · Default Pipeline">
+        <div class="toolbar">
+          <select class="pipeline-select" id="pipeline-select" aria-label="Pipeline">
+            <option value="default">Default Pipeline</option>
+            <option value="wholesale">Wholesale Pipeline (stub)</option>
+          </select>
+          <div class="seg" role="tablist">
+            <button type="button" class="active" data-leads-mode="kanban">Kanban</button>
+            <button type="button" data-leads-mode="list">List</button>
+          </div>
+          <div class="topbar-spacer"></div>
+          <button class="btn btn-ghost btn-sm" type="button" id="btn-filter-stub">Фильтры</button>
+          <button class="btn btn-primary btn-sm" type="button" id="btn-new-lead">+ Create Lead</button>
+        </div>
+        <div id="leads-kanban" class="kanban"></div>
+        <div id="leads-list" class="panel" style="display:none">
+          <div class="table-wrap">
+            <table class="data" id="leads-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Organization</th>
+                  <th>Stage</th>
+                  <th>Value</th>
+                  <th>Source</th>
+                  <th>Owner</th>
+                  <th>Expected close</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEAD DETAIL -->
+      <section class="view" id="view-lead-detail" data-title="Lead" data-sub="Карточка лида">
+        <button class="back-link" type="button" data-route="leads">← Назад к pipeline</button>
+        <div class="detail-head">
+          <div style="flex:1">
+            <h2 id="ld-title">—</h2>
+            <p id="ld-sub">—</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" type="button" id="ld-stage-btn">Сменить стадию</button>
+          <button class="btn btn-primary btn-sm" type="button" id="ld-quote-btn">+ Quote</button>
+        </div>
+        <div class="detail-layout">
+          <div>
+            <div class="panel" style="margin-bottom:14px">
+              <div class="panel-h"><h3>Details</h3></div>
+              <div class="panel-b">
+                <div class="field-grid">
+                  <div class="field"><label>Lead value</label><div class="val" id="ld-value">—</div></div>
+                  <div class="field"><label>Stage</label><div class="val" id="ld-stage">—</div></div>
+                  <div class="field"><label>Source</label><div class="val" id="ld-source">—</div></div>
+                  <div class="field"><label>Type</label><div class="val" id="ld-type">—</div></div>
+                  <div class="field"><label>Expected close</label><div class="val" id="ld-close">—</div></div>
+                  <div class="field"><label>Owner</label><div class="val" id="ld-owner">—</div></div>
+                  <div class="field" style="grid-column:1/-1"><label>Description</label><div class="val" id="ld-desc">—</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-h">
+                <h3>Activities / Timeline</h3>
+                <div class="spacer"></div>
+                <button class="btn btn-ghost btn-sm" type="button" id="ld-add-activity">+ Note</button>
+              </div>
+              <div class="panel-b">
+                <div class="timeline" id="ld-timeline"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="panel" style="margin-bottom:14px">
+              <div class="panel-h"><h3>Person / Organization</h3></div>
+              <div class="panel-b">
+                <div class="field" style="margin-bottom:12px">
+                  <label>Person</label>
+                  <div class="val" id="ld-person">—</div>
+                </div>
+                <div class="field" style="margin-bottom:12px">
+                  <label>Email / Phone</label>
+                  <div class="val" id="ld-contact">—</div>
+                </div>
+                <div class="field">
+                  <label>Organization</label>
+                  <div class="val" id="ld-org">—</div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-h"><h3>Linked quotes</h3></div>
+              <div class="panel-b" id="ld-quotes"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUOTES -->
+      <section class="view" id="view-quotes" data-title="Quotes" data-sub="Коммерческие предложения">
+        <div class="toolbar">
+          <div class="seg" id="quote-filter">
+            <button type="button" class="active" data-qfilter="all">All</button>
+            <button type="button" data-qfilter="draft">Draft</button>
+            <button type="button" data-qfilter="sent">Sent</button>
+            <button type="button" data-qfilter="accepted">Accepted</button>
+          </div>
+          <div class="topbar-spacer"></div>
+          <button class="btn btn-primary btn-sm" type="button" id="btn-new-quote">+ Create Quote</button>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data" id="quotes-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Person</th>
+                  <th>Organization</th>
+                  <th>Lead</th>
+                  <th>Subtotal</th>
+                  <th>Status</th>
+                  <th>Expired at</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIL -->
+      <section class="view" id="view-mail" data-title="Mail" data-sub="Встроенный почтовый stub (Krayin Mail)">
+        <div class="toolbar">
+          <button class="btn btn-primary btn-sm" type="button" id="btn-compose">Compose</button>
+          <div class="topbar-spacer"></div>
+          <span style="font-size:12px;color:var(--ink-mute)">Folders · Compose · link to Lead (stub)</span>
+        </div>
+        <div class="mail-layout">
+          <div class="mail-folders" id="mail-folders">
+            <button class="mail-folder active" type="button" data-folder="inbox">Inbox <span class="n">4</span></button>
+            <button class="mail-folder" type="button" data-folder="draft">Draft <span class="n">1</span></button>
+            <button class="mail-folder" type="button" data-folder="outbox">Outbox</button>
+            <button class="mail-folder" type="button" data-folder="sent">Sent <span class="n">12</span></button>
+            <button class="mail-folder" type="button" data-folder="trash">Trash</button>
+          </div>
+          <div style="display:grid;grid-template-columns:280px 1fr;min-width:0">
+            <div class="mail-list" id="mail-list"></div>
+            <div class="mail-preview" id="mail-preview">
+              <div class="empty">Выберите письмо</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings" data-title="Settings" data-sub="Конфигурация CRM (stubs)">
+        <div class="settings-grid">
+          <button class="settings-card" type="button" data-setting="users">
+            <div class="ico">👤</div>
+            <h4>Users</h4>
+            <p>Пользователи, приглашения, статусы</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="roles">
+            <div class="ico">🛡️</div>
+            <h4>Roles</h4>
+            <p>Права доступа (ACL) по модулям</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="groups">
+            <div class="ico">👥</div>
+            <h4>Groups</h4>
+            <p>Команды / sales groups</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="pipelines">
+            <div class="ico">📊</div>
+            <h4>Pipelines</h4>
+            <p>Стадии воронки, probability, ROT</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="sources">
+            <div class="ico">🔗</div>
+            <h4>Sources</h4>
+            <p>Каналы лидов: web, email, call…</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="types">
+            <div class="ico">🏷️</div>
+            <h4>Types</h4>
+            <p>Типы лидов (new business / existing)</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="attributes">
+            <div class="ico">🧩</div>
+            <h4>Attributes</h4>
+            <p>Кастомные поля entities</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="email">
+            <div class="ico">✉️</div>
+            <h4>Email settings</h4>
+            <p>IMAP / SMTP, подписи</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="warehouses">
+            <div class="ico">📦</div>
+            <h4>Warehouses</h4>
+            <p>Склады / inventory stub</p>
+          </button>
+          <button class="settings-card" type="button" data-setting="webhooks">
+            <div class="ico">⚡</div>
+            <h4>Webhooks / API</h4>
+            <p>Интеграции (stub)</p>
+          </button>
+        </div>
+        <div class="stub-note" id="settings-note">
+          Выберите раздел настроек — это structure stub для сопоставления с IA Krayin (Users, Roles, Groups, Pipeline, Sources, Types, Attributes…).
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ─── Demo data (Krayin-shaped) ─── */
+  const STAGES = [
+    { id: "new", name: "New", color: "#6366F1" },
+    { id: "followup", name: "Follow Up", color: "#0891B2" },
+    { id: "prospect", name: "Prospect", color: "#D97706" },
+    { id: "negotiation", name: "Negotiation", color: "#DB2777" },
+    { id: "won", name: "Won", color: "#059669" },
+    { id: "lost", name: "Lost", color: "#DC2626" }
+  ];
+
+  const LEADS = [
+    { id: "L-1042", title: "Сеть «Флора» — wholesale Q3", org: "Флора Group", person: "Анна Ковалёва", email: "anna@flora.ru", phone: "+7 495 100-20-30", stage: "negotiation", value: 420000, source: "Web", type: "Existing business", owner: "Ирина С.", ownerInit: "ИС", close: "2026-08-15", heat: "hot",
+      desc: "Расширение B2B-поставок букетов в 12 точек. Обсуждается объём и SLA доставки.",
+      activities: [
+        { t: "Call", d: "Согласовали прайс на премиум-линейку", when: "Сегодня, 11:20", who: "Ирина С." },
+        { t: "Email", d: "Отправлено КП v2", when: "Вчера", who: "Ирина С." },
+        { t: "Note", d: "Лид из webinar Webkul-style demo day", when: "3 дня назад", who: "System" }
+      ]
+    },
+    { id: "L-1038", title: "Корпоративные букеты · IT Park", org: "IT Park LLC", person: "Максим Орлов", email: "m.orlov@itpark.io", phone: "+7 812 555-01-01", stage: "prospect", value: 185000, source: "Email", type: "New business", owner: "Павел К.", ownerInit: "ПК", close: "2026-08-22", heat: "warm",
+      desc: "Еженедельные поставки в офис (40+ мест).",
+      activities: [
+        { t: "Meeting", d: "Демо каталога", when: "2 дня назад", who: "Павел К." }
+      ]
+    },
+    { id: "L-1031", title: "Свадебный пакет · Boutique Hotel", org: "Boutique Hotel Neva", person: "Елена М.", email: "events@neva.hotel", phone: "+7 812 200-11-22", stage: "followup", value: 95000, source: "Call", type: "New business", owner: "Ирина С.", ownerInit: "ИС", close: "2026-09-01", heat: "warm",
+      desc: "Пакет на сезон: фойе + банкетный зал.",
+      activities: [{ t: "Call", d: "Перезвонить по датам сентября", when: "Вчера", who: "Ирина С." }]
+    },
+    { id: "L-1029", title: "Онлайн-магазин интеграция API", org: "Bloom Retail Demo", person: "Demo Buyer", email: "buyer@demo.local", phone: "—", stage: "new", value: 60000, source: "Web", type: "New business", owner: "Admin", ownerInit: "AD", close: "2026-08-30", heat: "cold",
+      desc: "Интерес к quotes + lead pipeline для флористики.",
+      activities: [{ t: "Note", d: "Создан из web form", when: "Сегодня", who: "System" }]
+    },
+    { id: "L-1025", title: "Франшиза · 3 салона Казань", org: "Казанские цветы", person: "Р. Нуриев", email: "r@kazanflowers.ru", phone: "+7 843 000-00-01", stage: "new", value: 310000, source: "Partner", type: "New business", owner: "Павел К.", ownerInit: "ПК", close: "2026-09-10", heat: "hot",
+      desc: "Нужна multi-entity модель (shops).",
+      activities: []
+    },
+    { id: "L-1020", title: "Подписка на офисы · Банк", org: "Северный Банк", person: "Ольга В.", email: "procurement@nbank.ru", phone: "+7 495 777-00-00", stage: "followup", value: 540000, source: "Email", type: "Existing business", owner: "Ирина С.", ownerInit: "ИС", close: "2026-08-18", heat: "hot",
+      desc: "Годовой контракт, 28 офисов.",
+      activities: [{ t: "Email", d: "Запросили NDA", when: "4 дня назад", who: "Ольга В." }]
+    },
+    { id: "L-1015", title: "Event: день города", org: "City Admin", person: "Комитет", email: "events@city.gov", phone: "—", stage: "prospect", value: 220000, source: "Call", type: "New business", owner: "Admin", ownerInit: "AD", close: "2026-08-25", heat: "warm",
+      desc: "Декор 4 площадок.",
+      activities: []
+    },
+    { id: "L-1011", title: "Retail POS pilot", org: "GreenLeaf", person: "С. Ли", email: "s.lee@greenleaf.cn", phone: "—", stage: "negotiation", value: 150000, source: "Web", type: "New business", owner: "Павел К.", ownerInit: "ПК", close: "2026-08-12", heat: "warm",
+      desc: "Пилот 2 точки + quotes workflow.",
+      activities: [{ t: "Note", d: "Ждём feedback по quote Q-204", when: "Сегодня", who: "Павел К." }]
+    },
+    { id: "L-1004", title: "Корп. 8 марта 2026", org: "MediaHold", person: "HR", email: "hr@mediahold.ru", phone: "+7 495 333-22-11", stage: "won", value: 780000, source: "Email", type: "Existing business", owner: "Ирина С.", ownerInit: "ИС", close: "2026-03-01", heat: "hot",
+      desc: "Успешно закрыт сезон 8 марта.",
+      activities: [{ t: "Note", d: "Lead won · invoice paid", when: "Март", who: "System" }]
+    },
+    { id: "L-1001", title: "Тест-заказ marketplace", org: "—", person: "Guest", email: "guest@mail.ru", phone: "—", stage: "lost", value: 12000, source: "Web", type: "New business", owner: "Admin", ownerInit: "AD", close: "2026-07-01", heat: "cold",
+      desc: "Не ответил на follow-up.",
+      activities: [{ t: "Note", d: "Lost · no response", when: "Июль", who: "System" }]
+    },
+    { id: "L-0998", title: "Обучение флористов B2B", org: "Academy Pro", person: "М. Соколова", email: "m@academy.pro", phone: "+7 495 111-00-00", stage: "new", value: 45000, source: "Partner", type: "New business", owner: "Павел К.", ownerInit: "ПК", close: "2026-09-05", heat: "cold",
+      desc: "Пакет training + sample kits.",
+      activities: []
+    },
+    { id: "L-0990", title: "VIP-клиент renewal", org: "Art Gallery", person: "Куратор", email: "hello@art.gallery", phone: "—", stage: "won", value: 260000, source: "Call", type: "Existing business", owner: "Ирина С.", ownerInit: "ИС", close: "2026-07-20", heat: "warm",
+      desc: "Продление контракта на инсталляции.",
+      activities: []
+    }
+  ];
+
+  const QUOTES = [
+    { id: "Q-210", subject: "КП · Флора wholesale Q3", person: "Анна Ковалёва", org: "Флора Group", leadId: "L-1042", amount: 398000, status: "sent", expired: "2026-08-20" },
+    { id: "Q-204", subject: "POS pilot · GreenLeaf", person: "С. Ли", org: "GreenLeaf", leadId: "L-1011", amount: 148500, status: "sent", expired: "2026-08-14" },
+    { id: "Q-201", subject: "IT Park weekly flowers", person: "Максим Орлов", org: "IT Park LLC", leadId: "L-1038", amount: 172000, status: "draft", expired: "2026-08-30" },
+    { id: "Q-198", subject: "8 марта · MediaHold", person: "HR", org: "MediaHold", leadId: "L-1004", amount: 780000, status: "accepted", expired: "2026-02-20" },
+    { id: "Q-190", subject: "City event package", person: "Комитет", org: "City Admin", leadId: "L-1015", amount: 210000, status: "draft", expired: "2026-08-28" },
+    { id: "Q-175", subject: "Guest test quote", person: "Guest", org: "—", leadId: "L-1001", amount: 9800, status: "declined", expired: "2026-07-05" }
+  ];
+
+  const MAILS = {
+    inbox: [
+      { id: "m1", from: "Анна Ковалёва", subj: "Re: КП wholesale Q3", date: "11:42", unread: true, body: "Ирина, спасибо за v2. Можем ли добавить SLA 4ч по центру и отдельную строку на премиум-упаковку?\n\nС уважением,\nАнна", leadId: "L-1042" },
+      { id: "m2", from: "procurement@nbank.ru", subj: "NDA + требования к поставщику", date: "Вчера", unread: true, body: "Добрый день. Во вложении NDA и чек-лист compliance для годового контракта на 28 офисов.", leadId: "L-1020" },
+      { id: "m3", from: "events@neva.hotel", subj: "Даты сентября — уточнение", date: "Вчера", unread: false, body: "Просим зарезервировать 12–14 сентября для банкетного зала.", leadId: "L-1031" },
+      { id: "m4", from: "noreply@webform", subj: "New lead from website", date: "Пн", unread: false, body: "Форма: Online-магазин интеграция API. Контакт: buyer@demo.local", leadId: "L-1029" }
+    ],
+    draft: [
+      { id: "m5", from: "me", subj: "Черновик: follow-up GreenLeaf", date: "Сегодня", unread: false, body: "С. Ли, направляю напоминание по quote Q-204…", leadId: "L-1011" }
+    ],
+    outbox: [],
+    sent: [
+      { id: "m6", from: "me", subj: "КП v2 · Флора", date: "Вчера", unread: false, body: "Анна, направляю обновлённое коммерческое предложение.", leadId: "L-1042" }
+    ],
+    trash: []
+  };
+
+  /* ─── State ─── */
+  let currentRoute = "dashboard";
+  let currentLeadId = null;
+  let quoteFilter = "all";
+  let mailFolder = "inbox";
+  let mailSelected = null;
+  let leadsMode = "kanban";
+
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+
+  function money(n) {
+    return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 }).format(n);
+  }
+
+  function toast(msg) {
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => el.classList.remove("show"), 2200);
+  }
+
+  function stageName(id) {
+    return (STAGES.find(s => s.id === id) || {}).name || id;
+  }
+
+  function statusClass(st) {
+    return ({ draft: "st-draft", sent: "st-sent", accepted: "st-accepted", declined: "st-declined", expired: "st-expired" })[st] || "st-draft";
+  }
+
+  /* ─── Routing ─── */
+  function navigate(route, opts) {
+    opts = opts || {};
+    if (route === "lead" && opts.id) {
+      currentLeadId = opts.id;
+      currentRoute = "lead-detail";
+      history.replaceState(null, "", "#lead/" + opts.id);
+    } else {
+      currentRoute = route;
+      currentLeadId = null;
+      history.replaceState(null, "", "#" + route);
+    }
+    render();
+  }
+
+  function parseHash() {
+    const h = (location.hash || "#dashboard").slice(1);
+    if (h.startsWith("lead/")) {
+      currentRoute = "lead-detail";
+      currentLeadId = h.split("/")[1];
+    } else if (["dashboard", "leads", "quotes", "mail", "settings"].includes(h)) {
+      currentRoute = h;
+      currentLeadId = null;
+    } else {
+      currentRoute = "dashboard";
+    }
+  }
+
+  /* ─── Render helpers ─── */
+  function renderNav() {
+    $$(".nav-item").forEach(btn => {
+      const r = btn.getAttribute("data-route");
+      const active = (currentRoute === "lead-detail" && r === "leads") || currentRoute === r;
+      btn.classList.toggle("active", active);
+    });
+    $("#nav-leads-count").textContent = String(LEADS.length);
+  }
+
+  function renderTopbar() {
+    const map = {
+      dashboard: ["Dashboard", "Обзор воронки и KPI"],
+      leads: ["Leads", "Pipeline kanban · Default Pipeline"],
+      "lead-detail": ["Lead detail", currentLeadId || ""],
+      quotes: ["Quotes", "Коммерческие предложения"],
+      mail: ["Mail", "Встроенный почтовый stub (Krayin Mail)"],
+      settings: ["Settings", "Конфигурация CRM (stubs)"]
+    };
+    const m = map[currentRoute] || ["Krayin", ""];
+    $("#topbar-title").textContent = m[0];
+    $("#topbar-sub").textContent = m[1];
+  }
+
+  function renderDashboard() {
+    const open = LEADS.filter(l => l.stage !== "won" && l.stage !== "lost").length;
+    $("#stat-open").textContent = String(open);
+
+    const bars = $("#stage-bars");
+    const counts = STAGES.map(s => LEADS.filter(l => l.stage === s.id).length);
+    const max = Math.max(1, ...counts);
+    bars.innerHTML = STAGES.map((s, i) => {
+      const h = Math.round((counts[i] / max) * 100);
+      return `<div class="bar-col"><div class="bar" style="height:${h}%;background:linear-gradient(180deg,${s.color}cc,${s.color})"></div><span>${s.name.split(" ")[0]}</span></div>`;
+    }).join("");
+
+    const top = LEADS.slice().sort((a, b) => b.value - a.value).slice(0, 5);
+    $("#top-leads").innerHTML = top.map(l => `
+      <button class="list-row" type="button" data-open-lead="${l.id}" style="width:100%;background:none;border:0;cursor:pointer;text-align:left">
+        <div class="mini avatar" style="width:28px;height:28px;font-size:10px">${l.ownerInit}</div>
+        <div>
+          <div class="name">${escapeHtml(l.title)}</div>
+          <div class="sub">${escapeHtml(l.org)} · ${stageName(l.stage)}</div>
+        </div>
+        <div class="amt">${money(l.value)}</div>
+      </button>
+    `).join("");
+
+    const tb = $("#dash-quotes-table tbody");
+    tb.innerHTML = QUOTES.slice(0, 4).map(q => `
+      <tr data-route-jump="quotes">
+        <td><strong>${escapeHtml(q.subject)}</strong><div style="font-size:11px;color:var(--ink-faint)">${q.id}</div></td>
+        <td>${escapeHtml(q.person)}<div style="font-size:11px;color:var(--ink-mute)">${escapeHtml(q.org)}</div></td>
+        <td>${money(q.amount)}</td>
+        <td><span class="status ${statusClass(q.status)}">${q.status}</span></td>
+        <td>${q.expired}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderKanban() {
+    const root = $("#leads-kanban");
+    root.innerHTML = STAGES.map(stage => {
+      const items = LEADS.filter(l => l.stage === stage.id);
+      return `
+        <div class="col" data-stage="${stage.id}">
+          <div class="col-h">
+            <span class="col-dot" style="background:${stage.color}"></span>
+            <h4>${stage.name}</h4>
+            <span class="n">${items.length}</span>
+          </div>
+          <div class="col-body">
+            ${items.map(l => `
+              <button class="card" type="button" data-open-lead="${l.id}" draggable="true" data-lead-id="${l.id}">
+                <div class="card-title">${escapeHtml(l.title)}</div>
+                <div class="card-org">${escapeHtml(l.org || "—")}</div>
+                <div class="card-row">
+                  <span class="card-value">${money(l.value)}</span>
+                  <span class="chip ${l.heat === "hot" ? "hot" : l.heat === "warm" ? "warm" : "cold"}">${l.heat}</span>
+                </div>
+                <div class="card-row" style="margin-top:6px">
+                  <span class="chip source">${escapeHtml(l.source)}</span>
+                </div>
+                <div class="card-owner">
+                  <span class="mini">${l.ownerInit}</span>
+                  ${escapeHtml(l.owner)} · ${l.close}
+                </div>
+              </button>
+            `).join("") || `<div class="empty" style="padding:16px 8px">Пусто</div>`}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // drag-drop between stages
+    $$(".card[draggable]", root).forEach(card => {
+      card.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("text/plain", card.getAttribute("data-lead-id"));
+        e.dataTransfer.effectAllowed = "move";
+      });
+    });
+    $$(".col", root).forEach(col => {
+      col.addEventListener("dragover", e => { e.preventDefault(); col.style.outline = "2px dashed #A5B4FC"; });
+      col.addEventListener("dragleave", () => { col.style.outline = ""; });
+      col.addEventListener("drop", e => {
+        e.preventDefault();
+        col.style.outline = "";
+        const id = e.dataTransfer.getData("text/plain");
+        const lead = LEADS.find(l => l.id === id);
+        const stage = col.getAttribute("data-stage");
+        if (lead && stage && lead.stage !== stage) {
+          lead.stage = stage;
+          lead.activities = lead.activities || [];
+          lead.activities.unshift({ t: "Stage", d: "→ " + stageName(stage), when: "Сейчас", who: "Admin" });
+          toast("Lead " + id + " → " + stageName(stage));
+          renderKanban();
+          renderLeadsList();
+          if (currentRoute === "dashboard") renderDashboard();
+        }
+      });
+    });
+  }
+
+  function renderLeadsList() {
+    const tb = $("#leads-table tbody");
+    tb.innerHTML = LEADS.map(l => `
+      <tr data-open-lead="${l.id}">
+        <td><strong>${escapeHtml(l.title)}</strong><div style="font-size:11px;color:var(--ink-faint)">${l.id}</div></td>
+        <td>${escapeHtml(l.org || "—")}</td>
+        <td><span class="chip">${stageName(l.stage)}</span></td>
+        <td>${money(l.value)}</td>
+        <td>${escapeHtml(l.source)}</td>
+        <td>${escapeHtml(l.owner)}</td>
+        <td>${l.close}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderLeadDetail() {
+    const l = LEADS.find(x => x.id === currentLeadId);
+    if (!l) {
+      $("#ld-title").textContent = "Lead not found";
+      return;
+    }
+    $("#ld-title").textContent = l.title;
+    $("#ld-sub").textContent = l.id + " · " + stageName(l.stage) + " · " + (l.org || "—");
+    $("#ld-value").textContent = money(l.value);
+    $("#ld-stage").textContent = stageName(l.stage);
+    $("#ld-source").textContent = l.source;
+    $("#ld-type").textContent = l.type;
+    $("#ld-close").textContent = l.close;
+    $("#ld-owner").textContent = l.owner;
+    $("#ld-desc").textContent = l.desc || "—";
+    $("#ld-person").textContent = l.person;
+    $("#ld-contact").textContent = (l.email || "—") + " · " + (l.phone || "—");
+    $("#ld-org").textContent = l.org || "—";
+
+    $("#ld-timeline").innerHTML = (l.activities && l.activities.length
+      ? l.activities.map(a => `
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-body">
+              <div class="tl-title">${escapeHtml(a.t)}: ${escapeHtml(a.d)}</div>
+              <div class="tl-meta">${escapeHtml(a.when)} · ${escapeHtml(a.who)}</div>
+            </div>
+          </div>
+        `).join("")
+      : `<div class="empty">Нет активностей</div>`);
+
+    const qs = QUOTES.filter(q => q.leadId === l.id);
+    $("#ld-quotes").innerHTML = qs.length
+      ? qs.map(q => `
+          <div class="list-row">
+            <div>
+              <div class="name">${escapeHtml(q.subject)}</div>
+              <div class="sub">${q.id} · <span class="status ${statusClass(q.status)}">${q.status}</span></div>
+            </div>
+            <div class="amt">${money(q.amount)}</div>
+          </div>
+        `).join("")
+      : `<div class="empty" style="padding:12px 0">Нет связанных quotes</div>`;
+  }
+
+  function renderQuotes() {
+    const tb = $("#quotes-table tbody");
+    const list = QUOTES.filter(q => quoteFilter === "all" || q.status === quoteFilter);
+    tb.innerHTML = list.map(q => `
+      <tr data-open-lead="${q.leadId}">
+        <td><strong>${escapeHtml(q.subject)}</strong><div style="font-size:11px;color:var(--ink-faint)">${q.id}</div></td>
+        <td>${escapeHtml(q.person)}</td>
+        <td>${escapeHtml(q.org)}</td>
+        <td><span style="color:var(--brand);font-weight:600">${q.leadId}</span></td>
+        <td>${money(q.amount)}</td>
+        <td><span class="status ${statusClass(q.status)}">${q.status}</span></td>
+        <td>${q.expired}</td>
+      </tr>
+    `).join("") || `<tr><td colspan="7" class="empty">Нет quotes для фильтра</td></tr>`;
+  }
+
+  function renderMail() {
+    $$(".mail-folder").forEach(b => b.classList.toggle("active", b.getAttribute("data-folder") === mailFolder));
+    const list = MAILS[mailFolder] || [];
+    const listEl = $("#mail-list");
+    if (!list.length) {
+      listEl.innerHTML = `<div class="empty">Папка пуста</div>`;
+      $("#mail-preview").innerHTML = `<div class="empty">Нет писем</div>`;
+      return;
+    }
+    if (!mailSelected || !list.find(m => m.id === mailSelected)) {
+      mailSelected = list[0].id;
+    }
+    listEl.innerHTML = list.map(m => `
+      <button class="mail-row ${m.unread ? "unread" : ""} ${m.id === mailSelected ? "active" : ""}" type="button" data-mail="${m.id}">
+        <span class="mail-from">${escapeHtml(m.from)}</span>
+        <span class="mail-date">${escapeHtml(m.date)}</span>
+        <span class="mail-subj">${escapeHtml(m.subj)}</span>
+      </button>
+    `).join("");
+
+    const m = list.find(x => x.id === mailSelected);
+    if (m) {
+      $("#mail-preview").innerHTML = `
+        <h3>${escapeHtml(m.subj)}</h3>
+        <div class="meta">From: <strong>${escapeHtml(m.from)}</strong> · ${escapeHtml(m.date)}
+          ${m.leadId ? ` · Linked lead: <button type="button" data-open-lead="${m.leadId}" style="color:var(--brand);font-weight:700;background:none;border:0;cursor:pointer">${m.leadId}</button>` : ""}
+        </div>
+        <div style="white-space:pre-wrap">${escapeHtml(m.body)}</div>
+      `;
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function render() {
+    $$(".view").forEach(v => v.classList.remove("active"));
+    const id = currentRoute === "lead-detail" ? "view-lead-detail" : "view-" + currentRoute;
+    const view = document.getElementById(id);
+    if (view) view.classList.add("active");
+
+    renderNav();
+    renderTopbar();
+
+    if (currentRoute === "dashboard") renderDashboard();
+    if (currentRoute === "leads") {
+      $("#leads-kanban").style.display = leadsMode === "kanban" ? "flex" : "none";
+      $("#leads-list").style.display = leadsMode === "list" ? "block" : "none";
+      if (leadsMode === "kanban") renderKanban();
+      else renderLeadsList();
+    }
+    if (currentRoute === "lead-detail") renderLeadDetail();
+    if (currentRoute === "quotes") renderQuotes();
+    if (currentRoute === "mail") renderMail();
+  }
+
+  /* ─── Events ─── */
+  document.addEventListener("click", e => {
+    const nav = e.target.closest("[data-route]");
+    if (nav && nav.getAttribute("data-route")) {
+      e.preventDefault();
+      navigate(nav.getAttribute("data-route"));
+      return;
+    }
+    const jump = e.target.closest("[data-route-jump]");
+    if (jump) {
+      navigate(jump.getAttribute("data-route-jump"));
+      return;
+    }
+    const openLead = e.target.closest("[data-open-lead]");
+    if (openLead) {
+      navigate("lead", { id: openLead.getAttribute("data-open-lead") });
+      return;
+    }
+    const mailBtn = e.target.closest("[data-mail]");
+    if (mailBtn) {
+      mailSelected = mailBtn.getAttribute("data-mail");
+      renderMail();
+      return;
+    }
+    const folder = e.target.closest("[data-folder]");
+    if (folder) {
+      mailFolder = folder.getAttribute("data-folder");
+      mailSelected = null;
+      renderMail();
+      return;
+    }
+    const setting = e.target.closest("[data-setting]");
+    if (setting) {
+      const key = setting.getAttribute("data-setting");
+      $("#settings-note").innerHTML = `<strong>${escapeHtml(setting.querySelector("h4").textContent)}</strong> — structure stub. В полном Krayin: CRUD + permissions. Для Bloom: сопоставить с multi-shop / roles / pipeline config. <em>(${escapeHtml(key)})</em>`;
+      toast("Settings · " + key + " (stub)");
+      return;
+    }
+    const qf = e.target.closest("[data-qfilter]");
+    if (qf) {
+      quoteFilter = qf.getAttribute("data-qfilter");
+      $$("#quote-filter button").forEach(b => b.classList.toggle("active", b === qf));
+      renderQuotes();
+      return;
+    }
+    const lm = e.target.closest("[data-leads-mode]");
+    if (lm) {
+      leadsMode = lm.getAttribute("data-leads-mode");
+      $$("[data-leads-mode]").forEach(b => b.classList.toggle("active", b === lm));
+      render();
+      return;
+    }
+  });
+
+  $("#btn-quick-add").addEventListener("click", () => {
+    toast("Quick Add Lead (stub) — как Quick Add в Krayin 2.x");
+  });
+  $("#btn-new-lead").addEventListener("click", () => toast("Create Lead form (stub)"));
+  $("#btn-new-quote").addEventListener("click", () => toast("Create Quote form (stub)"));
+  $("#btn-compose").addEventListener("click", () => toast("Compose mail (stub)"));
+  $("#btn-filter-stub").addEventListener("click", () => toast("Filters: source, owner, value (stub)"));
+  $("#pipeline-select").addEventListener("change", e => {
+    toast(e.target.value === "default" ? "Default Pipeline" : "Wholesale Pipeline — stub, те же стадии");
+  });
+  $("#ld-stage-btn").addEventListener("click", () => {
+    const l = LEADS.find(x => x.id === currentLeadId);
+    if (!l) return;
+    const idx = STAGES.findIndex(s => s.id === l.stage);
+    const next = STAGES[(idx + 1) % STAGES.length];
+    l.stage = next.id;
+    l.activities = l.activities || [];
+    l.activities.unshift({ t: "Stage", d: "→ " + next.name, when: "Сейчас", who: "Admin" });
+    toast("Stage → " + next.name);
+    renderLeadDetail();
+  });
+  $("#ld-quote-btn").addEventListener("click", () => toast("Create Quote from Lead (stub)"));
+  $("#ld-add-activity").addEventListener("click", () => {
+    const l = LEADS.find(x => x.id === currentLeadId);
+    if (!l) return;
+    l.activities = l.activities || [];
+    l.activities.unshift({ t: "Note", d: "MVP note · activity logged", when: "Сейчас", who: "Admin" });
+    toast("Activity added");
+    renderLeadDetail();
+  });
+  $("#global-search").addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      toast("Search stub: «" + e.target.value + "»");
+    }
+  });
+
+  window.addEventListener("hashchange", () => {
+    parseHash();
+    render();
+  });
+
+  parseHash();
+  render();
+})();
+</script>
+</body>
+</html>

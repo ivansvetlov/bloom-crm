@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Twenty — Structure MVP · Bloom CRM research</title>
+<meta name="description" content="Clickable structure MVP of Twenty CRM IA for Bloom research. Offline shell." />
+<style>
+/* ═══════════════════════════════════════════════════════════
+   Twenty structure MVP — modern CRM shell (self-contained)
+   Inspired by twentyhq/twenty UX patterns (not a product clone)
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="light"] {
+  --bg: #fafafa;
+  --bg-elev: #ffffff;
+  --bg-soft: #f5f5f5;
+  --bg-hover: #f0f0f0;
+  --bg-active: #ebebeb;
+  --border: #e8e8e8;
+  --border-strong: #d4d4d4;
+  --ink: #1a1a1a;
+  --ink-2: #444444;
+  --ink-3: #737373;
+  --ink-4: #a3a3a3;
+  --accent: #575fcf;
+  --accent-soft: #eef0ff;
+  --accent-ink: #3d44a8;
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+  --warn: #d97706;
+  --warn-soft: #fef3c7;
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+  --info: #0284c7;
+  --info-soft: #e0f2fe;
+  --purple: #7c3aed;
+  --purple-soft: #ede9fe;
+  --pink: #db2777;
+  --pink-soft: #fce7f3;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 4px 16px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.04);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.06);
+  --sidebar-w: 240px;
+  --topbar-h: 48px;
+  --panel-w: 420px;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-lg: 12px;
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Code", "Segoe UI Mono", Consolas, monospace;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #141414;
+  --bg-elev: #1c1c1c;
+  --bg-soft: #222222;
+  --bg-hover: #2a2a2a;
+  --bg-active: #333333;
+  --border: #2e2e2e;
+  --border-strong: #404040;
+  --ink: #f5f5f5;
+  --ink-2: #d4d4d4;
+  --ink-3: #a3a3a3;
+  --ink-4: #737373;
+  --accent: #818cf8;
+  --accent-soft: #1e1b4b;
+  --accent-ink: #c7d2fe;
+  --success: #4ade80;
+  --success-soft: #14532d;
+  --warn: #fbbf24;
+  --warn-soft: #422006;
+  --danger: #f87171;
+  --danger-soft: #450a0a;
+  --info: #38bdf8;
+  --info-soft: #0c4a6e;
+  --purple: #a78bfa;
+  --purple-soft: #2e1065;
+  --pink: #f472b6;
+  --pink-soft: #500724;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+  --shadow: 0 4px 16px rgba(0,0,0,.35);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,.5);
+}
+
+html { height: 100%; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.45;
+  height: 100%;
+  overflow: hidden;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; border: none; background: none; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ── App shell ── */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  height: 100vh;
+  width: 100%;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  background: var(--bg-elev);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  z-index: 20;
+}
+.workspace {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.workspace-logo {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #575fcf, #a78bfa);
+  display: grid; place-items: center;
+  color: #fff; font-weight: 700; font-size: 13px;
+  flex-shrink: 0;
+}
+.workspace-meta { min-width: 0; flex: 1; }
+.workspace-name { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.workspace-sub { font-size: 11px; color: var(--ink-3); }
+.badge-mvp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 10px 12px 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  white-space: nowrap;
+}
+.nav-section {
+  padding: 8px 10px 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--ink-4);
+}
+.nav {
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  overflow-y: auto;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--ink-2);
+  font-weight: 500;
+  font-size: 13px;
+  transition: background .12s var(--ease), color .12s;
+  text-align: left;
+  width: 100%;
+}
+.nav-item:hover { background: var(--bg-hover); color: var(--ink); }
+.nav-item.active {
+  background: var(--bg-active);
+  color: var(--ink);
+  font-weight: 600;
+}
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: .85; }
+.nav-item .count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ink-4);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.sidebar-foot {
+  padding: 10px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--ink-3);
+  font-size: 12.5px;
+  width: 100%;
+  text-align: left;
+}
+.theme-btn:hover { background: var(--bg-hover); color: var(--ink); }
+
+/* ── Main ── */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  background: var(--bg);
+}
+.topbar {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+  flex-shrink: 0;
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  min-width: 0;
+}
+.breadcrumb .sep { color: var(--ink-4); font-weight: 400; }
+.breadcrumb .muted { color: var(--ink-3); font-weight: 500; }
+.spacer { flex: 1; }
+.search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--ink-3);
+  font-size: 12.5px;
+  min-width: 200px;
+  transition: border-color .15s, background .15s;
+}
+.search-trigger:hover { border-color: var(--border-strong); background: var(--bg-hover); }
+.search-trigger kbd {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--ink-4);
+}
+.icon-btn {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-sm);
+  color: var(--ink-3);
+  border: 1px solid transparent;
+}
+.icon-btn:hover { background: var(--bg-hover); color: var(--ink); }
+.icon-btn svg { width: 16px; height: 16px; }
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.view-tabs {
+  display: inline-flex;
+  padding: 2px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.view-tab {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.view-tab:hover { color: var(--ink); }
+.view-tab.active {
+  background: var(--bg-elev);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+}
+.view-tab svg { width: 14px; height: 14px; }
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.filter-chip input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 140px;
+  color: var(--ink);
+  font-size: 12px;
+}
+.filter-chip input::placeholder { color: var(--ink-4); }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 550;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--ink-2);
+  transition: background .12s, border-color .12s;
+}
+.btn:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { filter: brightness(1.05); background: var(--accent); }
+.btn svg { width: 14px; height: 14px; }
+
+/* ── Content area ── */
+.content-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  position: relative;
+}
+.content {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
+}
+
+/* ── Table ── */
+.table-wrap { min-width: 100%; }
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+table.data thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg-elev);
+  text-align: left;
+  font-weight: 500;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  user-select: none;
+}
+table.data tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  color: var(--ink-2);
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+table.data tbody tr {
+  cursor: pointer;
+  transition: background .1s;
+}
+table.data tbody tr:hover { background: var(--bg-hover); }
+table.data tbody tr.selected { background: var(--accent-soft); }
+table.data tbody tr.selected td { color: var(--ink); }
+
+.cell-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px;
+  font-weight: 650;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: -.02em;
+}
+.avatar.sq { border-radius: 7px; }
+.cell-name { font-weight: 550; color: var(--ink); }
+.cell-sub { font-size: 11.5px; color: var(--ink-3); }
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 550;
+  background: var(--bg-soft);
+  color: var(--ink-2);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+.tag.green { background: var(--success-soft); color: var(--success); border-color: transparent; }
+.tag.amber { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.tag.blue { background: var(--info-soft); color: var(--info); border-color: transparent; }
+.tag.purple { background: var(--purple-soft); color: var(--purple); border-color: transparent; }
+.tag.pink { background: var(--pink-soft); color: var(--pink); border-color: transparent; }
+.tag.gray { background: var(--bg-soft); color: var(--ink-3); }
+.money { font-variant-numeric: tabular-nums; font-weight: 550; color: var(--ink); }
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--ink-3);
+}
+.empty-state h3 { color: var(--ink-2); margin-bottom: 6px; font-size: 14px; }
+
+/* ── Kanban ── */
+.kanban {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px 24px;
+  min-height: 100%;
+  overflow-x: auto;
+  align-items: flex-start;
+}
+.kanban-col {
+  flex: 0 0 260px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - var(--topbar-h) - 100px);
+  min-height: 200px;
+}
+.kanban-col-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 8px;
+  font-weight: 600;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+.kanban-col-head .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.kanban-col-head .n {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-4);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+.kanban-cards {
+  padding: 4px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+.k-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .12s, box-shadow .12s, transform .12s;
+}
+.k-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+.k-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.k-card-title { font-weight: 600; font-size: 13px; color: var(--ink); margin-bottom: 6px; }
+.k-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  flex-wrap: wrap;
+}
+.k-card-meta .money { font-size: 12px; }
+.k-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.k-card-foot .cell-person { gap: 6px; }
+.k-card-foot .avatar { width: 20px; height: 20px; font-size: 9px; }
+
+/* ── Detail panel ── */
+.panel {
+  width: 0;
+  overflow: hidden;
+  border-left: 0 solid var(--border);
+  background: var(--bg-elev);
+  transition: width .22s var(--ease), border-width .22s;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+.panel.open {
+  width: var(--panel-w);
+  border-left-width: 1px;
+}
+.panel-inner {
+  width: var(--panel-w);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-head .titles { flex: 1; min-width: 0; }
+.panel-head h2 {
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.3;
+  word-break: break-word;
+}
+.panel-head .type-label {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 24px;
+}
+.field-group {
+  padding: 10px 16px 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-4);
+}
+.field {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  padding: 7px 16px;
+  align-items: start;
+}
+.field:hover { background: var(--bg-soft); }
+.field-label { color: var(--ink-3); font-size: 12.5px; padding-top: 1px; }
+.field-value { color: var(--ink); font-size: 13px; word-break: break-word; }
+.field-value.muted { color: var(--ink-4); }
+.rel-list { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
+.rel-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.rel-item:hover { background: var(--bg-hover); }
+.activity {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+}
+.activity time { color: var(--ink-4); font-size: 11px; display: block; margin-bottom: 2px; }
+.activity p { color: var(--ink-2); }
+
+/* ── Settings / home placeholders ── */
+.page-card {
+  margin: 20px auto;
+  max-width: 720px;
+  padding: 0 20px;
+}
+.page-card h2 { font-size: 18px; margin-bottom: 6px; }
+.page-card p { color: var(--ink-3); margin-bottom: 16px; }
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.stat-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+.stat-card .label { font-size: 11.5px; color: var(--ink-3); margin-bottom: 4px; }
+.stat-card .value { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.stat-card .hint { font-size: 11.5px; color: var(--ink-4); margin-top: 4px; }
+.feature-list {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-top: 12px;
+  overflow: hidden;
+}
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.feature-list li:last-child { border-bottom: none; }
+.feature-list .check {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--success-soft);
+  color: var(--success);
+  display: grid; place-items: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+/* ── Command palette ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  z-index: 100;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  backdrop-filter: blur(2px);
+}
+.overlay.open { display: flex; }
+.cmd {
+  width: min(560px, calc(100vw - 32px));
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.cmd-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.cmd-input-wrap svg { width: 16px; height: 16px; color: var(--ink-4); flex-shrink: 0; }
+.cmd-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--ink);
+}
+.cmd-input::placeholder { color: var(--ink-4); }
+.cmd-results {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 6px;
+}
+.cmd-group {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-4);
+  padding: 8px 10px 4px;
+}
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--ink-2);
+  font-size: 13px;
+}
+.cmd-item:hover, .cmd-item.active {
+  background: var(--bg-hover);
+  color: var(--ink);
+}
+.cmd-item .hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ink-4);
+}
+.cmd-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--ink-4);
+  font-size: 13px;
+}
+.cmd-foot {
+  border-top: 1px solid var(--border);
+  padding: 8px 14px;
+  font-size: 11px;
+  color: var(--ink-4);
+  display: flex;
+  gap: 12px;
+}
+.cmd-foot kbd {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-soft);
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  z-index: 200;
+  box-shadow: var(--shadow);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-w);
+    transform: translateX(-100%);
+    transition: transform .25s var(--ease);
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .panel.open { position: absolute; right: 0; top: 0; bottom: 0; z-index: 30; width: min(var(--panel-w), 100%); }
+  .search-trigger { min-width: 0; flex: 1; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+.mobile-menu-btn { display: none; }
+@media (max-width: 900px) {
+  .mobile-menu-btn { display: grid; }
+}
+
+/* Hide unused views via JS class */
+.view-hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- ════════ SIDEBAR ════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="workspace">
+      <div class="workspace-logo">T</div>
+      <div class="workspace-meta">
+        <div class="workspace-name">Twenty Workspace</div>
+        <div class="workspace-sub">Bloom research · demo</div>
+      </div>
+    </div>
+    <div class="badge-mvp" title="Structure prototype for Bloom CRM benchmark">MVP · Twenty structure → web</div>
+
+    <div class="nav-section">Workspace</div>
+    <nav class="nav" id="main-nav">
+      <button type="button" class="nav-item active" data-view="home" data-label="Главная">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5z"/></svg>
+        Главная
+      </button>
+      <button type="button" class="nav-item" data-view="people" data-label="Люди">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Люди
+        <span class="count" id="count-people">—</span>
+      </button>
+      <button type="button" class="nav-item" data-view="companies" data-label="Компании">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
+        Компании
+        <span class="count" id="count-companies">—</span>
+      </button>
+      <button type="button" class="nav-item" data-view="opportunities" data-label="Возможности">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+        Возможности
+        <span class="count" id="count-opps">—</span>
+      </button>
+      <button type="button" class="nav-item" data-view="tasks" data-label="Задачи">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Задачи
+        <span class="count" id="count-tasks">—</span>
+      </button>
+      <button type="button" class="nav-item" data-view="notes" data-label="Заметки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        Заметки
+        <span class="count" id="count-notes">—</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="nav-item" data-view="settings" data-label="Настройки" style="width:100%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Настройки
+      </button>
+      <button type="button" class="theme-btn" id="theme-toggle" title="Переключить тему">
+        <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <span id="theme-label">Тёмная тема</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ════════ MAIN ════════ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn mobile-menu-btn" id="mobile-menu" aria-label="Меню">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="breadcrumb" id="breadcrumb">
+        <span class="muted">Twenty</span>
+        <span class="sep">/</span>
+        <span id="crumb-current">Главная</span>
+      </div>
+      <div class="spacer"></div>
+      <button type="button" class="search-trigger" id="open-cmd" title="Поиск (Ctrl+K)">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+        Поиск…
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button type="button" class="icon-btn" id="close-panel-btn" title="Закрыть панель" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+
+    <div class="toolbar" id="toolbar">
+      <!-- filled by JS per view -->
+    </div>
+
+    <div class="content-wrap">
+      <div class="content" id="content">
+        <!-- views injected -->
+      </div>
+      <aside class="panel" id="panel">
+        <div class="panel-inner" id="panel-inner">
+          <!-- detail injected -->
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- Command palette -->
+<div class="overlay" id="cmd-overlay" role="dialog" aria-modal="true" aria-label="Командная палитра">
+  <div class="cmd">
+    <div class="cmd-input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+      <input class="cmd-input" id="cmd-input" type="search" placeholder="Поиск людей, компаний, сделок, разделов…" autocomplete="off" />
+    </div>
+    <div class="cmd-results" id="cmd-results"></div>
+    <div class="cmd-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> навигация</span>
+      <span><kbd>↵</kbd> открыть</span>
+      <span><kbd>Esc</kbd> закрыть</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════
+   Demo data — Twenty-like object model
+   ════════════════════════════════════════ */
+const AVATAR_COLORS = ["#575fcf","#7c3aed","#db2777","#0284c7","#16a34a","#d97706","#0f766e","#be123c"];
+const initials = (name) => name.split(/\s+/).map(p => p[0]).slice(0,2).join("").toUpperCase();
+const colorFor = (str) => AVATAR_COLORS[[...str].reduce((a,c)=>a+c.charCodeAt(0),0) % AVATAR_COLORS.length];
+const fmtMoney = (n) => new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 }).format(n);
+const fmtDate = (iso) => new Date(iso).toLocaleDateString("ru-RU", { day: "numeric", month: "short", year: "numeric" });
+
+const STAGES = [
+  { id: "new", label: "Новые", color: "#737373" },
+  { id: "qualifying", label: "Квалификация", color: "#0284c7" },
+  { id: "proposal", label: "Предложение", color: "#7c3aed" },
+  { id: "negotiation", label: "Переговоры", color: "#d97706" },
+  { id: "won", label: "Выиграно", color: "#16a34a" },
+  { id: "lost", label: "Проиграно", color: "#dc2626" },
+];
+
+const COMPANIES = [
+  { id: "c1", name: "Bloom Network HQ", domain: "bloom.network", industry: "Marketplace", employees: 120, city: "Москва", created: "2025-11-02", arr: 48000000 },
+  { id: "c2", name: "Floristica Pro", domain: "floristica.pro", industry: "Retail", employees: 45, city: "СПб", created: "2025-12-14", arr: 9200000 },
+  { id: "c3", name: "Petal Logistics", domain: "petal-log.ru", industry: "Logistics", employees: 80, city: "Казань", created: "2026-01-08", arr: 15400000 },
+  { id: "c4", name: "Garden Soft", domain: "gardensoft.io", industry: "SaaS", employees: 22, city: "Екатеринбург", created: "2026-02-20", arr: 3100000 },
+  { id: "c5", name: "Rosemarket", domain: "rosemarket.ru", industry: "E-commerce", employees: 60, city: "Новосибирск", created: "2026-03-11", arr: 18700000 },
+  { id: "c6", name: "Vase & Co", domain: "vaseco.com", industry: "Wholesale", employees: 35, city: "Москва", created: "2026-04-02", arr: 6400000 },
+];
+
+const PEOPLE = [
+  { id: "p1", name: "Анна Соколова", email: "anna@bloom.network", phone: "+7 905 100-20-30", job: "Head of Ops", companyId: "c1", city: "Москва", status: "active", created: "2025-11-03" },
+  { id: "p2", name: "Игорь Лебедев", email: "igor@floristica.pro", phone: "+7 921 555-01-02", job: "CEO", companyId: "c2", city: "СПб", status: "active", created: "2025-12-15" },
+  { id: "p3", name: "Мария Ким", email: "m.kim@petal-log.ru", phone: "+7 917 300-40-50", job: "Fleet Manager", companyId: "c3", city: "Казань", status: "active", created: "2026-01-09" },
+  { id: "p4", name: "Дмитрий Орлов", email: "d.orlov@gardensoft.io", phone: "+7 912 700-80-90", job: "Product Lead", companyId: "c4", city: "Екатеринбург", status: "lead", created: "2026-02-21" },
+  { id: "p5", name: "Елена Васильева", email: "elena@rosemarket.ru", phone: "+7 913 111-22-33", job: "CMO", companyId: "c5", city: "Новосибирск", status: "active", created: "2026-03-12" },
+  { id: "p6", name: "Павел Новиков", email: "pavel@vaseco.com", phone: "+7 495 200-30-40", job: "Procurement", companyId: "c6", city: "Москва", status: "lead", created: "2026-04-03" },
+  { id: "p7", name: "София Морозова", email: "sofia@bloom.network", phone: "+7 903 444-55-66", job: "Account Manager", companyId: "c1", city: "Москва", status: "active", created: "2026-01-20" },
+  { id: "p8", name: "Артём Белов", email: "artem@floristica.pro", phone: "+7 921 888-00-11", job: "Ops Lead", companyId: "c2", city: "СПб", status: "inactive", created: "2026-02-01" },
+];
+
+const OPPORTUNITIES = [
+  { id: "o1", name: "Мультимагазин Bloom × Floristica", amount: 2400000, stage: "negotiation", companyId: "c2", personId: "p2", closeDate: "2026-08-20", probability: 70, owner: "София Морозова" },
+  { id: "o2", name: "Интеграция курьеров Petal", amount: 1800000, stage: "proposal", companyId: "c3", personId: "p3", closeDate: "2026-09-05", probability: 55, owner: "Анна Соколова" },
+  { id: "o3", name: "SaaS-модуль статусов Garden Soft", amount: 920000, stage: "qualifying", companyId: "c4", personId: "p4", closeDate: "2026-09-30", probability: 35, owner: "София Морозова" },
+  { id: "o4", name: "Rosemarket — пилот inbox", amount: 3100000, stage: "new", companyId: "c5", personId: "p5", closeDate: "2026-10-15", probability: 20, owner: "Анна Соколова" },
+  { id: "o5", name: "Vase & Co — wholesale API", amount: 650000, stage: "won", companyId: "c6", personId: "p6", closeDate: "2026-07-10", probability: 100, owner: "София Морозова" },
+  { id: "o6", name: "HQ — dual status engine", amount: 5200000, stage: "negotiation", companyId: "c1", personId: "p1", closeDate: "2026-08-31", probability: 65, owner: "Анна Соколова" },
+  { id: "o7", name: "Floristica — analytics pack", amount: 480000, stage: "lost", companyId: "c2", personId: "p8", closeDate: "2026-06-01", probability: 0, owner: "София Морозова" },
+  { id: "o8", name: "Petal — SLA dashboard", amount: 1100000, stage: "proposal", companyId: "c3", personId: "p3", closeDate: "2026-09-18", probability: 50, owner: "Анна Соколова" },
+  { id: "o9", name: "Rosemarket — multi-branch", amount: 2750000, stage: "qualifying", companyId: "c5", personId: "p5", closeDate: "2026-11-01", probability: 40, owner: "София Морозова" },
+  { id: "o10", name: "Garden Soft — partner embed", amount: 390000, stage: "new", companyId: "c4", personId: "p4", closeDate: "2026-10-28", probability: 15, owner: "Анна Соколова" },
+];
+
+const TASKS = [
+  { id: "t1", title: "Согласовать SLA доставки", due: "2026-08-05", status: "open", related: "o2", assignee: "Анна Соколова" },
+  { id: "t2", title: "Демо dual-status для HQ", due: "2026-08-08", status: "open", related: "o6", assignee: "София Морозова" },
+  { id: "t3", title: "Подготовить КП для Floristica", due: "2026-08-03", status: "done", related: "o1", assignee: "София Морозова" },
+  { id: "t4", title: "Сбор требований inbox Rosemarket", due: "2026-08-12", status: "open", related: "o4", assignee: "Анна Соколова" },
+  { id: "t5", title: "Закрыть договор Vase & Co", due: "2026-07-15", status: "done", related: "o5", assignee: "София Морозова" },
+  { id: "t6", title: "Тех. discovery Garden Soft", due: "2026-08-18", status: "open", related: "o3", assignee: "Дмитрий Орлов" },
+];
+
+const NOTES = [
+  { id: "n1", title: "Итоги звонка с Floristica", body: "Готовы к пилоту multi-shop. Нужна карта статусов fulfillment vs payment.", relatedType: "company", relatedId: "c2", author: "София Морозова", created: "2026-07-28" },
+  { id: "n2", title: "Заметки по dual status", body: "Twenty: pipeline stage + custom fields. Bloom: parallel dimensions (fulfillment / payment / shop).", relatedType: "opportunity", relatedId: "o6", author: "Анна Соколова", created: "2026-07-30" },
+  { id: "n3", title: "Petal logistics constraints", body: "SLA 90 мин в радиусе 5 км. Нужна привязка курьера к заказу и thread.", relatedType: "company", relatedId: "c3", author: "Мария Ким", created: "2026-07-22" },
+  { id: "n4", title: "UX observation — command menu", body: "Cmd+K в Twenty — быстрый jump по объектам. Хороший паттерн для ops-кабинета.", relatedType: "person", relatedId: "p1", author: "Research", created: "2026-07-31" },
+];
+
+const companyById = (id) => COMPANIES.find(c => c.id === id);
+const personById = (id) => PEOPLE.find(p => p.id === id);
+const oppById = (id) => OPPORTUNITIES.find(o => o.id === id);
+const stageById = (id) => STAGES.find(s => s.id === id);
+
+const STATUS_TAG = {
+  active: { cls: "green", label: "Active" },
+  lead: { cls: "blue", label: "Lead" },
+  inactive: { cls: "gray", label: "Inactive" },
+  open: { cls: "amber", label: "Open" },
+  done: { cls: "green", label: "Done" },
+};
+
+/* ════════════════════════════════════════
+   App state
+   ════════════════════════════════════════ */
+const state = {
+  view: "home",
+  oppMode: "table", // table | kanban
+  filter: "",
+  selected: null, // { type, id }
+  cmdOpen: false,
+  cmdIndex: 0,
+};
+
+/* ════════════════════════════════════════
+   DOM helpers
+   ════════════════════════════════════════ */
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const el = (html) => {
+  const t = document.createElement("template");
+  t.innerHTML = html.trim();
+  return t.content.firstElementChild;
+};
+
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._tm);
+  toast._tm = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+function avatarHtml(name, { sq = false, size } = {}) {
+  const style = `background:${colorFor(name)}${size ? `;width:${size}px;height:${size}px;font-size:${Math.round(size*0.38)}px` : ""}`;
+  return `<span class="avatar${sq ? " sq" : ""}" style="${style}">${initials(name)}</span>`;
+}
+
+/* ════════════════════════════════════════
+   Theme
+   ════════════════════════════════════════ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("twenty-mvp-theme", theme);
+  const isDark = theme === "dark";
+  $("#theme-label").textContent = isDark ? "Светлая тема" : "Тёмная тема";
+}
+function initTheme() {
+  const saved = localStorage.getItem("twenty-mvp-theme");
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(saved || (prefersDark ? "dark" : "light"));
+}
+$("#theme-toggle").addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme");
+  applyTheme(cur === "dark" ? "light" : "dark");
+});
+
+/* ════════════════════════════════════════
+   Navigation
+   ════════════════════════════════════════ */
+function setView(view, { keepSelection = false } = {}) {
+  state.view = view;
+  if (!keepSelection) {
+    state.selected = null;
+    state.filter = "";
+  }
+  $$(".nav-item[data-view]").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+  $("#crumb-current").textContent = $(`.nav-item[data-view="${view}"]`)?.dataset.label || view;
+  closePanel();
+  render();
+  // close mobile sidebar
+  $("#sidebar").classList.remove("mobile-open");
+}
+
+$$(".nav-item[data-view]").forEach(btn => {
+  btn.addEventListener("click", () => setView(btn.dataset.view));
+});
+
+$("#mobile-menu").addEventListener("click", () => {
+  $("#sidebar").classList.toggle("mobile-open");
+});
+
+/* ════════════════════════════════════════
+   Selection / detail panel
+   ════════════════════════════════════════ */
+function selectRecord(type, id) {
+  state.selected = { type, id };
+  openPanel();
+  // re-highlight tables/cards without full re-render of heavy views when possible
+  renderContent(false);
+  renderPanel();
+}
+
+function openPanel() {
+  $("#panel").classList.add("open");
+  $("#close-panel-btn").style.display = "grid";
+}
+function closePanel() {
+  state.selected = null;
+  $("#panel").classList.remove("open");
+  $("#close-panel-btn").style.display = "none";
+  $("#panel-inner").innerHTML = "";
+  // clear selection styles
+  $$("tr.selected, .k-card.selected").forEach(n => n.classList.remove("selected"));
+}
+$("#close-panel-btn").addEventListener("click", closePanel);
+
+function isSelected(type, id) {
+  return state.selected && state.selected.type === type && state.selected.id === id;
+}
+
+/* ════════════════════════════════════════
+   Toolbar
+   ════════════════════════════════════════ */
+function renderToolbar() {
+  const tb = $("#toolbar");
+  const v = state.view;
+  const showFilter = ["people","companies","opportunities","tasks","notes"].includes(v);
+  const showOppViews = v === "opportunities";
+
+  let html = "";
+  if (showOppViews) {
+    html += `
+      <div class="view-tabs">
+        <button type="button" class="view-tab ${state.oppMode === "table" ? "active" : ""}" data-mode="table">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          Таблица
+        </button>
+        <button type="button" class="view-tab ${state.oppMode === "kanban" ? "active" : ""}" data-mode="kanban">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h4v16H4zM10 4h4v10h-4zM16 4h4v13h-4z"/></svg>
+          Канбан
+        </button>
+      </div>`;
+  }
+  if (showFilter) {
+    html += `
+      <label class="filter-chip">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+        <input type="search" id="filter-input" placeholder="Фильтр по имени…" value="${escapeAttr(state.filter)}" />
+      </label>`;
+  }
+  html += `<div class="spacer"></div>`;
+  if (showFilter) {
+    html += `<button type="button" class="btn btn-primary" id="btn-new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Создать</button>`;
+  }
+  if (v === "home" || v === "settings") {
+    html = `<div style="color:var(--ink-3);font-size:12.5px">Структурный MVP · объектная модель Twenty (People / Companies / Opportunities)</div><div class="spacer"></div>
+      <button type="button" class="btn" id="btn-open-cmd">⌘K Поиск</button>`;
+  }
+  tb.innerHTML = html;
+
+  const fi = $("#filter-input");
+  if (fi) {
+    fi.addEventListener("input", (e) => {
+      state.filter = e.target.value;
+      renderContent(true);
+    });
+  }
+  $$(".view-tab[data-mode]").forEach(b => {
+    b.addEventListener("click", () => {
+      state.oppMode = b.dataset.mode;
+      render();
+    });
+  });
+  $("#btn-new")?.addEventListener("click", () => toast("MVP: создание записи — заглушка"));
+  $("#btn-open-cmd")?.addEventListener("click", openCmd);
+}
+
+/* ════════════════════════════════════════
+   Content views
+   ════════════════════════════════════════ */
+function matchesFilter(text) {
+  const q = state.filter.trim().toLowerCase();
+  if (!q) return true;
+  return String(text).toLowerCase().includes(q);
+}
+
+function render() {
+  updateCounts();
+  renderToolbar();
+  renderContent(true);
+  if (state.selected) {
+    openPanel();
+    renderPanel();
+  }
+}
+
+function updateCounts() {
+  $("#count-people").textContent = PEOPLE.length;
+  $("#count-companies").textContent = COMPANIES.length;
+  $("#count-opps").textContent = OPPORTUNITIES.length;
+  $("#count-tasks").textContent = TASKS.length;
+  $("#count-notes").textContent = NOTES.length;
+}
+
+function renderContent(scrollReset) {
+  const root = $("#content");
+  const prevScroll = scrollReset ? 0 : root.scrollTop;
+  let html = "";
+  switch (state.view) {
+    case "home": html = viewHome(); break;
+    case "people": html = viewPeople(); break;
+    case "companies": html = viewCompanies(); break;
+    case "opportunities":
+      html = state.oppMode === "kanban" ? viewOppKanban() : viewOppTable();
+      break;
+    case "tasks": html = viewTasks(); break;
+    case "notes": html = viewNotes(); break;
+    case "settings": html = viewSettings(); break;
+    default: html = viewHome();
+  }
+  root.innerHTML = html;
+  root.scrollTop = prevScroll;
+  bindContentEvents();
+}
+
+function bindContentEvents() {
+  $$("[data-open]").forEach(node => {
+    node.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const [type, id] = node.dataset.open.split(":");
+      selectRecord(type, id);
+    });
+  });
+  $$("[data-goto]").forEach(node => {
+    node.addEventListener("click", () => setView(node.dataset.goto));
+  });
+}
+
+function viewHome() {
+  const pipeline = OPPORTUNITIES.filter(o => !["won","lost"].includes(o.stage));
+  const pipelineSum = pipeline.reduce((s,o) => s + o.amount, 0);
+  const wonSum = OPPORTUNITIES.filter(o => o.stage === "won").reduce((s,o) => s + o.amount, 0);
+  return `
+    <div class="page-card">
+      <h2>Twenty — structure MVP</h2>
+      <p>Интерактивная оболочка IA Twenty CRM для бенчмарка Bloom: объекты, таблица, канбан, detail panel, command palette. Данные — демо, без backend.</p>
+      <div class="grid-2">
+        <div class="stat-card">
+          <div class="label">People</div>
+          <div class="value">${PEOPLE.length}</div>
+          <div class="hint">контакты + job title + company link</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Companies</div>
+          <div class="value">${COMPANIES.length}</div>
+          <div class="hint">orgs с domain / industry</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Open pipeline</div>
+          <div class="value" style="font-size:18px">${fmtMoney(pipelineSum)}</div>
+          <div class="hint">${pipeline.length} возможностей · не won/lost</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Won (demo)</div>
+          <div class="value" style="font-size:18px">${fmtMoney(wonSum)}</div>
+          <div class="hint">закрытые сделки</div>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li><span class="check">✓</span> Левый nav: People · Companies · Opportunities · Tasks · Notes</li>
+        <li><span class="check">✓</span> Табличные views + фильтр</li>
+        <li><span class="check">✓</span> Канбан pipeline (stages)</li>
+        <li><span class="check">✓</span> Record detail side panel</li>
+        <li><span class="check">✓</span> Command palette (Ctrl/⌘ K)</li>
+        <li><span class="check">✓</span> Light / dark theme</li>
+      </ul>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="btn btn-primary" data-goto="opportunities">Открыть Opportunities</button>
+        <button type="button" class="btn" data-goto="people">Люди</button>
+        <button type="button" class="btn" data-goto="companies">Компании</button>
+      </div>
+    </div>`;
+}
+
+function viewPeople() {
+  const rows = PEOPLE.filter(p => {
+    const co = companyById(p.companyId)?.name || "";
+    return matchesFilter([p.name, p.email, p.job, co, p.city].join(" "));
+  });
+  if (!rows.length) return empty("Нет людей по фильтру");
+  return `
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Имя</th>
+            <th>Должность</th>
+            <th>Компания</th>
+            <th>Email</th>
+            <th>Статус</th>
+            <th>Город</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(p => {
+            const co = companyById(p.companyId);
+            const st = STATUS_TAG[p.status] || STATUS_TAG.lead;
+            return `
+              <tr class="${isSelected("person", p.id) ? "selected" : ""}" data-open="person:${p.id}">
+                <td>
+                  <div class="cell-person">
+                    ${avatarHtml(p.name)}
+                    <div>
+                      <div class="cell-name">${escapeHtml(p.name)}</div>
+                      <div class="cell-sub">${escapeHtml(p.phone)}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>${escapeHtml(p.job)}</td>
+                <td>${co ? escapeHtml(co.name) : "—"}</td>
+                <td>${escapeHtml(p.email)}</td>
+                <td><span class="tag ${st.cls}">${st.label}</span></td>
+                <td>${escapeHtml(p.city)}</td>
+              </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function viewCompanies() {
+  const rows = COMPANIES.filter(c => matchesFilter([c.name, c.domain, c.industry, c.city].join(" ")));
+  if (!rows.length) return empty("Нет компаний по фильтру");
+  return `
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Компания</th>
+            <th>Domain</th>
+            <th>Industry</th>
+            <th>Сотрудники</th>
+            <th>Город</th>
+            <th>ARR (demo)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(c => `
+            <tr class="${isSelected("company", c.id) ? "selected" : ""}" data-open="company:${c.id}">
+              <td>
+                <div class="cell-person">
+                  ${avatarHtml(c.name, { sq: true })}
+                  <div class="cell-name">${escapeHtml(c.name)}</div>
+                </div>
+              </td>
+              <td>${escapeHtml(c.domain)}</td>
+              <td><span class="tag purple">${escapeHtml(c.industry)}</span></td>
+              <td>${c.employees}</td>
+              <td>${escapeHtml(c.city)}</td>
+              <td class="money">${fmtMoney(c.arr)}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function viewOppTable() {
+  const rows = OPPORTUNITIES.filter(o => {
+    const co = companyById(o.companyId)?.name || "";
+    const pe = personById(o.personId)?.name || "";
+    return matchesFilter([o.name, co, pe, o.owner, stageById(o.stage)?.label].join(" "));
+  });
+  if (!rows.length) return empty("Нет возможностей по фильтру");
+  return `
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Возможность</th>
+            <th>Сумма</th>
+            <th>Стадия</th>
+            <th>Компания</th>
+            <th>Контакт</th>
+            <th>Close date</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(o => {
+            const st = stageById(o.stage);
+            const co = companyById(o.companyId);
+            const pe = personById(o.personId);
+            const tagCls = stageTagClass(o.stage);
+            return `
+              <tr class="${isSelected("opportunity", o.id) ? "selected" : ""}" data-open="opportunity:${o.id}">
+                <td><span class="cell-name">${escapeHtml(o.name)}</span></td>
+                <td class="money">${fmtMoney(o.amount)}</td>
+                <td><span class="tag ${tagCls}">${escapeHtml(st?.label || o.stage)}</span></td>
+                <td>${co ? escapeHtml(co.name) : "—"}</td>
+                <td>${pe ? escapeHtml(pe.name) : "—"}</td>
+                <td>${fmtDate(o.closeDate)}</td>
+                <td>${o.probability}%</td>
+              </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function stageTagClass(stage) {
+  return ({ new: "gray", qualifying: "blue", proposal: "purple", negotiation: "amber", won: "green", lost: "pink" })[stage] || "gray";
+}
+
+function viewOppKanban() {
+  const q = state.filter.trim().toLowerCase();
+  return `
+    <div class="kanban">
+      ${STAGES.map(st => {
+        const cards = OPPORTUNITIES.filter(o => {
+          if (o.stage !== st.id) return false;
+          if (!q) return true;
+          const co = companyById(o.companyId)?.name || "";
+          return [o.name, co, o.owner].join(" ").toLowerCase().includes(q);
+        });
+        return `
+          <div class="kanban-col">
+            <div class="kanban-col-head">
+              <span class="dot" style="background:${st.color}"></span>
+              ${escapeHtml(st.label)}
+              <span class="n">${cards.length}</span>
+            </div>
+            <div class="kanban-cards">
+              ${cards.map(o => {
+                const pe = personById(o.personId);
+                const co = companyById(o.companyId);
+                return `
+                  <div class="k-card ${isSelected("opportunity", o.id) ? "selected" : ""}" data-open="opportunity:${o.id}">
+                    <div class="k-card-title">${escapeHtml(o.name)}</div>
+                    <div class="k-card-meta">
+                      <span class="money">${fmtMoney(o.amount)}</span>
+                      <span>·</span>
+                      <span>${o.probability}%</span>
+                    </div>
+                    <div class="k-card-meta" style="margin-top:4px">${co ? escapeHtml(co.name) : ""}</div>
+                    <div class="k-card-foot">
+                      <div class="cell-person">
+                        ${pe ? avatarHtml(pe.name) : ""}
+                        <span style="font-size:11.5px;color:var(--ink-3)">${pe ? escapeHtml(pe.name.split(" ")[0]) : "—"}</span>
+                      </div>
+                      <span style="font-size:11px;color:var(--ink-4)">${fmtDate(o.closeDate)}</span>
+                    </div>
+                  </div>`;
+              }).join("") || `<div style="padding:12px;color:var(--ink-4);font-size:12px;text-align:center">Пусто</div>`}
+            </div>
+          </div>`;
+      }).join("")}
+    </div>`;
+}
+
+function viewTasks() {
+  const rows = TASKS.filter(t => matchesFilter([t.title, t.assignee, t.status].join(" ")));
+  if (!rows.length) return empty("Нет задач по фильтру");
+  return `
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Задача</th>
+            <th>Срок</th>
+            <th>Статус</th>
+            <th>Assignee</th>
+            <th>Related</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(t => {
+            const st = STATUS_TAG[t.status] || STATUS_TAG.open;
+            const opp = oppById(t.related);
+            return `
+              <tr class="${isSelected("task", t.id) ? "selected" : ""}" data-open="task:${t.id}">
+                <td><span class="cell-name">${escapeHtml(t.title)}</span></td>
+                <td>${fmtDate(t.due)}</td>
+                <td><span class="tag ${st.cls}">${st.label}</span></td>
+                <td>${escapeHtml(t.assignee)}</td>
+                <td>${opp ? escapeHtml(opp.name) : "—"}</td>
+              </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function viewNotes() {
+  const rows = NOTES.filter(n => matchesFilter([n.title, n.body, n.author].join(" ")));
+  if (!rows.length) return empty("Нет заметок по фильтру");
+  return `
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Заметка</th>
+            <th>Автор</th>
+            <th>Связь</th>
+            <th>Дата</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(n => {
+            let rel = "—";
+            if (n.relatedType === "company") rel = companyById(n.relatedId)?.name || "—";
+            if (n.relatedType === "person") rel = personById(n.relatedId)?.name || "—";
+            if (n.relatedType === "opportunity") rel = oppById(n.relatedId)?.name || "—";
+            return `
+              <tr class="${isSelected("note", n.id) ? "selected" : ""}" data-open="note:${n.id}">
+                <td>
+                  <div class="cell-name">${escapeHtml(n.title)}</div>
+                  <div class="cell-sub">${escapeHtml(n.body.slice(0, 72))}${n.body.length > 72 ? "…" : ""}</div>
+                </td>
+                <td>${escapeHtml(n.author)}</td>
+                <td>${escapeHtml(rel)}</td>
+                <td>${fmtDate(n.created)}</td>
+              </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function viewSettings() {
+  return `
+    <div class="page-card">
+      <h2>Настройки (заглушка)</h2>
+      <p>В Twenty: workspace, members, object model, fields, views, integrations. Здесь — только маркеры структуры для research.</p>
+      <ul class="feature-list">
+        <li><span class="check">·</span> Workspace & members</li>
+        <li><span class="check">·</span> Data model / custom objects</li>
+        <li><span class="check">·</span> Views & filters</li>
+        <li><span class="check">·</span> API keys / webhooks</li>
+        <li><span class="check">·</span> Appearance (theme toggle в sidebar уже работает)</li>
+      </ul>
+    </div>`;
+}
+
+function empty(msg) {
+  return `<div class="empty-state"><h3>${escapeHtml(msg)}</h3><p>Измените фильтр или сбросьте поиск.</p></div>`;
+}
+
+/* ════════════════════════════════════════
+   Detail panel
+   ════════════════════════════════════════ */
+function renderPanel() {
+  const sel = state.selected;
+  if (!sel) return;
+  const inner = $("#panel-inner");
+  let html = "";
+  switch (sel.type) {
+    case "person": html = panelPerson(personById(sel.id)); break;
+    case "company": html = panelCompany(companyById(sel.id)); break;
+    case "opportunity": html = panelOpp(oppById(sel.id)); break;
+    case "task": html = panelTask(TASKS.find(t => t.id === sel.id)); break;
+    case "note": html = panelNote(NOTES.find(n => n.id === sel.id)); break;
+  }
+  if (!html) {
+    inner.innerHTML = `<div class="panel-head"><div class="titles"><h2>Не найдено</h2></div>
+      <button type="button" class="icon-btn" id="panel-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
+  } else {
+    inner.innerHTML = html;
+  }
+  $("#panel-x")?.addEventListener("click", closePanel);
+  $$("[data-open]", inner).forEach(node => {
+    node.addEventListener("click", () => {
+      const [type, id] = node.dataset.open.split(":");
+      // navigate to related list view when useful
+      if (type === "person") setView("people", { keepSelection: true });
+      if (type === "company") setView("companies", { keepSelection: true });
+      if (type === "opportunity") setView("opportunities", { keepSelection: true });
+      selectRecord(type, id);
+    });
+  });
+}
+
+function panelShell({ typeLabel, title, avatarName, sq, body }) {
+  return `
+    <div class="panel-head">
+      ${avatarName ? avatarHtml(avatarName, { sq }) : ""}
+      <div class="titles">
+        <h2>${escapeHtml(title)}</h2>
+        <div class="type-label">${escapeHtml(typeLabel)}</div>
+      </div>
+      <button type="button" class="icon-btn" id="panel-x" title="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">${body}</div>`;
+}
+
+function field(label, value, { muted = false } = {}) {
+  const v = value == null || value === "" ? "—" : value;
+  return `<div class="field"><div class="field-label">${escapeHtml(label)}</div><div class="field-value${muted && (v === "—") ? " muted" : ""}">${typeof v === "string" && v.startsWith("<") ? v : escapeHtml(String(v))}</div></div>`;
+}
+
+function panelPerson(p) {
+  if (!p) return "";
+  const co = companyById(p.companyId);
+  const st = STATUS_TAG[p.status] || STATUS_TAG.lead;
+  const opps = OPPORTUNITIES.filter(o => o.personId === p.id);
+  const body = `
+    <div class="field-group">Поля</div>
+    ${field("Email", p.email)}
+    ${field("Телефон", p.phone)}
+    ${field("Должность", p.job)}
+    ${field("Город", p.city)}
+    ${field("Статус", `<span class="tag ${st.cls}">${st.label}</span>`)}
+    ${field("Создан", fmtDate(p.created))}
+    <div class="field-group">Компания</div>
+    <div class="rel-list">
+      ${co ? `<button type="button" class="rel-item" data-open="company:${co.id}">${avatarHtml(co.name, { sq: true })} <span>${escapeHtml(co.name)}</span></button>` : `<div class="field-value muted" style="padding:8px 12px">—</div>`}
+    </div>
+    <div class="field-group">Возможности (${opps.length})</div>
+    <div class="rel-list">
+      ${opps.map(o => `<button type="button" class="rel-item" data-open="opportunity:${o.id}"><span style="flex:1;text-align:left">${escapeHtml(o.name)}</span><span class="money" style="font-size:12px">${fmtMoney(o.amount)}</span></button>`).join("") || `<div style="padding:8px 12px;color:var(--ink-4)">Нет связанных сделок</div>`}
+    </div>
+    <div class="field-group">Активность (demo)</div>
+    <div class="activity"><time>2 дня назад</time><p>Email: follow-up по статусам заказа</p></div>
+    <div class="activity"><time>5 дней назад</time><p>Запись создана в workspace</p></div>`;
+  return panelShell({ typeLabel: "Person", title: p.name, avatarName: p.name, body });
+}
+
+function panelCompany(c) {
+  if (!c) return "";
+  const people = PEOPLE.filter(p => p.companyId === c.id);
+  const opps = OPPORTUNITIES.filter(o => o.companyId === c.id);
+  const body = `
+    <div class="field-group">Поля</div>
+    ${field("Domain", c.domain)}
+    ${field("Industry", `<span class="tag purple">${escapeHtml(c.industry)}</span>`)}
+    ${field("Сотрудники", String(c.employees))}
+    ${field("Город", c.city)}
+    ${field("ARR", fmtMoney(c.arr))}
+    ${field("Создана", fmtDate(c.created))}
+    <div class="field-group">People (${people.length})</div>
+    <div class="rel-list">
+      ${people.map(p => `<button type="button" class="rel-item" data-open="person:${p.id}">${avatarHtml(p.name)} <div style="text-align:left"><div>${escapeHtml(p.name)}</div><div class="cell-sub">${escapeHtml(p.job)}</div></div></button>`).join("")}
+    </div>
+    <div class="field-group">Opportunities (${opps.length})</div>
+    <div class="rel-list">
+      ${opps.map(o => `<button type="button" class="rel-item" data-open="opportunity:${o.id}"><span style="flex:1;text-align:left">${escapeHtml(o.name)}</span><span class="tag ${stageTagClass(o.stage)}">${escapeHtml(stageById(o.stage)?.label || "")}</span></button>`).join("") || `<div style="padding:8px 12px;color:var(--ink-4)">Нет сделок</div>`}
+    </div>`;
+  return panelShell({ typeLabel: "Company", title: c.name, avatarName: c.name, sq: true, body });
+}
+
+function panelOpp(o) {
+  if (!o) return "";
+  const st = stageById(o.stage);
+  const co = companyById(o.companyId);
+  const pe = personById(o.personId);
+  const tasks = TASKS.filter(t => t.related === o.id);
+  const body = `
+    <div class="field-group">Поля</div>
+    ${field("Сумма", fmtMoney(o.amount))}
+    ${field("Стадия", `<span class="tag ${stageTagClass(o.stage)}">${escapeHtml(st?.label || o.stage)}</span>`)}
+    ${field("Вероятность", o.probability + "%")}
+    ${field("Close date", fmtDate(o.closeDate))}
+    ${field("Owner", o.owner)}
+    <div class="field-group">Связи</div>
+    <div class="rel-list">
+      ${co ? `<button type="button" class="rel-item" data-open="company:${co.id}">${avatarHtml(co.name, { sq: true })} <span>${escapeHtml(co.name)}</span></button>` : ""}
+      ${pe ? `<button type="button" class="rel-item" data-open="person:${pe.id}">${avatarHtml(pe.name)} <span>${escapeHtml(pe.name)}</span></button>` : ""}
+    </div>
+    <div class="field-group">Задачи (${tasks.length})</div>
+    <div class="rel-list">
+      ${tasks.map(t => `<button type="button" class="rel-item" data-open="task:${t.id}"><span style="flex:1;text-align:left">${escapeHtml(t.title)}</span><span class="tag ${STATUS_TAG[t.status]?.cls || "gray"}">${STATUS_TAG[t.status]?.label || t.status}</span></button>`).join("") || `<div style="padding:8px 12px;color:var(--ink-4)">Нет задач</div>`}
+    </div>
+    <div class="field-group">Pipeline (Twenty pattern)</div>
+    <div style="padding:8px 16px 0;display:flex;flex-wrap:wrap;gap:6px">
+      ${STAGES.map(s => `<span class="tag ${s.id === o.stage ? stageTagClass(s.id) : "gray"}" style="${s.id === o.stage ? "" : "opacity:.55"}">${escapeHtml(s.label)}</span>`).join("")}
+    </div>`;
+  return panelShell({ typeLabel: "Opportunity", title: o.name, body });
+}
+
+function panelTask(t) {
+  if (!t) return "";
+  const opp = oppById(t.related);
+  const st = STATUS_TAG[t.status] || STATUS_TAG.open;
+  const body = `
+    <div class="field-group">Поля</div>
+    ${field("Срок", fmtDate(t.due))}
+    ${field("Статус", `<span class="tag ${st.cls}">${st.label}</span>`)}
+    ${field("Assignee", t.assignee)}
+    <div class="field-group">Related opportunity</div>
+    <div class="rel-list">
+      ${opp ? `<button type="button" class="rel-item" data-open="opportunity:${opp.id}"><span>${escapeHtml(opp.name)}</span></button>` : `<div style="padding:8px 12px;color:var(--ink-4)">—</div>`}
+    </div>`;
+  return panelShell({ typeLabel: "Task", title: t.title, body });
+}
+
+function panelNote(n) {
+  if (!n) return "";
+  let relBtn = "";
+  if (n.relatedType === "company" && companyById(n.relatedId)) {
+    const c = companyById(n.relatedId);
+    relBtn = `<button type="button" class="rel-item" data-open="company:${c.id}">${avatarHtml(c.name, { sq: true })} <span>${escapeHtml(c.name)}</span></button>`;
+  } else if (n.relatedType === "person" && personById(n.relatedId)) {
+    const p = personById(n.relatedId);
+    relBtn = `<button type="button" class="rel-item" data-open="person:${p.id}">${avatarHtml(p.name)} <span>${escapeHtml(p.name)}</span></button>`;
+  } else if (n.relatedType === "opportunity" && oppById(n.relatedId)) {
+    const o = oppById(n.relatedId);
+    relBtn = `<button type="button" class="rel-item" data-open="opportunity:${o.id}"><span>${escapeHtml(o.name)}</span></button>`;
+  }
+  const body = `
+    <div class="field-group">Содержание</div>
+    <div style="padding:4px 16px 12px;color:var(--ink-2);line-height:1.55">${escapeHtml(n.body)}</div>
+    <div class="field-group">Мета</div>
+    ${field("Автор", n.author)}
+    ${field("Дата", fmtDate(n.created))}
+    <div class="field-group">Связь</div>
+    <div class="rel-list">${relBtn || `<div style="padding:8px 12px;color:var(--ink-4)">—</div>`}</div>`;
+  return panelShell({ typeLabel: "Note", title: n.title, body });
+}
+
+/* ════════════════════════════════════════
+   Command palette
+   ════════════════════════════════════════ */
+function openCmd() {
+  state.cmdOpen = true;
+  state.cmdIndex = 0;
+  $("#cmd-overlay").classList.add("open");
+  const input = $("#cmd-input");
+  input.value = "";
+  input.focus();
+  renderCmdResults("");
+}
+function closeCmd() {
+  state.cmdOpen = false;
+  $("#cmd-overlay").classList.remove("open");
+  $("#cmd-input").value = "";
+}
+
+function buildCmdItems(q) {
+  const query = q.trim().toLowerCase();
+  const items = [];
+
+  // navigation
+  const nav = [
+    { type: "nav", id: "home", label: "Главная", hint: "раздел" },
+    { type: "nav", id: "people", label: "Люди", hint: "раздел" },
+    { type: "nav", id: "companies", label: "Компании", hint: "раздел" },
+    { type: "nav", id: "opportunities", label: "Возможности", hint: "раздел" },
+    { type: "nav", id: "tasks", label: "Задачи", hint: "раздел" },
+    { type: "nav", id: "notes", label: "Заметки", hint: "раздел" },
+    { type: "nav", id: "settings", label: "Настройки", hint: "раздел" },
+  ];
+  nav.forEach(n => {
+    if (!query || n.label.toLowerCase().includes(query) || n.id.includes(query)) {
+      items.push({ ...n, group: "Навигация" });
+    }
+  });
+
+  PEOPLE.forEach(p => {
+    const hay = [p.name, p.email, p.job].join(" ").toLowerCase();
+    if (!query || hay.includes(query)) {
+      items.push({ type: "person", id: p.id, label: p.name, hint: p.email, group: "Люди" });
+    }
+  });
+  COMPANIES.forEach(c => {
+    const hay = [c.name, c.domain, c.industry].join(" ").toLowerCase();
+    if (!query || hay.includes(query)) {
+      items.push({ type: "company", id: c.id, label: c.name, hint: c.domain, group: "Компании" });
+    }
+  });
+  OPPORTUNITIES.forEach(o => {
+    if (!query || o.name.toLowerCase().includes(query)) {
+      items.push({ type: "opportunity", id: o.id, label: o.name, hint: fmtMoney(o.amount), group: "Возможности" });
+    }
+  });
+  TASKS.forEach(t => {
+    if (!query || t.title.toLowerCase().includes(query)) {
+      items.push({ type: "task", id: t.id, label: t.title, hint: t.assignee, group: "Задачи" });
+    }
+  });
+  NOTES.forEach(n => {
+    if (!query || n.title.toLowerCase().includes(query) || n.body.toLowerCase().includes(query)) {
+      items.push({ type: "note", id: n.id, label: n.title, hint: n.author, group: "Заметки" });
+    }
+  });
+
+  return items.slice(0, 40);
+}
+
+function renderCmdResults(q) {
+  const items = buildCmdItems(q);
+  state.cmdItems = items;
+  if (state.cmdIndex >= items.length) state.cmdIndex = Math.max(0, items.length - 1);
+  const box = $("#cmd-results");
+  if (!items.length) {
+    box.innerHTML = `<div class="cmd-empty">Ничего не найдено</div>`;
+    return;
+  }
+  let lastGroup = null;
+  let html = "";
+  items.forEach((it, i) => {
+    if (it.group !== lastGroup) {
+      lastGroup = it.group;
+      html += `<div class="cmd-group">${escapeHtml(it.group)}</div>`;
+    }
+    html += `<button type="button" class="cmd-item ${i === state.cmdIndex ? "active" : ""}" data-cmd-idx="${i}">
+      <span>${escapeHtml(it.label)}</span>
+      <span class="hint">${escapeHtml(it.hint || "")}</span>
+    </button>`;
+  });
+  box.innerHTML = html;
+  $$("[data-cmd-idx]", box).forEach(btn => {
+    btn.addEventListener("click", () => runCmdItem(items[+btn.dataset.cmdIdx]));
+    btn.addEventListener("mouseenter", () => {
+      state.cmdIndex = +btn.dataset.cmdIdx;
+      $$(".cmd-item", box).forEach((n, i) => n.classList.toggle("active", i === state.cmdIndex));
+    });
+  });
+  // scroll active into view
+  const active = $(".cmd-item.active", box);
+  active?.scrollIntoView({ block: "nearest" });
+}
+
+function runCmdItem(it) {
+  if (!it) return;
+  closeCmd();
+  if (it.type === "nav") {
+    setView(it.id);
+    return;
+  }
+  const viewMap = { person: "people", company: "companies", opportunity: "opportunities", task: "tasks", note: "notes" };
+  setView(viewMap[it.type] || "home", { keepSelection: true });
+  selectRecord(it.type, it.id);
+}
+
+$("#open-cmd").addEventListener("click", openCmd);
+$("#cmd-overlay").addEventListener("click", (e) => {
+  if (e.target === $("#cmd-overlay")) closeCmd();
+});
+$("#cmd-input").addEventListener("input", (e) => {
+  state.cmdIndex = 0;
+  renderCmdResults(e.target.value);
+});
+$("#cmd-input").addEventListener("keydown", (e) => {
+  const items = state.cmdItems || [];
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    state.cmdIndex = Math.min(items.length - 1, state.cmdIndex + 1);
+    renderCmdResults($("#cmd-input").value);
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    state.cmdIndex = Math.max(0, state.cmdIndex - 1);
+    renderCmdResults($("#cmd-input").value);
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    runCmdItem(items[state.cmdIndex]);
+  } else if (e.key === "Escape") {
+    e.preventDefault();
+    closeCmd();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  const isK = e.key.toLowerCase() === "k";
+  if ((e.ctrlKey || e.metaKey) && isK) {
+    e.preventDefault();
+    if (state.cmdOpen) closeCmd();
+    else openCmd();
+    return;
+  }
+  if (e.key === "Escape") {
+    if (state.cmdOpen) closeCmd();
+    else if (state.selected) closePanel();
+  }
+});
+
+/* ════════════════════════════════════════
+   Escape utils
+   ════════════════════════════════════════ */
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/'/g, "&#39;");
+}
+
+/* ════════════════════════════════════════
+   Boot
+   ════════════════════════════════════════ */
+initTheme();
+render();
+</script>
+</body>
+</html>

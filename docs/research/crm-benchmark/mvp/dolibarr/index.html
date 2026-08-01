@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dolibarr · Structure MVP (dolibarr)</title>
+  <style>
+    :root {
+      --top-bg: #2c3e50;
+      --top-bg-2: #1a252f;
+      --accent: #3c78b5;
+      --accent-dark: #2a5a8c;
+      --accent-light: #e8f1f8;
+      --sidebar-bg: #f0f4f8;
+      --sidebar-border: #c5d0dc;
+      --row-hover: #eef5fb;
+      --row-selected: #d6e8f7;
+      --border: #c8d0d8;
+      --text: #222;
+      --muted: #667788;
+      --success: #2e7d32;
+      --success-bg: #e8f5e9;
+      --warn: #ef6c00;
+      --warn-bg: #fff3e0;
+      --danger: #c62828;
+      --danger-bg: #ffebee;
+      --info: #1565c0;
+      --info-bg: #e3f2fd;
+      --purple: #6a1b9a;
+      --purple-bg: #f3e5f5;
+      --gray: #546e7a;
+      --gray-bg: #eceff1;
+      --white: #fff;
+      --shadow: 0 1px 3px rgba(0,0,0,.12);
+      --radius: 3px;
+      --font: "Segoe UI", Tahoma, "DejaVu Sans", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--text);
+      background: #e5e9ee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* —— Top bar (Dolibarr-like) —— */
+    .topbar {
+      background: linear-gradient(180deg, var(--top-bg) 0%, var(--top-bg-2) 100%);
+      color: #fff;
+      display: flex;
+      align-items: stretch;
+      min-height: 42px;
+      box-shadow: 0 2px 4px rgba(0,0,0,.25);
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      background: rgba(0,0,0,.15);
+      border-right: 1px solid rgba(255,255,255,.08);
+      min-width: 200px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #5ba3d9, #2a6fa8);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.3);
+    }
+
+    .brand-text { line-height: 1.15; }
+    .brand-text strong { display: block; font-size: 14px; letter-spacing: .02em; }
+    .brand-text span { font-size: 10px; opacity: .7; }
+
+    .top-nav {
+      display: flex;
+      align-items: stretch;
+      flex: 1;
+      overflow-x: auto;
+    }
+
+    .top-nav button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,.88);
+      padding: 0 16px;
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: background .12s, color .12s;
+    }
+
+    .top-nav button:hover {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+
+    .top-nav button.active {
+      background: rgba(60,120,181,.35);
+      color: #fff;
+      border-bottom-color: #7ec0f0;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px;
+      border-left: 1px solid rgba(255,255,255,.08);
+    }
+
+    .mvp-badge {
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 12px;
+      letter-spacing: .02em;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(0,0,0,.25);
+    }
+
+    .user-chip {
+      font-size: 11px;
+      opacity: .85;
+      white-space: nowrap;
+    }
+
+    /* —— Layout —— */
+    .shell {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar-title {
+      padding: 12px 14px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--sidebar-border);
+      background: #e4ebf2;
+    }
+
+    .side-nav { padding: 6px 0 16px; }
+
+    .side-nav button {
+      appearance: none;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      padding: 8px 14px 8px 16px;
+      font: inherit;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 3px solid transparent;
+    }
+
+    .side-nav button:hover { background: #e2ebf4; }
+    .side-nav button.active {
+      background: var(--white);
+      border-left-color: var(--accent);
+      font-weight: 600;
+      color: var(--accent-dark);
+      box-shadow: inset 0 0 0 1px var(--sidebar-border);
+    }
+
+    .side-nav .ico {
+      width: 18px;
+      text-align: center;
+      opacity: .75;
+      font-size: 13px;
+    }
+
+    .side-section {
+      margin-top: 10px;
+      padding: 6px 14px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .breadcrumb {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .breadcrumb .path {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .breadcrumb .path strong { color: var(--text); }
+
+    .page-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-right: auto;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .content {
+      flex: 1;
+      overflow: auto;
+      padding: 14px 16px 28px;
+    }
+
+    /* —— Controls —— */
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+      font: inherit;
+      font-size: 12px;
+      padding: 5px 11px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      line-height: 1.3;
+    }
+
+    .btn:hover { background: #f5f7fa; border-color: #aab4be; }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent-dark);
+      color: #fff;
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: var(--accent-dark); }
+
+    .btn-success {
+      background: var(--success);
+      border-color: #1b5e20;
+      color: #fff;
+    }
+    .btn-success:hover { background: #1b5e20; }
+
+    .btn-warn {
+      background: var(--warn);
+      border-color: #e65100;
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      border-color: #b71c1c;
+      color: #fff;
+    }
+
+    .btn-sm { padding: 3px 8px; font-size: 11px; }
+
+    .btn-group { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+
+    input[type="search"],
+    input[type="text"],
+    select {
+      font: inherit;
+      font-size: 12px;
+      padding: 5px 9px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--white);
+      min-width: 140px;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid rgba(60,120,181,.35);
+      border-color: var(--accent);
+    }
+
+    /* —— Cards / panels —— */
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      background: linear-gradient(180deg, #f7fafc, #eef2f6);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 12px;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-body { padding: 12px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .stat .value { font-size: 22px; font-weight: 700; margin-top: 2px; color: var(--accent-dark); }
+    .stat .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* —— Tables —— */
+    .table-wrap { overflow-x: auto; }
+
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    table.data th {
+      background: #e8eef4;
+      text-align: left;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+      font-weight: 700;
+      color: #334;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    table.data td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e4e8ec;
+      vertical-align: middle;
+    }
+
+    table.data tbody tr { cursor: pointer; }
+    table.data tbody tr:hover { background: var(--row-hover); }
+    table.data tbody tr.selected { background: var(--row-selected); }
+    table.data tbody tr:last-child td { border-bottom: 0; }
+
+    table.data .num { text-align: right; font-variant-numeric: tabular-nums; }
+    table.data .mono { font-family: Consolas, "Courier New", monospace; font-size: 12px; }
+
+    a.link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a.link:hover { text-decoration: underline; }
+
+    /* —— Status badges —— */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .st-draft { background: var(--gray-bg); color: var(--gray); }
+    .st-validated { background: var(--info-bg); color: var(--info); }
+    .st-processing { background: var(--warn-bg); color: var(--warn); }
+    .st-shipped { background: var(--purple-bg); color: var(--purple); }
+    .st-delivered { background: var(--success-bg); color: var(--success); }
+    .st-cancelled { background: var(--danger-bg); color: var(--danger); }
+    .st-paid { background: var(--success-bg); color: var(--success); }
+    .st-unpaid { background: var(--warn-bg); color: var(--warn); }
+    .st-partial { background: #fff8e1; color: #f9a825; }
+    .st-active { background: var(--success-bg); color: var(--success); }
+    .st-prospect { background: var(--info-bg); color: var(--info); }
+    .st-closed { background: var(--gray-bg); color: var(--gray); }
+    .st-low { background: var(--danger-bg); color: var(--danger); }
+    .st-ok { background: var(--success-bg); color: var(--success); }
+
+    /* —— Detail layout —— */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .split { grid-template-columns: 1fr; }
+      .sidebar { width: 180px; }
+      .brand { min-width: 140px; }
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 6px 10px;
+      font-size: 12.5px;
+    }
+
+    .kv dt { color: var(--muted); }
+    .kv dd { font-weight: 600; }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+      background: #f4f7fa;
+      padding: 0 8px;
+    }
+
+    .tabs button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      padding: 9px 14px;
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .tabs button:hover { color: var(--text); }
+    .tabs button.active {
+      color: var(--accent-dark);
+      border-bottom-color: var(--accent);
+      background: var(--white);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .toast-host {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #263238;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-size: 12.5px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+      animation: toast-in .2s ease;
+      max-width: 320px;
+    }
+
+    .toast.ok { background: #2e7d32; }
+    .toast.warn { background: #ef6c00; }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer-note {
+      padding: 8px 16px;
+      font-size: 11px;
+      color: var(--muted);
+      background: #dfe5eb;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .stock-bar {
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+      min-width: 60px;
+    }
+
+    .stock-bar > i {
+      display: block;
+      height: 100%;
+      background: var(--success);
+    }
+
+    .stock-bar.low > i { background: var(--danger); }
+    .stock-bar.mid > i { background: var(--warn); }
+
+    .inline-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: end;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .pill-count {
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 8px;
+      margin-left: auto;
+    }
+
+    .home-modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .mod-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: border-color .12s, box-shadow .12s;
+    }
+
+    .mod-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(60,120,181,.2);
+    }
+
+    .mod-card .mod-ico {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .mod-card h3 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .mod-card p {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .hint {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" data-nav="home" title="Домой">
+      <div class="brand-logo">D</div>
+      <div class="brand-text">
+        <strong>Dolibarr</strong>
+        <span>ERP/CRM · Bloom research</span>
+      </div>
+    </div>
+    <nav class="top-nav" id="topNav"></nav>
+    <div class="top-right">
+      <span class="mvp-badge">MVP · Dolibarr structure → web</span>
+      <span class="user-chip">admin · Bloom Demo</span>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-title" id="sideTitle">Модули</div>
+      <nav class="side-nav" id="sideNav"></nav>
+    </aside>
+
+    <div class="main">
+      <div class="breadcrumb">
+        <div class="page-title" id="pageTitle">Главная</div>
+        <div class="path" id="breadPath">Home</div>
+        <div class="toolbar" id="toolbar"></div>
+      </div>
+      <div class="content" id="content"></div>
+      <div class="footer-note">
+        Structure MVP · dolibarr · offline mock · не продакшен · Bloom CRM research ·
+        статусы заказов кликабельны · остатки редактируются
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-host" id="toasts"></div>
+
+  <script>
+    /* ========== Mock data (Bloom-ish flower retail) ========== */
+    const STATUS_ORDER = [
+      { id: "draft",      label: "Черновик",     cls: "st-draft" },
+      { id: "validated",  label: "Подтверждён",  cls: "st-validated" },
+      { id: "processing", label: "В сборке",     cls: "st-processing" },
+      { id: "shipped",    label: "Доставка",     cls: "st-shipped" },
+      { id: "delivered",  label: "Доставлен",    cls: "st-delivered" },
+      { id: "cancelled",  label: "Отменён",      cls: "st-cancelled" },
+    ];
+
+    const STATUS_INV = [
+      { id: "draft",   label: "Черновик",   cls: "st-draft" },
+      { id: "unpaid",  label: "Не оплачен", cls: "st-unpaid" },
+      { id: "partial", label: "Частично",   cls: "st-partial" },
+      { id: "paid",    label: "Оплачен",    cls: "st-paid" },
+      { id: "cancelled", label: "Отменён",  cls: "st-cancelled" },
+    ];
+
+    const state = {
+      module: "home",
+      view: "dashboard",
+      selectedThird: null,
+      selectedOrder: null,
+      selectedProduct: null,
+      selectedInvoice: null,
+      filter: { third: "", order: "", product: "", invoice: "", orderStatus: "all" },
+      thirdParties: [
+        { id: 1, ref: "CU2501-001", name: "ООО «Роза Люкс»", type: "customer", status: "active", city: "Москва", phone: "+7 495 111-22-33", email: "zakaz@rozalux.ru", tags: ["сеть", "B2B"], balance: 12450, orders: 18 },
+        { id: 2, ref: "CU2501-002", name: "ИП Смирнова А.В.", type: "customer", status: "active", city: "Санкт-Петербург", phone: "+7 812 555-01-02", email: "smirnova@mail.ru", tags: ["розница"], balance: 0, orders: 7 },
+        { id: 3, ref: "CU2501-003", name: "Цветочный рай", type: "customer", status: "prospect", city: "Казань", phone: "+7 843 200-30-40", email: "info@cvet-rai.ru", tags: ["лид"], balance: 0, orders: 0 },
+        { id: 4, ref: "SU2501-001", name: "GreenBase Wholesale", type: "supplier", status: "active", city: "Москва", phone: "+7 495 900-10-20", email: "sales@greenbase.ru", tags: ["опт", "импорт"], balance: -8200, orders: 42 },
+        { id: 5, ref: "CU2501-004", name: "Bloom Partner · Тверь", type: "customer", status: "active", city: "Тверь", phone: "+7 482 333-44-55", email: "tver@bloom.partner", tags: ["франшиза", "мультишоп"], balance: 3100, orders: 25 },
+        { id: 6, ref: "CU2501-005", name: "Event Decor Studio", type: "customer", status: "closed", city: "Екатеринбург", phone: "+7 343 700-80-90", email: "hello@eventdecor.ru", tags: ["B2B"], balance: 0, orders: 3 },
+      ],
+      products: [
+        { id: 1, ref: "FL-RRD-25", label: "Роза красная 60 см", type: "product", price: 180, stock: 240, warehouse: "WH-MSK-01", min: 50, unit: "шт" },
+        { id: 2, ref: "FL-WHT-50", label: "Хризантема белая", type: "product", price: 95, stock: 38, warehouse: "WH-MSK-01", min: 40, unit: "шт" },
+        { id: 3, ref: "FL-TUL-10", label: "Тюльпан микс (10)", type: "product", price: 450, stock: 12, warehouse: "WH-SPB-01", min: 20, unit: "упак" },
+        { id: 4, ref: "SRV-DEL-MSK", label: "Доставка Москва", type: "service", price: 490, stock: null, warehouse: "—", min: null, unit: "усл" },
+        { id: 5, ref: "FL-EUC-01", label: "Эвкалипт cinerea", type: "product", price: 120, stock: 85, warehouse: "WH-MSK-01", min: 30, unit: "ветка" },
+        { id: 6, ref: "KIT-BRQ-STD", label: "Букет «Стандарт»", type: "product", price: 3200, stock: 15, warehouse: "WH-MSK-02", min: 10, unit: "шт" },
+        { id: 7, ref: "PKG-BOX-M", label: "Коробка M крафт", type: "product", price: 85, stock: 4, warehouse: "WH-MSK-02", min: 25, unit: "шт" },
+      ],
+      orders: [
+        { id: 101, ref: "CO2503-0142", thirdId: 1, date: "2026-03-28", amount: 18600, status: "processing", channel: "marketplace", lines: 4, note: "Сборка к 15:00" },
+        { id: 102, ref: "CO2503-0141", thirdId: 2, date: "2026-03-28", amount: 3690, status: "validated", channel: "direct", lines: 2, note: "" },
+        { id: 103, ref: "CO2503-0140", thirdId: 5, date: "2026-03-27", amount: 22400, status: "shipped", channel: "marketplace", lines: 6, note: "Курьер #C12" },
+        { id: 104, ref: "CO2503-0139", thirdId: 1, date: "2026-03-27", amount: 8900, status: "delivered", channel: "direct", lines: 3, note: "" },
+        { id: 105, ref: "CO2503-0138", thirdId: 3, date: "2026-03-26", amount: 5200, status: "draft", channel: "direct", lines: 1, note: "Ждём подтверждения" },
+        { id: 106, ref: "CO2503-0137", thirdId: 5, date: "2026-03-25", amount: 15100, status: "cancelled", channel: "marketplace", lines: 5, note: "Клиент отменил" },
+        { id: 107, ref: "CO2503-0136", thirdId: 2, date: "2026-03-25", amount: 4120, status: "delivered", channel: "direct", lines: 2, note: "" },
+      ],
+      invoices: [
+        { id: 201, ref: "FA2503-0088", thirdId: 1, orderId: 104, date: "2026-03-27", amount: 8900, paid: 8900, status: "paid" },
+        { id: 202, ref: "FA2503-0087", thirdId: 5, orderId: 103, date: "2026-03-27", amount: 22400, paid: 10000, status: "partial" },
+        { id: 203, ref: "FA2503-0086", thirdId: 2, orderId: 102, date: "2026-03-28", amount: 3690, paid: 0, status: "unpaid" },
+        { id: 204, ref: "FA2503-0085", thirdId: 1, orderId: 101, date: "2026-03-28", amount: 18600, paid: 0, status: "draft" },
+      ],
+    };
+
+    /* ========== Navigation model (Dolibarr IA) ========== */
+    const MODULES = [
+      {
+        id: "home",
+        label: "Главная",
+        icon: "⌂",
+        views: [
+          { id: "dashboard", label: "Рабочий стол", icon: "▦" },
+        ],
+      },
+      {
+        id: "thirds",
+        label: "Контрагенты",
+        icon: "👥",
+        dolibarr: "Third parties / Tiers",
+        views: [
+          { id: "thirds-list", label: "Список", icon: "☰" },
+          { id: "thirds-customers", label: "Клиенты", icon: "★" },
+          { id: "thirds-suppliers", label: "Поставщики", icon: "◆" },
+          { id: "thirds-contacts", label: "Контакты", icon: "☎" },
+        ],
+      },
+      {
+        id: "commercial",
+        label: "Коммерция",
+        icon: "💼",
+        dolibarr: "Commercial",
+        views: [
+          { id: "comm-proposals", label: "КП / Предложения", icon: "✎" },
+          { id: "comm-orders", label: "Заказы клиентов", icon: "▣" },
+          { id: "comm-pipeline", label: "Воронка (stub)", icon: "↗" },
+        ],
+      },
+      {
+        id: "products",
+        label: "Товары",
+        icon: "📦",
+        dolibarr: "Products / Services",
+        views: [
+          { id: "prod-list", label: "Номенклатура", icon: "☰" },
+          { id: "prod-stock", label: "Склад / остатки", icon: "▤" },
+          { id: "prod-warehouses", label: "Склады", icon: "⌂" },
+        ],
+      },
+      {
+        id: "orders",
+        label: "Заказы",
+        icon: "🛒",
+        dolibarr: "Orders / Commandes",
+        views: [
+          { id: "ord-list", label: "Все заказы", icon: "☰" },
+          { id: "ord-active", label: "В работе", icon: "⚡" },
+          { id: "ord-board", label: "Статусы (доска)", icon: "▦" },
+        ],
+      },
+      {
+        id: "billing",
+        label: "Счета",
+        icon: "🧾",
+        dolibarr: "Invoices (stub)",
+        views: [
+          { id: "inv-list", label: "Счета клиентам", icon: "☰" },
+          { id: "inv-unpaid", label: "К оплате", icon: "!" },
+        ],
+      },
+    ];
+
+    /* ========== Helpers ========== */
+    const $ = (sel, el = document) => el.querySelector(sel);
+    const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
+
+    function money(n) {
+      return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 }).format(n);
+    }
+
+    function thirdById(id) {
+      return state.thirdParties.find((t) => t.id === id);
+    }
+
+    function statusMeta(list, id) {
+      return list.find((s) => s.id === id) || { id, label: id, cls: "st-draft" };
+    }
+
+    function badge(list, id) {
+      const m = statusMeta(list, id);
+      return `<span class="badge ${m.cls}">${m.label}</span>`;
+    }
+
+    function toast(msg, kind = "") {
+      const el = document.createElement("div");
+      el.className = "toast " + kind;
+      el.textContent = msg;
+      $("#toasts").appendChild(el);
+      setTimeout(() => el.remove(), 2600);
+    }
+
+    function typeLabel(t) {
+      if (t === "customer") return "Клиент";
+      if (t === "supplier") return "Поставщик";
+      if (t === "product") return "Товар";
+      if (t === "service") return "Услуга";
+      return t;
+    }
+
+    function thirdStatusBadge(s) {
+      const map = { active: ["Активен", "st-active"], prospect: ["Проспект", "st-prospect"], closed: ["Закрыт", "st-closed"] };
+      const [label, cls] = map[s] || [s, "st-draft"];
+      return `<span class="badge ${cls}">${label}</span>`;
+    }
+
+    function stockClass(p) {
+      if (p.stock == null) return "";
+      if (p.stock <= p.min * 0.4) return "low";
+      if (p.stock <= p.min) return "mid";
+      return "";
+    }
+
+    function stockPct(p) {
+      if (p.stock == null) return 0;
+      const max = Math.max(p.min * 3, p.stock, 1);
+      return Math.min(100, Math.round((p.stock / max) * 100));
+    }
+
+    /* ========== Render chrome ========== */
+    function renderTopNav() {
+      const nav = $("#topNav");
+      nav.innerHTML = MODULES.map((m) =>
+        `<button type="button" data-module="${m.id}" class="${state.module === m.id ? "active" : ""}">${m.icon} ${m.label}</button>`
+      ).join("");
+      nav.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => navigate(btn.dataset.module));
+      });
+    }
+
+    function renderSideNav() {
+      const mod = MODULES.find((m) => m.id === state.module) || MODULES[0];
+      $("#sideTitle").textContent = mod.dolibarr ? `${mod.label} · left menu` : "Навигация";
+      const side = $("#sideNav");
+      let html = "";
+      if (mod.dolibarr) {
+        html += `<div class="side-section">Dolibarr: ${mod.dolibarr}</div>`;
+      }
+      html += mod.views.map((v) => {
+        const active = state.view === v.id ? "active" : "";
+        return `<button type="button" data-view="${v.id}" class="${active}"><span class="ico">${v.icon}</span>${v.label}</button>`;
+      }).join("");
+
+      if (mod.id === "orders" || mod.id === "commercial") {
+        const active = state.orders.filter((o) => !["delivered", "cancelled", "draft"].includes(o.status)).length;
+        html += `<div class="side-section">Сводка</div>
+          <button type="button" disabled style="opacity:.9;cursor:default">
+            <span class="ico">●</span> В работе <span class="pill-count">${active}</span>
+          </button>`;
+      }
+      if (mod.id === "products") {
+        const low = state.products.filter((p) => p.stock != null && p.stock < p.min).length;
+        html += `<div class="side-section">Сводка</div>
+          <button type="button" data-view="prod-stock" class="${state.view === "prod-stock" ? "active" : ""}">
+            <span class="ico">⚠</span> Ниже минимума <span class="pill-count" style="background:${low ? "var(--danger)" : "var(--success)"}">${low}</span>
+          </button>`;
+      }
+      side.innerHTML = html;
+      side.querySelectorAll("button[data-view]").forEach((btn) => {
+        btn.addEventListener("click", () => navigate(state.module, btn.dataset.view));
+      });
+    }
+
+    function navigate(moduleId, viewId) {
+      const mod = MODULES.find((m) => m.id === moduleId) || MODULES[0];
+      state.module = mod.id;
+      state.view = viewId || mod.views[0].id;
+      if (moduleId !== "thirds") state.selectedThird = null;
+      if (moduleId !== "orders" && moduleId !== "commercial") state.selectedOrder = null;
+      if (moduleId !== "products") state.selectedProduct = null;
+      if (moduleId !== "billing") state.selectedInvoice = null;
+      render();
+    }
+
+    function setTitle(title, path) {
+      $("#pageTitle").textContent = title;
+      $("#breadPath").innerHTML = path;
+    }
+
+    /* ========== Views ========== */
+    function viewHome() {
+      setTitle("Рабочий стол", "Home / Dashboard");
+      $("#toolbar").innerHTML = "";
+      const openOrders = state.orders.filter((o) => !["delivered", "cancelled"].includes(o.status)).length;
+      const unpaid = state.invoices.filter((i) => ["unpaid", "partial"].includes(i.status)).length;
+      const lowStock = state.products.filter((p) => p.stock != null && p.stock < p.min).length;
+      const customers = state.thirdParties.filter((t) => t.type === "customer").length;
+
+      $("#content").innerHTML = `
+        <div class="stats">
+          <div class="stat"><div class="label">Заказы в работе</div><div class="value">${openOrders}</div><div class="sub">из ${state.orders.length} всего</div></div>
+          <div class="stat"><div class="label">Клиенты</div><div class="value">${customers}</div><div class="sub">контрагентов: ${state.thirdParties.length}</div></div>
+          <div class="stat"><div class="label">Счета к оплате</div><div class="value">${unpaid}</div><div class="sub">invoices stub</div></div>
+          <div class="stat"><div class="label">Низкий остаток</div><div class="value">${lowStock}</div><div class="sub">SKU ниже min</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">Модули Dolibarr (IA shell)</div>
+          <div class="panel-body">
+            <div class="home-modules">
+              ${MODULES.filter((m) => m.id !== "home").map((m) => `
+                <div class="mod-card" data-go="${m.id}">
+                  <div class="mod-ico">${m.icon}</div>
+                  <h3>${m.label}</h3>
+                  <p>${m.dolibarr || ""} · клик для перехода</p>
+                </div>
+              `).join("")}
+            </div>
+            <p class="hint">Каркас повторяет top menu + left menu Dolibarr: Tiers → Commercial → Products → Orders → Invoices. Данные mock для Bloom (цветочный ритейл).</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">Последние заказы</div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Реф</th><th>Клиент</th><th>Дата</th><th>Канал</th><th class="num">Сумма</th><th>Статус</th></tr></thead>
+              <tbody>
+                ${state.orders.slice(0, 5).map((o) => {
+                  const t = thirdById(o.thirdId);
+                  return `<tr data-go-order="${o.id}">
+                    <td class="mono"><a class="link" href="#">${o.ref}</a></td>
+                    <td>${t ? t.name : "—"}</td>
+                    <td>${o.date}</td>
+                    <td><span class="tag">${o.channel}</span></td>
+                    <td class="num">${money(o.amount)}</td>
+                    <td>${badge(STATUS_ORDER, o.status)}</td>
+                  </tr>`;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      $$(".mod-card[data-go]").forEach((el) => el.addEventListener("click", () => navigate(el.dataset.go)));
+      $$("tr[data-go-order]").forEach((el) => el.addEventListener("click", () => {
+        state.selectedOrder = +el.dataset.goOrder;
+        navigate("orders", "ord-list");
+      }));
+    }
+
+    function filteredThirds() {
+      let list = [...state.thirdParties];
+      if (state.view === "thirds-customers") list = list.filter((t) => t.type === "customer");
+      if (state.view === "thirds-suppliers") list = list.filter((t) => t.type === "supplier");
+      const q = (state.filter.third || "").toLowerCase().trim();
+      if (q) list = list.filter((t) =>
+        t.name.toLowerCase().includes(q) || t.ref.toLowerCase().includes(q) || t.city.toLowerCase().includes(q)
+      );
+      return list;
+    }
+
+    function viewThirds() {
+      if (state.view === "thirds-contacts") {
+        setTitle("Контакты", "Third parties / Contacts");
+        $("#toolbar").innerHTML = `<button class="btn btn-primary" type="button" id="btnFake">+ Новый контакт</button>`;
+        $("#btnFake")?.addEventListener("click", () => toast("Stub: создание контакта (MVP)", "warn"));
+        $("#content").innerHTML = `
+          <div class="panel">
+            <div class="panel-head">Контакты (связанные с контрагентами)</div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead><tr><th>Имя</th><th>Контрагент</th><th>Роль</th><th>Телефон</th><th>Email</th></tr></thead>
+                <tbody>
+                  <tr><td>Анна Смирнова</td><td>ИП Смирнова А.В.</td><td>Владелец</td><td>+7 812 555-01-02</td><td>smirnova@mail.ru</td></tr>
+                  <tr><td>Игорь Петров</td><td>ООО «Роза Люкс»</td><td>Закупки</td><td>+7 495 111-22-34</td><td>i.petrov@rozalux.ru</td></tr>
+                  <tr><td>Мария Ковалёва</td><td>Bloom Partner · Тверь</td><td>Управляющая</td><td>+7 482 333-44-55</td><td>tver@bloom.partner</td></tr>
+                  <tr><td>Supply Desk</td><td>GreenBase Wholesale</td><td>Sales</td><td>+7 495 900-10-20</td><td>sales@greenbase.ru</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const list = filteredThirds();
+      const titles = {
+        "thirds-list": ["Контрагенты", "Third parties / List"],
+        "thirds-customers": ["Клиенты", "Third parties / Customers"],
+        "thirds-suppliers": ["Поставщики", "Third parties / Suppliers"],
+      };
+      const [title, path] = titles[state.view] || titles["thirds-list"];
+      setTitle(title, path);
+
+      $("#toolbar").innerHTML = `
+        <input type="search" id="qThird" placeholder="Поиск: имя, реф, город…" value="${escapeAttr(state.filter.third)}" />
+        <button class="btn btn-primary" type="button" id="btnNewThird">+ Новый контрагент</button>
+      `;
+      $("#qThird").addEventListener("input", (e) => {
+        state.filter.third = e.target.value;
+        viewThirds();
+        $("#qThird")?.focus();
+        const inp = $("#qThird");
+        if (inp) { const len = inp.value.length; inp.setSelectionRange(len, len); }
+      });
+      $("#btnNewThird").addEventListener("click", () => toast("Stub: карточка нового контрагента", "warn"));
+
+      const selected = state.selectedThird ? state.thirdParties.find((t) => t.id === state.selectedThird) : null;
+
+      $("#content").innerHTML = `
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head">Список · ${list.length}</div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Реф</th><th>Название</th><th>Тип</th><th>Город</th><th>Статус</th><th class="num">Баланс</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${list.map((t) => `
+                    <tr data-id="${t.id}" class="${state.selectedThird === t.id ? "selected" : ""}">
+                      <td class="mono">${t.ref}</td>
+                      <td><a class="link" href="#">${t.name}</a></td>
+                      <td>${typeLabel(t.type)}</td>
+                      <td>${t.city}</td>
+                      <td>${thirdStatusBadge(t.status)}</td>
+                      <td class="num">${money(t.balance)}</td>
+                    </tr>
+                  `).join("") || `<tr><td colspan="6" class="empty">Ничего не найдено</td></tr>`}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">${selected ? "Карточка" : "Детали"}</div>
+            <div class="panel-body" id="thirdDetail">
+              ${selected ? renderThirdDetail(selected) : `<div class="empty">Выберите контрагента в списке</div>`}
+            </div>
+          </div>
+        </div>
+      `;
+
+      $$("tr[data-id]").forEach((tr) => {
+        tr.addEventListener("click", () => {
+          state.selectedThird = +tr.dataset.id;
+          viewThirds();
+        });
+      });
+      bindThirdDetailActions();
+    }
+
+    function renderThirdDetail(t) {
+      const ords = state.orders.filter((o) => o.thirdId === t.id);
+      return `
+        <dl class="kv">
+          <dt>Реф</dt><dd class="mono">${t.ref}</dd>
+          <dt>Название</dt><dd>${t.name}</dd>
+          <dt>Тип</dt><dd>${typeLabel(t.type)}</dd>
+          <dt>Статус</dt><dd>${thirdStatusBadge(t.status)}</dd>
+          <dt>Город</dt><dd>${t.city}</dd>
+          <dt>Телефон</dt><dd>${t.phone}</dd>
+          <dt>Email</dt><dd>${t.email}</dd>
+          <dt>Баланс</dt><dd>${money(t.balance)}</dd>
+          <dt>Теги</dt><dd>${t.tags.map((x) => `<span class="tag">${x}</span>`).join(" ")}</dd>
+        </dl>
+        <div class="inline-form">
+          <button class="btn btn-sm" type="button" data-act="prospect">→ Проспект</button>
+          <button class="btn btn-sm btn-success" type="button" data-act="active">→ Активен</button>
+          <button class="btn btn-sm" type="button" data-act="closed">→ Закрыт</button>
+        </div>
+        <p class="hint" style="margin-top:12px;font-weight:700">Заказы (${ords.length})</p>
+        <ul style="margin:6px 0 0 16px;line-height:1.7">
+          ${ords.length ? ords.map((o) => `<li><a class="link" href="#" data-open-order="${o.id}">${o.ref}</a> · ${badge(STATUS_ORDER, o.status)} · ${money(o.amount)}</li>`).join("") : "<li class=\"hint\">нет</li>"}
+        </ul>
+      `;
+    }
+
+    /* rebind third detail actions after render — handled in viewThirds via event delegation on content */
+    function bindThirdDetailActions() {
+      const root = $("#thirdDetail");
+      if (!root) return;
+      root.querySelectorAll("[data-act]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const t = state.thirdParties.find((x) => x.id === state.selectedThird);
+          if (!t) return;
+          t.status = btn.dataset.act;
+          toast(`Статус «${t.name}» → ${btn.dataset.act}`, "ok");
+          viewThirds();
+        });
+      });
+      root.querySelectorAll("[data-open-order]").forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          state.selectedOrder = +a.dataset.openOrder;
+          navigate("orders", "ord-list");
+        });
+      });
+    }
+
+    function filteredOrders() {
+      let list = [...state.orders];
+      if (state.view === "ord-active" || state.view === "comm-orders") {
+        if (state.view === "ord-active") {
+          list = list.filter((o) => ["validated", "processing", "shipped"].includes(o.status));
+        }
+      }
+      if (state.filter.orderStatus && state.filter.orderStatus !== "all") {
+        list = list.filter((o) => o.status === state.filter.orderStatus);
+      }
+      const q = (state.filter.order || "").toLowerCase().trim();
+      if (q) {
+        list = list.filter((o) => {
+          const t = thirdById(o.thirdId);
+          return o.ref.toLowerCase().includes(q) || (t && t.name.toLowerCase().includes(q));
+        });
+      }
+      return list.sort((a, b) => b.ref.localeCompare(a.ref));
+    }
+
+    function nextOrderStatus(cur) {
+      const flow = ["draft", "validated", "processing", "shipped", "delivered"];
+      const i = flow.indexOf(cur);
+      if (i < 0 || i >= flow.length - 1) return null;
+      return flow[i + 1];
+    }
+
+    function setOrderStatus(id, status) {
+      const o = state.orders.find((x) => x.id === id);
+      if (!o) return;
+      o.status = status;
+      toast(`${o.ref}: статус → ${statusMeta(STATUS_ORDER, status).label}`, "ok");
+      render();
+    }
+
+    function viewOrders(fromCommercial) {
+      if (state.view === "ord-board") {
+        viewOrderBoard();
+        return;
+      }
+      if (state.view === "comm-proposals") {
+        setTitle("Коммерческие предложения", "Commercial / Proposals");
+        $("#toolbar").innerHTML = `<button class="btn btn-primary" type="button" id="btnProp">+ Новое КП</button>`;
+        $("#btnProp").addEventListener("click", () => toast("Stub: КП (propale) — не в mock data", "warn"));
+        $("#content").innerHTML = `
+          <div class="panel">
+            <div class="panel-head">Proposals (stub)</div>
+            <div class="panel-body">
+              <p>В полном Dolibarr: Propale → Customer order → Invoice.</p>
+              <p class="hint">Для MVP цепочка упрощена: сразу <strong>Заказы клиентов</strong> и <strong>Счета</strong>.</p>
+              <button class="btn btn-primary" type="button" id="goOrders">Открыть заказы клиентов →</button>
+            </div>
+          </div>`;
+        $("#goOrders").addEventListener("click", () => navigate("commercial", "comm-orders"));
+        return;
+      }
+      if (state.view === "comm-pipeline") {
+        setTitle("Воронка", "Commercial / Pipeline stub");
+        $("#toolbar").innerHTML = "";
+        $("#content").innerHTML = `
+          <div class="panel"><div class="panel-body empty">
+            Pipeline / opportunities — опциональный модуль Dolibarr.<br/>
+            Bloom-аналог: этапы лида / магазина, не реализовано в этом shell.
+          </div></div>`;
+        return;
+      }
+
+      const list = filteredOrders();
+      const title = fromCommercial || state.module === "commercial"
+        ? "Заказы клиентов"
+        : state.view === "ord-active" ? "Заказы в работе" : "Заказы";
+      const path = state.module === "commercial"
+        ? "Commercial / Customer orders"
+        : "Orders / List";
+      setTitle(title, path);
+
+      $("#toolbar").innerHTML = `
+        <input type="search" id="qOrder" placeholder="Реф или клиент…" value="${escapeAttr(state.filter.order)}" />
+        <select id="fStatus">
+          <option value="all">Все статусы</option>
+          ${STATUS_ORDER.map((s) => `<option value="${s.id}" ${state.filter.orderStatus === s.id ? "selected" : ""}>${s.label}</option>`).join("")}
+        </select>
+        <button class="btn btn-primary" type="button" id="btnNewOrd">+ Заказ</button>
+      `;
+      $("#qOrder").addEventListener("input", (e) => {
+        state.filter.order = e.target.value;
+        renderOrdersListOnly();
+      });
+      $("#fStatus").addEventListener("change", (e) => {
+        state.filter.orderStatus = e.target.value;
+        render();
+      });
+      $("#btnNewOrd").addEventListener("click", () => toast("Stub: создание заказа", "warn"));
+
+      renderOrdersListOnly(list);
+    }
+
+    function renderOrdersListOnly(list) {
+      list = list || filteredOrders();
+      const selected = state.selectedOrder ? state.orders.find((o) => o.id === state.selectedOrder) : null;
+
+      $("#content").innerHTML = `
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head">Commandes · ${list.length}</div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Реф</th><th>Клиент</th><th>Дата</th><th>Канал</th>
+                    <th class="num">Сумма</th><th>Статус</th><th>Действия</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${list.map((o) => {
+                    const t = thirdById(o.thirdId);
+                    const nxt = nextOrderStatus(o.status);
+                    return `<tr data-id="${o.id}" class="${state.selectedOrder === o.id ? "selected" : ""}">
+                      <td class="mono"><a class="link" href="#">${o.ref}</a></td>
+                      <td>${t ? t.name : "—"}</td>
+                      <td>${o.date}</td>
+                      <td><span class="tag">${o.channel}</span></td>
+                      <td class="num">${money(o.amount)}</td>
+                      <td>${badge(STATUS_ORDER, o.status)}</td>
+                      <td>
+                        <div class="btn-group">
+                          ${nxt ? `<button class="btn btn-sm btn-primary" data-next="${o.id}" data-st="${nxt}" type="button">→ ${statusMeta(STATUS_ORDER, nxt).label}</button>` : ""}
+                          ${o.status !== "cancelled" && o.status !== "delivered" ? `<button class="btn btn-sm btn-danger" data-cancel="${o.id}" type="button">Отмена</button>` : ""}
+                        </div>
+                      </td>
+                    </tr>`;
+                  }).join("") || `<tr><td colspan="7" class="empty">Нет заказов</td></tr>`}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">Карточка заказа</div>
+            <div class="panel-body" id="orderDetail">
+              ${selected ? renderOrderDetail(selected) : `<div class="empty">Выберите заказ</div>`}
+            </div>
+          </div>
+        </div>
+      `;
+
+      $$("tr[data-id]").forEach((tr) => {
+        tr.addEventListener("click", (e) => {
+          if (e.target.closest("button")) return;
+          state.selectedOrder = +tr.dataset.id;
+          renderOrdersListOnly();
+        });
+      });
+      $$("[data-next]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setOrderStatus(+btn.dataset.next, btn.dataset.st);
+        });
+      });
+      $$("[data-cancel]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setOrderStatus(+btn.dataset.cancel, "cancelled");
+        });
+      });
+      bindOrderDetailActions();
+    }
+
+    function renderOrderDetail(o) {
+      const t = thirdById(o.thirdId);
+      return `
+        <dl class="kv">
+          <dt>Реф</dt><dd class="mono">${o.ref}</dd>
+          <dt>Клиент</dt><dd>${t ? `<a class="link" href="#" data-open-third="${t.id}">${t.name}</a>` : "—"}</dd>
+          <dt>Дата</dt><dd>${o.date}</dd>
+          <dt>Канал</dt><dd><span class="tag">${o.channel}</span></dd>
+          <dt>Позиций</dt><dd>${o.lines}</dd>
+          <dt>Сумма</dt><dd>${money(o.amount)}</dd>
+          <dt>Статус</dt><dd>${badge(STATUS_ORDER, o.status)}</dd>
+          <dt>Заметка</dt><dd>${o.note || "—"}</dd>
+        </dl>
+        <p class="hint" style="margin-top:10px;font-weight:700">Сменить статус</p>
+        <div class="btn-group" style="margin-top:6px">
+          ${STATUS_ORDER.map((s) => `
+            <button type="button" class="btn btn-sm ${o.status === s.id ? "btn-primary" : ""}" data-set-st="${s.id}" ${o.status === s.id ? "disabled" : ""}>${s.label}</button>
+          `).join("")}
+        </div>
+        <div class="inline-form">
+          <button class="btn btn-sm" type="button" data-to-inv="${o.id}">Создать счёт (stub)</button>
+        </div>
+      `;
+    }
+
+    function bindOrderDetailActions() {
+      const root = $("#orderDetail");
+      if (!root) return;
+      root.querySelectorAll("[data-set-st]").forEach((btn) => {
+        btn.addEventListener("click", () => setOrderStatus(state.selectedOrder, btn.dataset.setSt));
+      });
+      root.querySelectorAll("[data-open-third]").forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          state.selectedThird = +a.dataset.openThird;
+          navigate("thirds", "thirds-list");
+        });
+      });
+      root.querySelectorAll("[data-to-inv]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const o = state.orders.find((x) => x.id === +btn.dataset.toInv);
+          if (!o) return;
+          const exists = state.invoices.find((i) => i.orderId === o.id);
+          if (exists) {
+            state.selectedInvoice = exists.id;
+            toast(`Счёт уже есть: ${exists.ref}`, "warn");
+            navigate("billing", "inv-list");
+            return;
+          }
+          const id = Math.max(...state.invoices.map((i) => i.id)) + 1;
+          const ref = `FA2503-0${88 + state.invoices.length}`;
+          state.invoices.unshift({
+            id, ref, thirdId: o.thirdId, orderId: o.id, date: o.date, amount: o.amount, paid: 0, status: "draft",
+          });
+          state.selectedInvoice = id;
+          toast(`Счёт ${ref} создан (draft)`, "ok");
+          navigate("billing", "inv-list");
+        });
+      });
+    }
+
+    function viewOrderBoard() {
+      setTitle("Доска статусов", "Orders / Status board");
+      $("#toolbar").innerHTML = `<span class="hint">Перетаскивание нет — кнопки на карточке</span>`;
+      const cols = STATUS_ORDER.filter((s) => s.id !== "cancelled");
+      $("#content").innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(${cols.length},minmax(140px,1fr));gap:10px;overflow-x:auto">
+          ${cols.map((col) => {
+            const items = state.orders.filter((o) => o.status === col.id);
+            return `
+              <div class="panel" style="min-width:150px">
+                <div class="panel-head">${col.label} <span class="pill-count">${items.length}</span></div>
+                <div class="panel-body" style="padding:8px;display:flex;flex-direction:column;gap:8px;min-height:120px">
+                  ${items.map((o) => {
+                    const t = thirdById(o.thirdId);
+                    const nxt = nextOrderStatus(o.status);
+                    return `
+                      <div style="border:1px solid var(--border);border-radius:3px;padding:8px;background:#fafbfc">
+                        <div class="mono" style="font-weight:700;font-size:11px">${o.ref}</div>
+                        <div style="font-size:12px;margin:4px 0">${t ? t.name : "—"}</div>
+                        <div style="font-weight:700">${money(o.amount)}</div>
+                        ${nxt ? `<button class="btn btn-sm btn-primary" style="margin-top:6px;width:100%" data-next="${o.id}" data-st="${nxt}" type="button">→ ${statusMeta(STATUS_ORDER, nxt).label}</button>` : ""}
+                      </div>`;
+                  }).join("") || `<div class="empty" style="padding:16px">∅</div>`}
+                </div>
+              </div>`;
+          }).join("")}
+        </div>
+        <div class="panel" style="margin-top:12px">
+          <div class="panel-head">Отменённые</div>
+          <div class="panel-body">
+            ${state.orders.filter((o) => o.status === "cancelled").map((o) =>
+              `<span class="tag" style="margin:2px">${o.ref}</span>`
+            ).join(" ") || "<span class='hint'>нет</span>"}
+          </div>
+        </div>
+      `;
+      $$("[data-next]").forEach((btn) => {
+        btn.addEventListener("click", () => setOrderStatus(+btn.dataset.next, btn.dataset.st));
+      });
+    }
+
+    function filteredProducts() {
+      let list = [...state.products];
+      const q = (state.filter.product || "").toLowerCase().trim();
+      if (q) list = list.filter((p) => p.ref.toLowerCase().includes(q) || p.label.toLowerCase().includes(q));
+      return list;
+    }
+
+    function viewProducts() {
+      if (state.view === "prod-warehouses") {
+        setTitle("Склады", "Products / Warehouses");
+        $("#toolbar").innerHTML = "";
+        const wh = {};
+        state.products.forEach((p) => {
+          if (p.warehouse === "—") return;
+          wh[p.warehouse] = wh[p.warehouse] || { sku: 0, stock: 0 };
+          wh[p.warehouse].sku += 1;
+          wh[p.warehouse].stock += p.stock || 0;
+        });
+        $("#content").innerHTML = `
+          <div class="panel">
+            <div class="panel-head">Warehouses</div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead><tr><th>Код</th><th>Название</th><th class="num">SKU</th><th class="num">Ед. на складе</th></tr></thead>
+                <tbody>
+                  ${Object.entries(wh).map(([code, v]) => `
+                    <tr>
+                      <td class="mono">${code}</td>
+                      <td>${code.includes("MSK") ? "Москва" : code.includes("SPB") ? "Санкт-Петербург" : code}</td>
+                      <td class="num">${v.sku}</td>
+                      <td class="num">${v.stock}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const isStock = state.view === "prod-stock";
+      setTitle(isStock ? "Склад / остатки" : "Номенклатура", isStock ? "Products / Stock" : "Products / List");
+      $("#toolbar").innerHTML = `
+        <input type="search" id="qProd" placeholder="Реф или название…" value="${escapeAttr(state.filter.product)}" />
+        ${isStock ? `<button class="btn" type="button" id="btnLowOnly">Только ниже min</button>` : ""}
+        <button class="btn btn-primary" type="button" id="btnNewProd">+ Товар</button>
+      `;
+      let list = filteredProducts();
+      let lowOnly = false;
+      $("#qProd").addEventListener("input", (e) => {
+        state.filter.product = e.target.value;
+        viewProducts();
+        const inp = $("#qProd");
+        if (inp) { const len = inp.value.length; inp.setSelectionRange(len, len); }
+      });
+      $("#btnNewProd").addEventListener("click", () => toast("Stub: новый продукт", "warn"));
+      $("#btnLowOnly")?.addEventListener("click", () => {
+        lowOnly = true;
+        list = filteredProducts().filter((p) => p.stock != null && p.stock < p.min);
+        paintProducts(list, isStock);
+      });
+
+      paintProducts(list, isStock);
+    }
+
+    function paintProducts(list, isStock) {
+      const selected = state.selectedProduct ? state.products.find((p) => p.id === state.selectedProduct) : null;
+      $("#content").innerHTML = `
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head">${isStock ? "Остатки" : "Products / Services"} · ${list.length}</div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Реф</th><th>Название</th><th>Тип</th>
+                    <th class="num">Цена</th>
+                    <th class="num">Остаток</th>
+                    <th>Склад</th>
+                    ${isStock ? "<th>Уровень</th>" : ""}
+                  </tr>
+                </thead>
+                <tbody>
+                  ${list.map((p) => {
+                    const low = p.stock != null && p.stock < p.min;
+                    return `<tr data-id="${p.id}" class="${state.selectedProduct === p.id ? "selected" : ""}">
+                      <td class="mono">${p.ref}</td>
+                      <td><a class="link" href="#">${p.label}</a></td>
+                      <td>${typeLabel(p.type)}</td>
+                      <td class="num">${money(p.price)}</td>
+                      <td class="num">${p.stock == null ? "—" : p.stock}${low ? " " + '<span class="badge st-low">low</span>' : ""}</td>
+                      <td class="mono">${p.warehouse}</td>
+                      ${isStock ? `<td><div class="stock-bar ${stockClass(p)}"><i style="width:${stockPct(p)}%"></i></div></td>` : ""}
+                    </tr>`;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">Карточка / движение</div>
+            <div class="panel-body" id="prodDetail">
+              ${selected ? renderProdDetail(selected) : `<div class="empty">Выберите позицию</div>`}
+            </div>
+          </div>
+        </div>
+      `;
+      $$("tr[data-id]").forEach((tr) => {
+        tr.addEventListener("click", () => {
+          state.selectedProduct = +tr.dataset.id;
+          paintProducts(list, isStock);
+        });
+      });
+      bindProdDetail();
+    }
+
+    function renderProdDetail(p) {
+      const low = p.stock != null && p.stock < p.min;
+      return `
+        <dl class="kv">
+          <dt>Реф</dt><dd class="mono">${p.ref}</dd>
+          <dt>Название</dt><dd>${p.label}</dd>
+          <dt>Тип</dt><dd>${typeLabel(p.type)}</dd>
+          <dt>Цена</dt><dd>${money(p.price)}</dd>
+          <dt>Склад</dt><dd class="mono">${p.warehouse}</dd>
+          <dt>Остаток</dt><dd>${p.stock == null ? "n/a (услуга)" : `${p.stock} ${p.unit}`} ${low ? badge([{ id: "low", label: "Ниже min", cls: "st-low" }], "low") : p.stock != null ? badge([{ id: "ok", label: "OK", cls: "st-ok" }], "ok") : ""}</dd>
+          <dt>Min</dt><dd>${p.min == null ? "—" : p.min}</dd>
+        </dl>
+        ${p.stock != null ? `
+          <div class="inline-form">
+            <div class="field">
+              <label>Корректировка (+/−)</label>
+              <input type="text" id="stockDelta" placeholder="напр. -5 или 20" style="width:120px" />
+            </div>
+            <button class="btn btn-primary" type="button" id="btnStockApply">Применить</button>
+            <button class="btn" type="button" id="btnStockPlus10">+10</button>
+            <button class="btn" type="button" id="btnStockMinus5">−5</button>
+          </div>
+        ` : `<p class="hint">Услуги не хранятся на складе (Dolibarr: type=service).</p>`}
+      `;
+    }
+
+    function bindProdDetail() {
+      const p = state.products.find((x) => x.id === state.selectedProduct);
+      if (!p || p.stock == null) return;
+      const apply = (delta) => {
+        const n = Number(delta);
+        if (!Number.isFinite(n) || n === 0) {
+          toast("Введите число, напр. -5", "warn");
+          return;
+        }
+        p.stock = Math.max(0, p.stock + n);
+        toast(`${p.ref}: остаток ${p.stock} (${n > 0 ? "+" : ""}${n})`, "ok");
+        viewProducts();
+      };
+      $("#btnStockApply")?.addEventListener("click", () => apply($("#stockDelta").value));
+      $("#btnStockPlus10")?.addEventListener("click", () => apply(10));
+      $("#btnStockMinus5")?.addEventListener("click", () => apply(-5));
+    }
+
+    function filteredInvoices() {
+      let list = [...state.invoices];
+      if (state.view === "inv-unpaid") list = list.filter((i) => ["unpaid", "partial", "draft"].includes(i.status));
+      const q = (state.filter.invoice || "").toLowerCase().trim();
+      if (q) {
+        list = list.filter((i) => {
+          const t = thirdById(i.thirdId);
+          return i.ref.toLowerCase().includes(q) || (t && t.name.toLowerCase().includes(q));
+        });
+      }
+      return list;
+    }
+
+    function viewBilling() {
+      setTitle(state.view === "inv-unpaid" ? "Счета к оплате" : "Счета клиентам", "Billing / Customer invoices (stub)");
+      $("#toolbar").innerHTML = `
+        <input type="search" id="qInv" placeholder="Реф или клиент…" value="${escapeAttr(state.filter.invoice)}" />
+        <button class="btn btn-primary" type="button" id="btnNewInv">+ Счёт</button>
+      `;
+      $("#qInv").addEventListener("input", (e) => {
+        state.filter.invoice = e.target.value;
+        viewBilling();
+        const inp = $("#qInv");
+        if (inp) { const len = inp.value.length; inp.setSelectionRange(len, len); }
+      });
+      $("#btnNewInv").addEventListener("click", () => toast("Создайте счёт из карточки заказа", "warn"));
+
+      const list = filteredInvoices();
+      const selected = state.selectedInvoice ? state.invoices.find((i) => i.id === state.selectedInvoice) : null;
+
+      $("#content").innerHTML = `
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head">Invoices · ${list.length}</div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Реф</th><th>Клиент</th><th>Заказ</th><th>Дата</th>
+                    <th class="num">Сумма</th><th class="num">Оплачено</th><th>Статус</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${list.map((i) => {
+                    const t = thirdById(i.thirdId);
+                    const o = state.orders.find((x) => x.id === i.orderId);
+                    return `<tr data-id="${i.id}" class="${state.selectedInvoice === i.id ? "selected" : ""}">
+                      <td class="mono"><a class="link" href="#">${i.ref}</a></td>
+                      <td>${t ? t.name : "—"}</td>
+                      <td class="mono">${o ? o.ref : "—"}</td>
+                      <td>${i.date}</td>
+                      <td class="num">${money(i.amount)}</td>
+                      <td class="num">${money(i.paid)}</td>
+                      <td>${badge(STATUS_INV, i.status)}</td>
+                    </tr>`;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">Счёт (stub)</div>
+            <div class="panel-body" id="invDetail">
+              ${selected ? renderInvDetail(selected) : `<div class="empty">Выберите счёт</div>`}
+            </div>
+          </div>
+        </div>
+      `;
+      $$("tr[data-id]").forEach((tr) => {
+        tr.addEventListener("click", () => {
+          state.selectedInvoice = +tr.dataset.id;
+          viewBilling();
+        });
+      });
+      bindInvDetail();
+    }
+
+    function renderInvDetail(i) {
+      const t = thirdById(i.thirdId);
+      const o = state.orders.find((x) => x.id === i.orderId);
+      const due = i.amount - i.paid;
+      return `
+        <dl class="kv">
+          <dt>Реф</dt><dd class="mono">${i.ref}</dd>
+          <dt>Клиент</dt><dd>${t ? t.name : "—"}</dd>
+          <dt>Заказ</dt><dd class="mono">${o ? o.ref : "—"}</dd>
+          <dt>Дата</dt><dd>${i.date}</dd>
+          <dt>Сумма</dt><dd>${money(i.amount)}</dd>
+          <dt>Оплачено</dt><dd>${money(i.paid)}</dd>
+          <dt>Долг</dt><dd>${money(due)}</dd>
+          <dt>Статус</dt><dd>${badge(STATUS_INV, i.status)}</dd>
+        </dl>
+        <div class="inline-form">
+          <button class="btn btn-sm btn-success" type="button" data-pay="full" ${i.status === "paid" || i.status === "cancelled" ? "disabled" : ""}>Оплатить 100%</button>
+          <button class="btn btn-sm btn-warn" type="button" data-pay="half" ${i.status === "paid" || i.status === "cancelled" ? "disabled" : ""}>Частично 50%</button>
+          <button class="btn btn-sm" type="button" data-pay="validate" ${i.status !== "draft" ? "disabled" : ""}>Валидировать</button>
+          <button class="btn btn-sm btn-danger" type="button" data-pay="cancel" ${i.status === "cancelled" || i.status === "paid" ? "disabled" : ""}>Отменить</button>
+        </div>
+        <p class="hint">Dolibarr flow: draft → validated (unpaid) → payment(s) → paid.</p>
+      `;
+    }
+
+    function bindInvDetail() {
+      const inv = state.invoices.find((x) => x.id === state.selectedInvoice);
+      if (!inv) return;
+      const root = $("#invDetail");
+      root?.querySelectorAll("[data-pay]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const act = btn.dataset.pay;
+          if (act === "validate" && inv.status === "draft") {
+            inv.status = "unpaid";
+            toast(`${inv.ref} валидирован → unpaid`, "ok");
+          } else if (act === "full") {
+            inv.paid = inv.amount;
+            inv.status = "paid";
+            toast(`${inv.ref} оплачен полностью`, "ok");
+          } else if (act === "half") {
+            inv.paid = Math.round(inv.amount / 2);
+            inv.status = inv.paid >= inv.amount ? "paid" : "partial";
+            toast(`${inv.ref}: оплачено ${money(inv.paid)}`, "ok");
+          } else if (act === "cancel") {
+            inv.status = "cancelled";
+            toast(`${inv.ref} отменён`, "warn");
+          }
+          viewBilling();
+        });
+      });
+    }
+
+    function escapeAttr(s) {
+      return String(s || "").replace(/"/g, "&quot;");
+    }
+
+    /* ========== Router ========== */
+    function render() {
+      renderTopNav();
+      renderSideNav();
+
+      const v = state.view;
+      const m = state.module;
+
+      if (m === "home") return viewHome();
+      if (m === "thirds") {
+        viewThirds();
+        bindThirdDetailActions();
+        return;
+      }
+      if (m === "commercial") {
+        if (v === "comm-orders") return viewOrders(true);
+        return viewOrders(true);
+      }
+      if (m === "products") return viewProducts();
+      if (m === "orders") return viewOrders(false);
+      if (m === "billing") return viewBilling();
+      viewHome();
+    }
+
+    /* brand home */
+    document.querySelector(".brand").addEventListener("click", () => navigate("home"));
+
+    render();
+  </script>
+</body>
+</html>

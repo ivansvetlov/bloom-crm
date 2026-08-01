@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chatwoot · Omni-inbox MVP — Bloom research</title>
+  <style>
+    :root {
+      --bg: #f5f7f9;
+      --surface: #ffffff;
+      --border: #e5e8eb;
+      --border-soft: #eef1f4;
+      --text: #1f2d3d;
+      --text-muted: #6b7c8f;
+      --text-faint: #93a1b0;
+      --primary: #1f93ff;
+      --primary-soft: #e8f4ff;
+      --primary-dark: #0b7ae0;
+      --success: #44ce4b;
+      --success-soft: #e9f9ea;
+      --warning: #f59e0b;
+      --danger: #ff382d;
+      --wa: #25d366;
+      --tg: #2aabee;
+      --max: #7c5cff;
+      --email: #9aa5b1;
+      --sidebar-w: 320px;
+      --right-w: 300px;
+      --top-h: 56px;
+      --radius: 10px;
+      --shadow: 0 1px 2px rgba(31, 45, 61, 0.06);
+      --shadow-md: 0 8px 24px rgba(31, 45, 61, 0.12);
+      --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+    ul { list-style: none; }
+
+    /* —— Shell —— */
+    .app {
+      display: grid;
+      grid-template-rows: var(--top-h) 1fr;
+      height: 100vh;
+    }
+
+    /* —— Top bar —— */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      z-index: 20;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 180px;
+    }
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #1f93ff, #0b6bcb);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(31, 147, 255, 0.35);
+    }
+    .brand-name {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+    .mvp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #fff7e6;
+      border: 1px solid #ffe0a3;
+      color: #9a6700;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .mvp-badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--warning);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+    .top-search {
+      flex: 1;
+      max-width: 420px;
+      position: relative;
+    }
+    .top-search input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px 0 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      outline: none;
+      transition: border-color .15s, background .15s;
+    }
+    .top-search input:focus {
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .top-search svg {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-faint);
+    }
+    .top-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .agent-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px 4px 4px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .avatar.sm { width: 24px; height: 24px; font-size: 10px; }
+    .avatar.lg { width: 48px; height: 48px; font-size: 16px; }
+    .avatar.agent { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    .agent-chip span { font-size: 13px; font-weight: 600; }
+
+    /* —— Workspace —— */
+    .workspace {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr var(--right-w);
+      min-height: 0;
+      height: 100%;
+    }
+
+    /* —— Left: conversation list —— */
+    .inbox-pane {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .inbox-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 12px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .inbox-tab {
+      flex: 1;
+      padding: 8px 6px;
+      border-radius: 8px 8px 0 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: color .15s, background .15s;
+    }
+    .inbox-tab:hover { color: var(--text); background: var(--bg); }
+    .inbox-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: transparent;
+    }
+    .inbox-tab .count {
+      display: inline-block;
+      min-width: 18px;
+      padding: 0 5px;
+      margin-left: 4px;
+      border-radius: 999px;
+      background: var(--bg);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .inbox-tab.active .count {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .channel-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all .15s;
+    }
+    .chip:hover { border-color: #c8d1db; color: var(--text); }
+    .chip.active {
+      border-color: transparent;
+      color: #fff;
+    }
+    .chip.active[data-ch="all"] { background: var(--text); }
+    .chip.active[data-ch="whatsapp"] { background: var(--wa); }
+    .chip.active[data-ch="telegram"] { background: var(--tg); }
+    .chip.active[data-ch="max"] { background: var(--max); }
+    .ch-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .ch-dot.whatsapp { background: var(--wa); }
+    .ch-dot.telegram { background: var(--tg); }
+    .ch-dot.max { background: var(--max); }
+    .ch-dot.all { background: var(--text-faint); }
+    .chip.active .ch-dot { background: rgba(255,255,255,.9); }
+
+    .conv-list {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+    .conv-item {
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-soft);
+      cursor: pointer;
+      transition: background .12s;
+      position: relative;
+    }
+    .conv-item:hover { background: #f8fafc; }
+    .conv-item.active {
+      background: var(--primary-soft);
+      box-shadow: inset 3px 0 0 var(--primary);
+    }
+    .conv-item.unread .conv-name { font-weight: 700; }
+    .conv-item.unread .conv-preview { color: var(--text); font-weight: 500; }
+    .conv-avatar-wrap { position: relative; }
+    .conv-avatar-wrap .avatar {
+      width: 40px;
+      height: 40px;
+      font-size: 13px;
+    }
+    .ch-badge {
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      display: grid;
+      place-items: center;
+      font-size: 8px;
+      color: #fff;
+      font-weight: 700;
+    }
+    .ch-badge.whatsapp { background: var(--wa); }
+    .ch-badge.telegram { background: var(--tg); }
+    .ch-badge.max { background: var(--max); }
+    .conv-meta { min-width: 0; }
+    .conv-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .conv-preview {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+    .conv-labels {
+      display: flex;
+      gap: 4px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+    .label {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .label.open { background: #e8f5e9; color: #2e7d32; }
+    .label.pending { background: #fff3e0; color: #e65100; }
+    .label.resolved { background: #eceff1; color: #546e7a; }
+    .label.order { background: #f3e8ff; color: #7c3aed; }
+    .conv-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .conv-time {
+      font-size: 11px;
+      color: var(--text-faint);
+      white-space: nowrap;
+    }
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    .assignee-mini {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      background: #94a3b8;
+    }
+
+    /* —— Center: thread —— */
+    .thread-pane {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      background: #f0f4f8;
+    }
+    .thread-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      min-height: 60px;
+    }
+    .thread-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .thread-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-pill.open { background: #e8f5e9; color: #2e7d32; }
+    .status-pill.pending { background: #fff3e0; color: #e65100; }
+    .status-pill.resolved { background: #eceff1; color: #546e7a; }
+    .thread-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      transition: background .12s, border-color .12s, box-shadow .12s;
+    }
+    .btn:hover { background: var(--bg); }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+    .btn-success {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+    .btn-success:hover { filter: brightness(0.95); }
+    .btn-ghost {
+      border-color: transparent;
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover { background: var(--bg); color: var(--text); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+    }
+    .day-sep {
+      align-self: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-faint);
+      background: rgba(255,255,255,.8);
+      padding: 3px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      margin: 4px 0;
+    }
+    .msg {
+      display: flex;
+      gap: 10px;
+      max-width: min(640px, 85%);
+    }
+    .msg.out {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    .msg-body {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+    }
+    .msg.out .msg-body {
+      background: var(--primary-soft);
+      border-color: #cfe6ff;
+    }
+    .msg-author {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+    .msg.out .msg-author { color: var(--primary-dark); }
+    .msg-text {
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .msg-time {
+      font-size: 10.5px;
+      color: var(--text-faint);
+      margin-top: 5px;
+      text-align: right;
+    }
+    .msg-private {
+      border-style: dashed;
+      background: #fffbeb !important;
+      border-color: #fcd34d !important;
+    }
+    .msg-private .msg-author { color: #b45309; }
+    .sys-note {
+      align-self: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(255,255,255,.7);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .composer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px 14px;
+    }
+    .composer-toolbar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .composer-toolbar .btn {
+      padding: 4px 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .composer-toolbar .btn.active {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fcd34d;
+    }
+    .composer-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .composer textarea {
+      flex: 1;
+      min-height: 44px;
+      max-height: 120px;
+      resize: none;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      background: var(--bg);
+      line-height: 1.4;
+    }
+    .composer textarea:focus {
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .composer .btn-primary {
+      height: 44px;
+      padding: 0 18px;
+      border-radius: 10px;
+    }
+
+    /* —— Right: contact —— */
+    .contact-pane {
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .contact-head {
+      padding: 20px 16px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .contact-head .avatar {
+      margin: 0 auto 10px;
+    }
+    .contact-name {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .contact-channel {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .contact-section {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-faint);
+      margin-bottom: 10px;
+    }
+    .kv {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 6px 8px;
+      font-size: 13px;
+    }
+    .kv dt { color: var(--text-muted); }
+    .kv dd { font-weight: 500; word-break: break-word; }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .order-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fafbfc;
+      margin-bottom: 8px;
+    }
+    .order-card:last-child { margin-bottom: 0; }
+    .order-id {
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .order-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .order-status {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .order-status.paid { background: #e8f5e9; color: #2e7d32; }
+    .order-status.packing { background: #e3f2fd; color: #1565c0; }
+    .order-status.new { background: #fff3e0; color: #e65100; }
+    .order-status.delivered { background: #eceff1; color: #546e7a; }
+
+    .contact-actions {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+      border-top: 1px solid var(--border-soft);
+      position: sticky;
+      bottom: 0;
+      background: var(--surface);
+    }
+    .contact-actions .btn { width: 100%; justify-content: center; }
+
+    /* —— Empty / toast —— */
+    .empty-thread {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 40px;
+    }
+    .empty-thread h3 { color: var(--text); margin-bottom: 6px; }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1f2d3d;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* —— Modal: Create order —— */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(440px, 100%);
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      animation: pop .18s ease-out;
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .modal-body { padding: 16px; }
+    .form-row {
+      margin-bottom: 12px;
+    }
+    .form-row label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    .form-row input,
+    .form-row select,
+    .form-row textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      outline: none;
+    }
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus {
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .form-row textarea { min-height: 64px; resize: vertical; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px 16px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    /* —— Color helpers for avatars —— */
+    .c1 { background: linear-gradient(135deg, #f472b6, #ec4899); }
+    .c2 { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+    .c3 { background: linear-gradient(135deg, #34d399, #10b981); }
+    .c4 { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+    .c5 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+    .c6 { background: linear-gradient(135deg, #fb7185, #f43f5e); }
+
+    @media (max-width: 1100px) {
+      .workspace { grid-template-columns: 280px 1fr 0; }
+      .contact-pane { display: none; }
+      .workspace.right-open {
+        grid-template-columns: 0 1fr 300px;
+      }
+      .workspace.right-open .inbox-pane { display: none; }
+      .workspace.right-open .contact-pane { display: flex; }
+    }
+    @media (max-width: 720px) {
+      .workspace { grid-template-columns: 1fr 0 0; }
+      .workspace.chat-open { grid-template-columns: 0 1fr 0; }
+      .workspace.right-open { grid-template-columns: 0 0 1fr; }
+      .top-search { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">C</div>
+        <div>
+          <div class="brand-name">Chatwoot</div>
+          <div class="brand-sub">Bloom research · omni-inbox</div>
+        </div>
+      </div>
+      <span class="mvp-badge" title="Структурный прототип для бенчмарка Bloom CRM">MVP · Chatwoot inbox → web</span>
+      <div class="top-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+        <input id="searchInput" type="search" placeholder="Поиск диалогов, контактов…" autocomplete="off" />
+      </div>
+      <div class="top-actions">
+        <div class="agent-chip" title="Текущий агент">
+          <div class="avatar agent">АК</div>
+          <span>Анна К.</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="workspace" id="workspace">
+      <!-- LEFT -->
+      <aside class="inbox-pane">
+        <div class="inbox-tabs" role="tablist">
+          <button class="inbox-tab active" data-filter="mine" type="button">Мои <span class="count" id="countMine">0</span></button>
+          <button class="inbox-tab" data-filter="unassigned" type="button">Без назн. <span class="count" id="countUnassigned">0</span></button>
+          <button class="inbox-tab" data-filter="all" type="button">Все <span class="count" id="countAll">0</span></button>
+        </div>
+        <div class="channel-filters">
+          <button class="chip active" data-ch="all" type="button"><span class="ch-dot all"></span>Все</button>
+          <button class="chip" data-ch="whatsapp" type="button"><span class="ch-dot whatsapp"></span>WhatsApp</button>
+          <button class="chip" data-ch="telegram" type="button"><span class="ch-dot telegram"></span>Telegram</button>
+          <button class="chip" data-ch="max" type="button"><span class="ch-dot max"></span>MAX</button>
+        </div>
+        <div class="conv-list" id="convList" role="listbox" aria-label="Список диалогов"></div>
+      </aside>
+
+      <!-- CENTER -->
+      <main class="thread-pane" id="threadPane">
+        <div class="empty-thread" id="emptyState">
+          <div>
+            <h3>Выберите диалог</h3>
+            <p>Omni-inbox в стиле Chatwoot: WA · TG · MAX (mock)</p>
+          </div>
+        </div>
+        <div id="threadActive" hidden>
+          <div class="thread-header">
+            <button class="btn btn-ghost btn-sm" id="backToList" type="button" title="К списку" style="display:none">←</button>
+            <div>
+              <div class="thread-title" id="threadTitle">—</div>
+              <div class="thread-sub">
+                <span id="threadChannel"></span>
+                <span class="status-pill open" id="threadStatus">Open</span>
+                <span id="threadAssignee"></span>
+              </div>
+            </div>
+            <div class="thread-actions">
+              <button class="btn btn-sm" id="btnResolve" type="button">Решить</button>
+              <button class="btn btn-sm" id="btnToggleContact" type="button">Контакт</button>
+              <button class="btn btn-success btn-sm" id="btnCreateOrder" type="button">+ Создать заказ</button>
+            </div>
+          </div>
+          <div class="messages" id="messages"></div>
+          <div class="composer">
+            <div class="composer-toolbar">
+              <button class="btn" id="btnPrivate" type="button" title="Внутренняя заметка">🔒 Приват</button>
+              <button class="btn" type="button" disabled title="MVP: заглушка">📎</button>
+              <button class="btn" type="button" disabled title="MVP: заглушка">😊</button>
+            </div>
+            <div class="composer-row">
+              <textarea id="composerInput" rows="1" placeholder="Написать ответ клиенту…"></textarea>
+              <button class="btn btn-primary" id="btnSend" type="button">Отправить</button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- RIGHT -->
+      <aside class="contact-pane" id="contactPane">
+        <div class="empty-thread" id="contactEmpty">
+          <div>
+            <h3>Контакт</h3>
+            <p>Данные появятся после выбора диалога</p>
+          </div>
+        </div>
+        <div id="contactActive" hidden>
+          <div class="contact-head">
+            <div class="avatar lg" id="contactAvatar">?</div>
+            <div class="contact-name" id="contactName">—</div>
+            <div class="contact-channel" id="contactChannelLine"></div>
+          </div>
+          <div class="contact-section">
+            <div class="section-title">Атрибуты</div>
+            <dl class="kv" id="contactAttrs"></dl>
+          </div>
+          <div class="contact-section">
+            <div class="section-title">Метки</div>
+            <div class="tag-row" id="contactTags"></div>
+          </div>
+          <div class="contact-section">
+            <div class="section-title">Заказы (mock)</div>
+            <div id="contactOrders"></div>
+          </div>
+          <div class="contact-section">
+            <div class="section-title">Диалог</div>
+            <dl class="kv" id="convAttrs"></dl>
+          </div>
+          <div class="contact-actions">
+            <button class="btn btn-success" id="btnCreateOrderSide" type="button">+ Создать заказ</button>
+            <button class="btn" id="btnAssignMe" type="button">Назначить на меня</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Create order modal -->
+  <div class="modal-backdrop" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="orderModalTitle">Создать заказ</h2>
+        <button class="btn btn-ghost btn-sm" id="btnCloseModal" type="button" aria-label="Закрыть">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label for="orderContact">Клиент</label>
+          <input id="orderContact" type="text" readonly />
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label for="orderChannel">Канал</label>
+            <select id="orderChannel">
+              <option value="whatsapp">WhatsApp</option>
+              <option value="telegram">Telegram</option>
+              <option value="max">MAX</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="orderSource">Источник</label>
+            <select id="orderSource">
+              <option value="direct">Прямой (direct)</option>
+              <option value="flowwow">Flowwow</option>
+              <option value="walkin">Витрина</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="orderProduct">Букет / позиция</label>
+          <input id="orderProduct" type="text" placeholder="Например: Розы 25, премиум" />
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label for="orderAmount">Сумма, ₽</label>
+            <input id="orderAmount" type="number" min="0" step="100" placeholder="4500" />
+          </div>
+          <div class="form-row">
+            <label for="orderDelivery">Доставка</label>
+            <input id="orderDelivery" type="date" />
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="orderAddress">Адрес / комментарий</label>
+          <textarea id="orderAddress" placeholder="Адрес, пожелания, время…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btnCancelOrder" type="button">Отмена</button>
+        <button class="btn btn-primary" id="btnSubmitOrder" type="button">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const CHANNELS = {
+        whatsapp: { label: "WhatsApp", short: "WA", color: "var(--wa)" },
+        telegram: { label: "Telegram", short: "TG", color: "var(--tg)" },
+        max: { label: "MAX", short: "MX", color: "var(--max)" },
+      };
+
+      const AGENT = { id: "anna", name: "Анна К.", initials: "АК" };
+
+      /** Mock conversations — flower-shop ops context for Bloom research */
+      const conversations = [
+        {
+          id: "c1",
+          name: "Мария Соколова",
+          initials: "МС",
+          color: "c1",
+          channel: "whatsapp",
+          phone: "+7 916 234-11-08",
+          email: "m.sokolova@mail.ru",
+          city: "Москва",
+          shop: "Bloom · Арбат",
+          status: "open",
+          assignee: "anna",
+          unread: true,
+          labels: ["order"],
+          tags: ["VIP", "повторный"],
+          orders: [
+            { id: "FW-10482", title: "Пионы + эустома", amount: 6200, status: "packing" },
+          ],
+          preview: "Можно доставить к 18:00?",
+          time: "14:32",
+          messages: [
+            { id: "m1", from: "in", author: "Мария Соколова", text: "Здравствуйте! Хочу заказать букет на день рождения, бюджет около 6–7 тыс.", time: "13:10", day: "Сегодня" },
+            { id: "m2", from: "out", author: "Анна К.", text: "Здравствуйте, Мария! Могу предложить пионы с эустомой — 6200 ₽. Доставка сегодня по центру.", time: "13:14", day: "Сегодня" },
+            { id: "m3", from: "in", author: "Мария Соколова", text: "Отлично, давайте. Адрес: ул. Арбат, 12. Можно доставить к 18:00?", time: "14:32", day: "Сегодня" },
+          ],
+        },
+        {
+          id: "c2",
+          name: "Игорь Петров",
+          initials: "ИП",
+          color: "c2",
+          channel: "telegram",
+          phone: "+7 903 551-00-22",
+          email: "",
+          city: "Москва",
+          shop: "Bloom · Хамовники",
+          status: "pending",
+          assignee: "anna",
+          unread: true,
+          labels: [],
+          tags: ["корпоратив"],
+          orders: [],
+          preview: "Нужно 12 одинаковых композиций",
+          time: "12:05",
+          messages: [
+            { id: "m1", from: "in", author: "Игорь Петров", text: "Добрый день. Нужно 12 одинаковых композиций на стол переговоров, четверг.", time: "11:40", day: "Сегодня" },
+            { id: "m2", from: "out", author: "Анна К.", text: "Добрый день! Уточните бюджет на одну композицию и адрес офиса?", time: "11:55", day: "Сегодня" },
+            { id: "m3", from: "in", author: "Игорь Петров", text: "Около 2500 ₽/шт. Нужно 12 одинаковых композиций. ТТК, офис «Север».", time: "12:05", day: "Сегодня" },
+            { id: "m4", from: "private", author: "Анна К.", text: "Заметка: проверить наличие эука и роз в Хамовниках. Возможно, перевод на второй склад.", time: "12:08", day: "Сегодня" },
+          ],
+        },
+        {
+          id: "c3",
+          name: "Елена В.",
+          initials: "ЕВ",
+          color: "c3",
+          channel: "max",
+          phone: "+7 925 100-44-91",
+          email: "elena.v@yandex.ru",
+          city: "Санкт-Петербург",
+          shop: "Bloom · СПб Невский",
+          status: "open",
+          assignee: null,
+          unread: true,
+          labels: ["order"],
+          tags: ["Flowwow"],
+          orders: [
+            { id: "FW-10401", title: "Розы 51, красные", amount: 8900, status: "paid" },
+          ],
+          preview: "Заказ с Flowwow — можно ли добавить открытку?",
+          time: "Вчера",
+          messages: [
+            { id: "m1", from: "sys", text: "Входящий с канала MAX · связан с заказом Flowwow FW-10401", time: "Вчера 19:02" },
+            { id: "m2", from: "in", author: "Елена В.", text: "Здравствуйте! Заказ с Flowwow — можно ли добавить открытку? Текст: «С любовью, от Максима».", time: "Вчера 19:05", day: "Вчера" },
+          ],
+        },
+        {
+          id: "c4",
+          name: "Алексей Морозов",
+          initials: "АМ",
+          color: "c4",
+          channel: "whatsapp",
+          phone: "+7 926 777-12-34",
+          email: "a.morozov@corp.ru",
+          city: "Москва",
+          shop: "Bloom · Арбат",
+          status: "open",
+          assignee: null,
+          unread: false,
+          labels: [],
+          tags: ["новый"],
+          orders: [],
+          preview: "Сколько стоит доставка за МКАД?",
+          time: "Вчера",
+          messages: [
+            { id: "m1", from: "in", author: "Алексей Морозов", text: "Добрый вечер. Сколько стоит доставка за МКАД, район Мытищи?", time: "Вчера 20:11", day: "Вчера" },
+          ],
+        },
+        {
+          id: "c5",
+          name: "Ольга Кузнецова",
+          initials: "ОК",
+          color: "c5",
+          channel: "telegram",
+          phone: "+7 985 333-88-01",
+          email: "olga.k@gmail.com",
+          city: "Москва",
+          shop: "Bloom · Хамовники",
+          status: "resolved",
+          assignee: "anna",
+          unread: false,
+          labels: [],
+          tags: ["повторный", "VIP"],
+          orders: [
+            { id: "BL-9921", title: "Авторский букет", amount: 5400, status: "delivered" },
+          ],
+          preview: "Спасибо, всё привезли вовремя!",
+          time: "Пн",
+          messages: [
+            { id: "m1", from: "in", author: "Ольга Кузнецова", text: "Спасибо, всё привезли вовремя! Курьер очень вежливый.", time: "Пн 16:40", day: "Понедельник" },
+            { id: "m2", from: "out", author: "Анна К.", text: "Ольга, спасибо за отзыв 💛 Будем рады видеть снова!", time: "Пн 16:52", day: "Понедельник" },
+          ],
+        },
+        {
+          id: "c6",
+          name: "Дмитрий С.",
+          initials: "ДС",
+          color: "c6",
+          channel: "max",
+          phone: "+7 999 200-15-15",
+          email: "",
+          city: "Казань",
+          shop: "Bloom · Казань",
+          status: "pending",
+          assignee: "anna",
+          unread: false,
+          labels: ["order"],
+          tags: ["оплата"],
+          orders: [
+            { id: "BL-10012", title: "Хризантемы + розы", amount: 3100, status: "new" },
+          ],
+          preview: "Можно оплатить по ссылке?",
+          time: "Пн",
+          messages: [
+            { id: "m1", from: "in", author: "Дмитрий С.", text: "Заказ BL-10012 — можно оплатить по ссылке? Карты нет под рукой.", time: "Пн 11:20", day: "Понедельник" },
+            { id: "m2", from: "out", author: "Анна К.", text: "Да, отправила ссылку на оплату. После оплаты статус обновится автоматически.", time: "Пн 11:28", day: "Понедельник" },
+          ],
+        },
+      ];
+
+      // —— State ——
+      let filterTab = "mine";
+      let filterChannel = "all";
+      let searchQuery = "";
+      let activeId = null;
+      let privateMode = false;
+      let msgSeq = 100;
+
+      // —— DOM ——
+      const $ = (sel) => document.querySelector(sel);
+      const convList = $("#convList");
+      const messagesEl = $("#messages");
+      const emptyState = $("#emptyState");
+      const threadActive = $("#threadActive");
+      const contactEmpty = $("#contactEmpty");
+      const contactActive = $("#contactActive");
+      const composerInput = $("#composerInput");
+      const orderModal = $("#orderModal");
+      const toastEl = $("#toast");
+      const workspace = $("#workspace");
+
+      function toast(text) {
+        toastEl.textContent = text;
+        toastEl.classList.add("show");
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => toastEl.classList.remove("show"), 2400);
+      }
+
+      function statusLabel(s) {
+        return { open: "Open", pending: "Pending", resolved: "Resolved" }[s] || s;
+      }
+
+      function matchesFilters(c) {
+        if (filterTab === "mine" && c.assignee !== AGENT.id) return false;
+        if (filterTab === "unassigned" && c.assignee) return false;
+        if (filterChannel !== "all" && c.channel !== filterChannel) return false;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const hay = [c.name, c.phone, c.email, c.preview, c.city, c.shop].join(" ").toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      }
+
+      function updateCounts() {
+        const base = (tab) =>
+          conversations.filter((c) => {
+            if (tab === "mine" && c.assignee !== AGENT.id) return false;
+            if (tab === "unassigned" && c.assignee) return false;
+            if (filterChannel !== "all" && c.channel !== filterChannel) return false;
+            return true;
+          }).length;
+        $("#countMine").textContent = base("mine");
+        $("#countUnassigned").textContent = base("unassigned");
+        $("#countAll").textContent = base("all");
+      }
+
+      function renderList() {
+        const list = conversations.filter(matchesFilters);
+        convList.innerHTML = "";
+        if (!list.length) {
+          convList.innerHTML =
+            '<div style="padding:24px 16px;text-align:center;color:var(--text-muted);font-size:13px">Нет диалогов по фильтру</div>';
+          updateCounts();
+          return;
+        }
+        list.forEach((c) => {
+          const ch = CHANNELS[c.channel];
+          const el = document.createElement("div");
+          el.className = "conv-item" + (c.id === activeId ? " active" : "") + (c.unread ? " unread" : "");
+          el.setAttribute("role", "option");
+          el.dataset.id = c.id;
+          el.innerHTML = `
+            <div class="conv-avatar-wrap">
+              <div class="avatar ${c.color}">${c.initials}</div>
+              <span class="ch-badge ${c.channel}" title="${ch.label}">${ch.short[0]}</span>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-name">${escapeHtml(c.name)}</div>
+              <div class="conv-preview">${escapeHtml(c.preview)}</div>
+              <div class="conv-labels">
+                <span class="label ${c.status}">${statusLabel(c.status)}</span>
+                ${c.labels.includes("order") ? '<span class="label order">Order</span>' : ""}
+              </div>
+            </div>
+            <div class="conv-side">
+              <span class="conv-time">${escapeHtml(c.time)}</span>
+              ${c.unread ? '<span class="unread-dot"></span>' : c.assignee === "anna" ? '<span class="assignee-mini" title="Анна К.">АК</span>' : ""}
+            </div>
+          `;
+          el.addEventListener("click", () => selectConversation(c.id));
+          convList.appendChild(el);
+        });
+        updateCounts();
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function getActive() {
+        return conversations.find((c) => c.id === activeId) || null;
+      }
+
+      function selectConversation(id) {
+        activeId = id;
+        const c = getActive();
+        if (!c) return;
+        c.unread = false;
+        renderList();
+        renderThread(c);
+        renderContact(c);
+        emptyState.hidden = true;
+        threadActive.hidden = false;
+        contactEmpty.hidden = true;
+        contactActive.hidden = false;
+        if (window.matchMedia("(max-width: 720px)").matches) {
+          workspace.classList.add("chat-open");
+          workspace.classList.remove("right-open");
+        }
+        composerInput.focus();
+      }
+
+      function renderThread(c) {
+        const ch = CHANNELS[c.channel];
+        $("#threadTitle").textContent = c.name;
+        $("#threadChannel").innerHTML = `<span class="ch-dot ${c.channel}" style="display:inline-block;vertical-align:middle"></span> ${ch.label}`;
+        const st = $("#threadStatus");
+        st.className = "status-pill " + c.status;
+        st.textContent = statusLabel(c.status);
+        $("#threadAssignee").textContent = c.assignee === "anna" ? "· Анна К." : "· Без назначения";
+        $("#btnResolve").textContent = c.status === "resolved" ? "Открыть снова" : "Решить";
+
+        messagesEl.innerHTML = "";
+        let lastDay = null;
+        c.messages.forEach((m) => {
+          if (m.from === "sys") {
+            const note = document.createElement("div");
+            note.className = "sys-note";
+            note.textContent = m.text;
+            messagesEl.appendChild(note);
+            return;
+          }
+          if (m.day && m.day !== lastDay) {
+            lastDay = m.day;
+            const sep = document.createElement("div");
+            sep.className = "day-sep";
+            sep.textContent = m.day;
+            messagesEl.appendChild(sep);
+          }
+          const row = document.createElement("div");
+          const isOut = m.from === "out" || m.from === "private";
+          row.className = "msg" + (isOut ? " out" : "");
+          const bodyCls = "msg-body" + (m.from === "private" ? " msg-private" : "");
+          row.innerHTML = `
+            <div class="avatar sm ${isOut ? "agent" : c.color}">${isOut ? "АК" : c.initials}</div>
+            <div class="${bodyCls}">
+              <div class="msg-author">${escapeHtml(m.from === "private" ? "🔒 " + m.author + " (приват)" : m.author)}</div>
+              <div class="msg-text">${escapeHtml(m.text)}</div>
+              <div class="msg-time">${escapeHtml(m.time)}</div>
+            </div>
+          `;
+          messagesEl.appendChild(row);
+        });
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function renderContact(c) {
+        const ch = CHANNELS[c.channel];
+        const av = $("#contactAvatar");
+        av.className = "avatar lg " + c.color;
+        av.textContent = c.initials;
+        $("#contactName").textContent = c.name;
+        $("#contactChannelLine").innerHTML = `<span class="ch-dot ${c.channel}"></span> ${ch.label} · ${escapeHtml(c.phone || "—")}`;
+
+        $("#contactAttrs").innerHTML = `
+          <dt>Телефон</dt><dd>${escapeHtml(c.phone || "—")}</dd>
+          <dt>Email</dt><dd>${escapeHtml(c.email || "—")}</dd>
+          <dt>Город</dt><dd>${escapeHtml(c.city || "—")}</dd>
+          <dt>Магазин</dt><dd>${escapeHtml(c.shop || "—")}</dd>
+        `;
+
+        $("#contactTags").innerHTML = (c.tags || [])
+          .map((t) => `<span class="tag">${escapeHtml(t)}</span>`)
+          .join("") || '<span class="tag">нет меток</span>';
+
+        $("#contactOrders").innerHTML = (c.orders || []).length
+          ? c.orders
+              .map(
+                (o) => `
+            <div class="order-card">
+              <div class="order-id">
+                <span>${escapeHtml(o.id)}</span>
+                <span class="order-status ${o.status}">${escapeHtml(o.status)}</span>
+              </div>
+              <div class="order-meta">${escapeHtml(o.title)} · ${o.amount.toLocaleString("ru-RU")} ₽</div>
+            </div>`
+              )
+              .join("")
+          : '<div class="order-meta">Заказов пока нет</div>';
+
+        $("#convAttrs").innerHTML = `
+          <dt>Статус</dt><dd>${statusLabel(c.status)}</dd>
+          <dt>Агент</dt><dd>${c.assignee === "anna" ? "Анна К." : "—"}</dd>
+          <dt>Канал</dt><dd>${ch.label}</dd>
+          <dt>ID</dt><dd><code style="font-size:11px">${c.id}</code></dd>
+        `;
+      }
+
+      function sendMessage() {
+        const c = getActive();
+        if (!c) return;
+        const text = composerInput.value.trim();
+        if (!text) return;
+        const now = new Date();
+        const time = now.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+        msgSeq += 1;
+        c.messages.push({
+          id: "m" + msgSeq,
+          from: privateMode ? "private" : "out",
+          author: AGENT.name,
+          text,
+          time,
+          day: "Сегодня",
+        });
+        c.preview = (privateMode ? "[приват] " : "") + text;
+        c.time = time;
+        if (c.status === "resolved" && !privateMode) c.status = "open";
+        composerInput.value = "";
+        autoGrow();
+        renderThread(c);
+        renderList();
+        toast(privateMode ? "Приватная заметка сохранена (local)" : "Сообщение отправлено (local mock)");
+      }
+
+      function openOrderModal() {
+        const c = getActive();
+        if (!c) {
+          toast("Сначала выберите диалог");
+          return;
+        }
+        $("#orderContact").value = c.name + (c.phone ? " · " + c.phone : "");
+        $("#orderChannel").value = c.channel;
+        $("#orderProduct").value = "";
+        $("#orderAmount").value = "";
+        $("#orderAddress").value = "";
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        $("#orderDelivery").value = d.toISOString().slice(0, 10);
+        orderModal.classList.add("open");
+        setTimeout(() => $("#orderProduct").focus(), 50);
+      }
+
+      function closeOrderModal() {
+        orderModal.classList.remove("open");
+      }
+
+      function submitOrder() {
+        const c = getActive();
+        if (!c) return;
+        const product = $("#orderProduct").value.trim() || "Букет (без названия)";
+        const amount = Number($("#orderAmount").value) || 0;
+        const source = $("#orderSource").value;
+        const delivery = $("#orderDelivery").value;
+        const address = $("#orderAddress").value.trim();
+        const id = "BL-" + (10000 + Math.floor(Math.random() * 90000));
+        c.orders = c.orders || [];
+        c.orders.unshift({ id, title: product, amount, status: "new" });
+        if (!c.labels.includes("order")) c.labels.push("order");
+        if (!c.tags.includes(source === "flowwow" ? "Flowwow" : "direct")) {
+          c.tags.push(source === "flowwow" ? "Flowwow" : "direct");
+        }
+        msgSeq += 1;
+        const time = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+        c.messages.push({
+          id: "m" + msgSeq,
+          from: "sys",
+          text: `Создан заказ ${id}: ${product}${amount ? " · " + amount.toLocaleString("ru-RU") + " ₽" : ""}${delivery ? " · доставка " + delivery : ""}${address ? " · " + address : ""} (local mock)`,
+          time,
+        });
+        c.preview = "Заказ " + id + " создан";
+        c.time = time;
+        renderContact(c);
+        renderThread(c);
+        renderList();
+        closeOrderModal();
+        toast("Заказ " + id + " создан (mock, local)");
+      }
+
+      function autoGrow() {
+        const ta = composerInput;
+        ta.style.height = "auto";
+        ta.style.height = Math.min(ta.scrollHeight, 120) + "px";
+      }
+
+      // —— Events ——
+      document.querySelectorAll(".inbox-tab").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".inbox-tab").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          filterTab = btn.dataset.filter;
+          renderList();
+        });
+      });
+
+      document.querySelectorAll(".channel-filters .chip").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".channel-filters .chip").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          filterChannel = btn.dataset.ch;
+          renderList();
+        });
+      });
+
+      $("#searchInput").addEventListener("input", (e) => {
+        searchQuery = e.target.value.trim();
+        renderList();
+      });
+
+      $("#btnSend").addEventListener("click", sendMessage);
+      composerInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      composerInput.addEventListener("input", autoGrow);
+
+      $("#btnPrivate").addEventListener("click", () => {
+        privateMode = !privateMode;
+        $("#btnPrivate").classList.toggle("active", privateMode);
+        composerInput.placeholder = privateMode
+          ? "Внутренняя заметка (не уйдёт клиенту)…"
+          : "Написать ответ клиенту…";
+      });
+
+      $("#btnResolve").addEventListener("click", () => {
+        const c = getActive();
+        if (!c) return;
+        c.status = c.status === "resolved" ? "open" : "resolved";
+        renderThread(c);
+        renderContact(c);
+        renderList();
+        toast(c.status === "resolved" ? "Диалог решён (mock)" : "Диалог снова открыт (mock)");
+      });
+
+      $("#btnAssignMe").addEventListener("click", () => {
+        const c = getActive();
+        if (!c) return;
+        c.assignee = AGENT.id;
+        renderThread(c);
+        renderContact(c);
+        renderList();
+        toast("Назначено на Анну К. (local)");
+      });
+
+      $("#btnCreateOrder").addEventListener("click", openOrderModal);
+      $("#btnCreateOrderSide").addEventListener("click", openOrderModal);
+      $("#btnCloseModal").addEventListener("click", closeOrderModal);
+      $("#btnCancelOrder").addEventListener("click", closeOrderModal);
+      $("#btnSubmitOrder").addEventListener("click", submitOrder);
+      orderModal.addEventListener("click", (e) => {
+        if (e.target === orderModal) closeOrderModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && orderModal.classList.contains("open")) closeOrderModal();
+      });
+
+      $("#btnToggleContact").addEventListener("click", () => {
+        if (window.matchMedia("(max-width: 1100px)").matches) {
+          workspace.classList.toggle("right-open");
+          workspace.classList.remove("chat-open");
+        } else {
+          toast("Панель контакта уже справа");
+        }
+      });
+
+      $("#backToList").addEventListener("click", () => {
+        workspace.classList.remove("chat-open", "right-open");
+      });
+
+      // Show back button on small screens
+      function syncMobileChrome() {
+        const small = window.matchMedia("(max-width: 720px)").matches;
+        $("#backToList").style.display = small ? "inline-flex" : "none";
+      }
+      window.addEventListener("resize", syncMobileChrome);
+      syncMobileChrome();
+
+      // Init
+      renderList();
+      // Auto-open first "mine" conversation for demo punch
+      const first = conversations.find((c) => c.assignee === AGENT.id && c.status !== "resolved");
+      if (first) selectConversation(first.id);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EspoCRM · structure MVP · espocrm</title>
+  <style>
+    :root {
+      --nav: #3d4e5c;
+      --nav-hover: #344552;
+      --nav-active: #2c3a45;
+      --accent: #5d9cec;
+      --accent-dark: #4a89dc;
+      --bg: #e8eef2;
+      --panel: #ffffff;
+      --border: #d5dde3;
+      --text: #2f3b45;
+      --muted: #7a8a96;
+      --success: #8cc152;
+      --warning: #f6bb42;
+      --danger: #e9573f;
+      --info: #5d9cec;
+      --stream-bg: #f7f9fb;
+      --shadow: 0 1px 3px rgba(45, 62, 80, 0.08);
+      --radius: 4px;
+      --font: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+      --sidebar-w: 220px;
+      --top-h: 48px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    button, input, select { font: inherit; color: inherit; }
+    a { color: var(--accent-dark); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button { cursor: pointer; border: none; background: none; }
+    .hidden { display: none !important; }
+
+    /* —— Shell —— */
+    .app {
+      display: grid;
+      grid-template-rows: var(--top-h) 1fr;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      grid-template-areas:
+        "top top"
+        "side main";
+      height: 100vh;
+      min-height: 520px;
+    }
+    .topbar {
+      grid-area: top;
+      background: var(--nav);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 14px;
+      z-index: 20;
+      box-shadow: 0 1px 0 rgba(0,0,0,.15);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: linear-gradient(145deg, #5d9cec, #37bc9b);
+      display: grid; place-items: center;
+      font-size: 12px; font-weight: 700;
+      color: #fff;
+    }
+    .badge-mvp {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.22);
+      color: #e8f0f7;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .badge-mvp span.dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #37bc9b;
+      box-shadow: 0 0 0 3px rgba(55,188,155,.25);
+    }
+    .top-search {
+      flex: 1;
+      max-width: 420px;
+      position: relative;
+    }
+    .top-search input {
+      width: 100%;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 7px 12px 7px 32px;
+      outline: none;
+    }
+    .top-search input::placeholder { color: rgba(255,255,255,.55); }
+    .top-search::before {
+      content: "⌕";
+      position: absolute; left: 10px; top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,.55);
+      font-size: 14px;
+    }
+    .top-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,.85);
+      font-size: 12px;
+    }
+    .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #5d9cec; color: #fff;
+      display: grid; place-items: center;
+      font-weight: 700; font-size: 11px;
+    }
+
+    .sidebar {
+      grid-area: side;
+      background: #f4f7f9;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 12px 0 24px;
+    }
+    .nav-section {
+      padding: 8px 14px 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      padding: 8px 14px;
+      color: var(--text);
+      border-left: 3px solid transparent;
+      transition: background .12s, border-color .12s;
+    }
+    .nav-item:hover { background: rgba(93,156,236,.08); text-decoration: none; }
+    .nav-item.active {
+      background: rgba(93,156,236,.14);
+      border-left-color: var(--accent);
+      color: var(--accent-dark);
+      font-weight: 600;
+    }
+    .nav-ico {
+      width: 18px; text-align: center; opacity: .75; font-size: 13px;
+    }
+    .nav-count {
+      margin-left: auto;
+      background: #e1e8ee;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .nav-item.active .nav-count {
+      background: rgba(93,156,236,.25);
+      color: var(--accent-dark);
+    }
+    .bloom-note {
+      margin: 16px 12px 0;
+      padding: 10px 12px;
+      background: #fff8e6;
+      border: 1px solid #f0d78c;
+      border-radius: var(--radius);
+      font-size: 11px;
+      color: #6b5a2a;
+      line-height: 1.4;
+    }
+    .bloom-note strong { display: block; margin-bottom: 4px; color: #5a4a1c; }
+
+    .main {
+      grid-area: main;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* —— Header / toolbar —— */
+    .page-head {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 18px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .page-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .breadcrumb {
+      width: 100%;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .breadcrumb button {
+      color: var(--accent-dark);
+      padding: 0;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-left: auto;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 12px;
+      transition: background .12s, border-color .12s, box-shadow .12s;
+    }
+    .btn:hover { background: #f5f8fa; }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent-dark);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-dark); }
+    .btn-ghost { background: transparent; }
+    .seg {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+    .seg button {
+      padding: 6px 12px;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+    }
+    .seg button:last-child { border-right: 0; }
+    .seg button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .search-inline {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 0 8px;
+      min-width: 180px;
+    }
+    .search-inline input {
+      border: 0;
+      outline: none;
+      padding: 6px 6px;
+      width: 160px;
+      background: transparent;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #eef4fb;
+      border: 1px solid #c8dbf0;
+      color: #3a6ea5;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 14px 18px 28px;
+      flex: 1;
+    }
+
+    /* —— Panels —— */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .panel-head {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fafbfc;
+    }
+    .panel-body { padding: 12px 14px; }
+
+    /* —— List table —— */
+    .list-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .list-table th {
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      background: #fafbfc;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .list-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eef2f5;
+      vertical-align: middle;
+    }
+    .list-table tr:last-child td { border-bottom: 0; }
+    .list-table tbody tr {
+      cursor: pointer;
+      transition: background .1s;
+    }
+    .list-table tbody tr:hover { background: #f3f8fd; }
+    .list-table tbody tr.selected { background: #e8f1fb; }
+    .cell-name {
+      font-weight: 600;
+      color: var(--accent-dark);
+    }
+    .cell-muted { color: var(--muted); }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .status::before {
+      content: "";
+      width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor;
+    }
+    .st-new { background: #e8f1fb; color: #3a7bd5; }
+    .st-assigned { background: #f3e8fb; color: #8e44ad; }
+    .st-progress { background: #fff4e0; color: #c27c0e; }
+    .st-closed { background: #e8f6e9; color: #3c9a4b; }
+    .st-prospect { background: #e8f1fb; color: #3a7bd5; }
+    .st-qualification { background: #f3e8fb; color: #8e44ad; }
+    .st-proposal { background: #fff4e0; color: #c27c0e; }
+    .st-negotiation { background: #fdecea; color: #c0392b; }
+    .st-won { background: #e8f6e9; color: #3c9a4b; }
+    .st-lost { background: #f0f0f0; color: #777; }
+    .st-active { background: #e8f6e9; color: #3c9a4b; }
+    .st-inactive { background: #f0f0f0; color: #777; }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    /* —— Detail —— */
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 980px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .app { grid-template-columns: 1fr; grid-template-areas: "top" "main"; }
+    }
+    .detail-header {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 16px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+    .detail-avatar {
+      width: 56px; height: 56px; border-radius: 8px;
+      background: linear-gradient(145deg, #5d9cec, #4a89dc);
+      color: #fff;
+      display: grid; place-items: center;
+      font-weight: 700; font-size: 18px;
+      flex-shrink: 0;
+    }
+    .detail-avatar.case { background: linear-gradient(145deg, #f6bb42, #e9573f); }
+    .detail-avatar.opp { background: linear-gradient(145deg, #37bc9b, #2a9d7c); }
+    .detail-avatar.contact { background: linear-gradient(145deg, #ac92ec, #8e6ad8); }
+    .detail-meta h2 {
+      margin: 0 0 4px;
+      font-size: 20px;
+      font-weight: 650;
+    }
+    .detail-sub {
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-bottom: 10px;
+    }
+    .detail-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .field {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eef2f5;
+      border-right: 1px solid #eef2f5;
+    }
+    .field:nth-child(2n) { border-right: 0; }
+    .field-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .field-value { font-weight: 500; min-height: 18px; }
+    .field-value a { font-weight: 600; }
+
+    /* —— Stream —— */
+    .stream-list { display: flex; flex-direction: column; gap: 0; }
+    .stream-item {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eef2f5;
+    }
+    .stream-item:last-child { border-bottom: 0; }
+    .stream-ico {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 13px;
+      background: #eef4fb;
+      color: var(--accent-dark);
+    }
+    .stream-ico.note { background: #fff4e0; color: #c27c0e; }
+    .stream-ico.email { background: #e8f6e9; color: #3c9a4b; }
+    .stream-ico.status { background: #f3e8fb; color: #8e44ad; }
+    .stream-ico.create { background: #e8f1fb; color: #3a7bd5; }
+    .stream-body { min-width: 0; }
+    .stream-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+    .stream-who { font-weight: 700; }
+    .stream-when { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .stream-text { color: #3a4650; }
+    .stream-text .quote {
+      margin-top: 6px;
+      padding: 8px 10px;
+      background: var(--stream-bg);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 12px;
+      color: #4a5864;
+    }
+    .stream-compose {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stream-compose textarea {
+      width: 100%;
+      min-height: 64px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      outline: none;
+      font: inherit;
+    }
+    .stream-compose textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(93,156,236,.15); }
+    .stream-compose-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+    /* —— Kanban —— */
+    .kanban {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(200px, 1fr));
+      gap: 12px;
+      align-items: start;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .kanban-col {
+      background: #eef2f5;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+    }
+    .kanban-col-head {
+      padding: 10px 12px;
+      font-weight: 700;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: #f7f9fb;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .kanban-col-head .cnt {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 7px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .kanban-col-head.k-new { border-top: 3px solid #5d9cec; }
+    .kanban-col-head.k-assigned { border-top: 3px solid #ac92ec; }
+    .kanban-col-head.k-progress { border-top: 3px solid #f6bb42; }
+    .kanban-col-head.k-closed { border-top: 3px solid #8cc152; }
+    .kanban-cards {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .k-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: border-color .12s, box-shadow .12s, transform .12s;
+      text-align: left;
+      width: 100%;
+    }
+    .k-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(45,62,80,.12);
+      transform: translateY(-1px);
+    }
+    .k-card-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .k-card-meta {
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .k-card-foot {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .prio {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .prio-high { background: #fdecea; color: #c0392b; }
+    .prio-medium { background: #fff4e0; color: #c27c0e; }
+    .prio-low { background: #eef2f5; color: #6a7782; }
+
+    .mapping-banner {
+      background: linear-gradient(90deg, #fff8e6, #f0f7ff);
+      border: 1px solid #e6d49a;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #4a4030;
+      line-height: 1.5;
+    }
+    .mapping-banner code {
+      background: rgba(0,0,0,.06);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+    .mapping-banner strong { color: #2f3b45; }
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .12s, box-shadow .12s;
+    }
+    .stat-card:hover { border-color: var(--accent); box-shadow: 0 2px 10px rgba(45,62,80,.1); }
+    .stat-card .label { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat-card .value { font-size: 28px; font-weight: 700; margin: 4px 0; color: var(--text); }
+    .stat-card .hint { color: var(--muted); font-size: 12px; }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--nav);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      z-index: 100;
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .2s, transform .2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .related-list { list-style: none; margin: 0; padding: 0; }
+    .related-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eef2f5;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .related-list li:last-child { border-bottom: 0; }
+    .related-list button {
+      color: var(--accent-dark);
+      font-weight: 600;
+      padding: 0;
+      text-align: left;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+      background: #fafbfc;
+    }
+    .tabs button {
+      padding: 10px 16px;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tabs button.active {
+      color: var(--accent-dark);
+      border-bottom-color: var(--accent);
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">E</div>
+        <span>EspoCRM</span>
+      </div>
+      <div class="badge-mvp" title="Structure prototype for Bloom research">
+        <span class="dot"></span>
+        MVP · EspoCRM structure → web
+      </div>
+      <div class="top-search">
+        <input type="search" id="globalSearch" placeholder="Глобальный поиск (мок)…" autocomplete="off" />
+      </div>
+      <div class="top-actions">
+        <span>Админ Bloom</span>
+        <div class="avatar" title="Admin">AB</div>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <div class="nav-section">CRM</div>
+      <button class="nav-item active" data-nav="home" type="button">
+        <span class="nav-ico">⌂</span> Главная
+      </button>
+      <button class="nav-item" data-nav="Account" type="button">
+        <span class="nav-ico">🏢</span> Аккаунты
+        <span class="nav-count" id="cnt-Account">0</span>
+      </button>
+      <button class="nav-item" data-nav="Contact" type="button">
+        <span class="nav-ico">👤</span> Контакты
+        <span class="nav-count" id="cnt-Contact">0</span>
+      </button>
+      <button class="nav-item" data-nav="Opportunity" type="button">
+        <span class="nav-ico">◇</span> Возможности
+        <span class="nav-count" id="cnt-Opportunity">0</span>
+      </button>
+      <button class="nav-item" data-nav="Case" type="button">
+        <span class="nav-ico">🎫</span> Обращения
+        <span class="nav-count" id="cnt-Case">0</span>
+      </button>
+
+      <div class="nav-section" style="margin-top:12px">Активности</div>
+      <button class="nav-item" data-nav="stream-global" type="button">
+        <span class="nav-ico">☰</span> Лента
+      </button>
+
+      <div class="bloom-note">
+        <strong>Bloom note</strong>
+        Entity SPA EspoCRM: list → detail + Stream + Kanban по статусам.
+        Cases ≈ заказы/тикеты сети цветов (см. Kanban).
+      </div>
+    </aside>
+
+    <main class="main" id="main"></main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /**
+     * EspoCRM structure MVP — clickable entity SPA shell
+     * Bloom research · offline · no backend
+     */
+    const STATUS_CASE = {
+      New:        { label: "Новое",        cls: "st-new" },
+      Assigned:   { label: "Назначено",    cls: "st-assigned" },
+      "In Progress": { label: "В работе",  cls: "st-progress" },
+      Closed:     { label: "Закрыто",      cls: "st-closed" },
+    };
+    const CASE_COLUMNS = ["New", "Assigned", "In Progress", "Closed"];
+    const CASE_COL_CLASS = {
+      New: "k-new",
+      Assigned: "k-assigned",
+      "In Progress": "k-progress",
+      Closed: "k-closed",
+    };
+
+    const STATUS_OPP = {
+      Prospecting:   { label: "Поиск",         cls: "st-prospect" },
+      Qualification: { label: "Квалификация",  cls: "st-qualification" },
+      Proposal:      { label: "Предложение",   cls: "st-proposal" },
+      Negotiation:   { label: "Переговоры",    cls: "st-negotiation" },
+      Won:           { label: "Выиграно",      cls: "st-won" },
+      Lost:          { label: "Проиграно",     cls: "st-lost" },
+    };
+
+    const DB = {
+      Account: [
+        { id: "A1", name: "Букетная · Москва", type: "Клиент", industry: "Цветочный ритейл", website: "bouquetnaya.ru", phone: "+7 495 111-22-33", email: "ops@bouquetnaya.ru", assigned: "Ирина К.", status: "Active", billing: "Москва, Тверская 12", description: "Сеть из 4 точек; marketplace + direct." },
+        { id: "A2", name: "Flower Hub B2B", type: "Партнёр", industry: "Опт / склад", website: "flowerhub.example", phone: "+7 495 222-33-44", email: "sales@flowerhub.example", assigned: "Павел М.", status: "Active", billing: "МО, Складской пр. 8", description: "Оптовый поставщик среза." },
+        { id: "A3", name: "Studio Rosa", type: "Клиент", industry: "Свадебный декор", website: "studiorosa.ru", phone: "+7 812 333-44-55", email: "hello@studiorosa.ru", assigned: "Ирина К.", status: "Active", billing: "СПб, Невский 40", description: "Свадебные заказы, высокий средний чек." },
+        { id: "A4", name: "GreenLine Logistics", type: "Поставщик", industry: "Логистика", website: "greenline.example", phone: "+7 495 444-55-66", email: "dispatch@greenline.example", assigned: "Сергей В.", status: "Inactive", billing: "Казань", description: "Курьерский партнёр (пилот)." },
+      ],
+      Contact: [
+        { id: "C1", name: "Анна Смирнова", title: "Управляющая", accountId: "A1", accountName: "Букетная · Москва", email: "anna@bouquetnaya.ru", phone: "+7 916 100-20-30", assigned: "Ирина К.", status: "Active" },
+        { id: "C2", name: "Дмитрий Орлов", title: "Закупщик", accountId: "A2", accountName: "Flower Hub B2B", email: "d.orlov@flowerhub.example", phone: "+7 903 200-30-40", assigned: "Павел М.", status: "Active" },
+        { id: "C3", name: "Елена Розанова", title: "Основатель", accountId: "A3", accountName: "Studio Rosa", email: "elena@studiorosa.ru", phone: "+7 921 300-40-50", assigned: "Ирина К.", status: "Active" },
+        { id: "C4", name: "Максим Кузнецов", title: "Диспетчер", accountId: "A4", accountName: "GreenLine Logistics", email: "m.kuz@greenline.example", phone: "+7 987 400-50-60", assigned: "Сергей В.", status: "Inactive" },
+        { id: "C5", name: "Ольга Ветрова", title: "Флорист-старший", accountId: "A1", accountName: "Букетная · Москва", email: "olga@bouquetnaya.ru", phone: "+7 916 500-60-70", assigned: "Ирина К.", status: "Active" },
+      ],
+      Opportunity: [
+        { id: "O1", name: "Корпоративные букеты Q3", accountId: "A1", accountName: "Букетная · Москва", stage: "Proposal", amount: 420000, closeDate: "2026-08-20", assigned: "Ирина К.", probability: 60 },
+        { id: "O2", name: "Опт среза — расширение", accountId: "A2", accountName: "Flower Hub B2B", stage: "Negotiation", amount: 890000, closeDate: "2026-09-01", assigned: "Павел М.", probability: 45 },
+        { id: "O3", name: "Свадебный пакет «Роза»", accountId: "A3", accountName: "Studio Rosa", stage: "Qualification", amount: 180000, closeDate: "2026-08-10", assigned: "Ирина К.", probability: 30 },
+        { id: "O4", name: "Курьерский SLA пилот", accountId: "A4", accountName: "GreenLine Logistics", stage: "Prospecting", amount: 0, closeDate: "2026-10-01", assigned: "Сергей В.", probability: 15 },
+        { id: "O5", name: "Marketplace VIP-лента", accountId: "A1", accountName: "Букетная · Москва", stage: "Won", amount: 250000, closeDate: "2026-07-15", assigned: "Ирина К.", probability: 100 },
+      ],
+      Case: [
+        { id: "K1", name: "Опоздание доставки #8841", number: "CASE-1001", status: "New", priority: "High", accountId: "A1", accountName: "Букетная · Москва", contactId: "C1", contactName: "Анна Смирнова", assigned: "—", type: "Доставка", description: "Клиент ждёт заказ более 40 мин после SLA." },
+        { id: "K2", name: "Замена состава букета", number: "CASE-1002", status: "Assigned", priority: "Medium", accountId: "A1", accountName: "Букетная · Москва", contactId: "C5", contactName: "Ольга Ветрова", assigned: "Ольга В.", type: "Сборка", description: "Нет пионов — согласовать замену." },
+        { id: "K3", name: "Жалоба на свежесть", number: "CASE-1003", status: "In Progress", priority: "High", accountId: "A3", accountName: "Studio Rosa", contactId: "C3", contactName: "Елена Розанова", assigned: "Ирина К.", type: "Качество", description: "Розы поникли через 6 ч; фото приложены." },
+        { id: "K4", name: "Счёт B2B не совпал", number: "CASE-1004", status: "In Progress", priority: "Medium", accountId: "A2", accountName: "Flower Hub B2B", contactId: "C2", contactName: "Дмитрий Орлов", assigned: "Павел М.", type: "Биллинг", description: "Расхождение по срезу 12.07." },
+        { id: "K5", name: "Отмена marketplace-заказа", number: "CASE-1005", status: "Closed", priority: "Low", accountId: "A1", accountName: "Букетная · Москва", contactId: "C1", contactName: "Анна Смирнова", assigned: "Ирина К.", type: "Заказ", description: "Клиент отменил до сборки; возврат OK." },
+        { id: "K6", name: "Новый слот курьера", number: "CASE-1006", status: "New", priority: "Medium", accountId: "A4", accountName: "GreenLine Logistics", contactId: "C4", contactName: "Максим Кузнецов", assigned: "—", type: "Логистика", description: "Нужен вечерний слот 19–22 в ЦАО." },
+        { id: "K7", name: "Фото перед доставкой", number: "CASE-1007", status: "Assigned", priority: "Low", accountId: "A3", accountName: "Studio Rosa", contactId: "C3", contactName: "Елена Розанова", assigned: "Сергей В.", type: "Сервис", description: "Клиент просит pre-delivery photo." },
+        { id: "K8", name: "Повторная доставка", number: "CASE-1008", status: "Closed", priority: "High", accountId: "A1", accountName: "Букетная · Москва", contactId: "C1", contactName: "Анна Смирнова", assigned: "Ольга В.", type: "Доставка", description: "Адрес неверный → redelivery выполнен." },
+      ],
+    };
+
+    const STREAMS = {
+      A1: [
+        { type: "create", who: "Система", when: "01.07.2026 10:12", text: "Аккаунт создан." },
+        { type: "note", who: "Ирина К.", when: "12.07.2026 14:20", text: "Заметка", quote: "Подключили dual intake: marketplace + direct. Нужен единый Case/Order status." },
+        { type: "email", who: "Анна Смирнова", when: "18.07.2026 09:05", text: "Email: запрос на отчёт по SLA доставок за июль." },
+        { type: "status", who: "Ирина К.", when: "20.07.2026 11:40", text: "Связанная возможность «Marketplace VIP-лента» → Выиграно." },
+      ],
+      A2: [
+        { type: "create", who: "Павел М.", when: "05.06.2026 16:00", text: "Аккаунт создан (партнёр / опт)." },
+        { type: "note", who: "Павел М.", when: "22.07.2026 13:11", text: "Заметка", quote: "Переговоры по объёму среза на сентябрь." },
+      ],
+      A3: [
+        { type: "create", who: "Ирина К.", when: "10.05.2026 12:00", text: "Аккаунт создан." },
+        { type: "email", who: "Елена Розанова", when: "25.07.2026 18:22", text: "Email: претензия по свежести (см. Case CASE-1003)." },
+      ],
+      A4: [
+        { type: "create", who: "Сергей В.", when: "01.08.2026 09:30", text: "Аккаунт создан (пилот логистики)." },
+      ],
+      C1: [
+        { type: "create", who: "Ирина К.", when: "01.07.2026 10:15", text: "Контакт создан · роль Управляющая." },
+        { type: "note", who: "Ирина К.", when: "19.07.2026 17:00", text: "Заметка", quote: "Предпочитает WhatsApp для срочных Case." },
+      ],
+      C2: [
+        { type: "create", who: "Павел М.", when: "05.06.2026 16:05", text: "Контакт создан." },
+      ],
+      C3: [
+        { type: "email", who: "Елена Розанова", when: "25.07.2026 18:22", text: "Входящий email по качеству." },
+        { type: "note", who: "Ирина К.", when: "26.07.2026 10:00", text: "Заметка", quote: "Эскалация в Case CASE-1003." },
+      ],
+      C4: [
+        { type: "create", who: "Сергей В.", when: "01.08.2026 09:32", text: "Контакт создан." },
+      ],
+      C5: [
+        { type: "note", who: "Ольга В.", when: "28.07.2026 08:45", text: "Заметка", quote: "Готова брать Assigned Cases по сборке." },
+      ],
+      O1: [
+        { type: "create", who: "Ирина К.", when: "01.07.2026 11:00", text: "Возможность создана · стадия Proposal." },
+        { type: "status", who: "Ирина К.", when: "15.07.2026 12:00", text: "Стадия: Qualification → Proposal." },
+        { type: "note", who: "Ирина К.", when: "22.07.2026 16:30", text: "Заметка", quote: "КП отправлено: 120 корп. букетов / мес." },
+      ],
+      O2: [
+        { type: "create", who: "Павел М.", when: "10.07.2026 09:00", text: "Возможность создана." },
+        { type: "status", who: "Павел М.", when: "28.07.2026 14:00", text: "Стадия: Proposal → Negotiation." },
+      ],
+      O3: [
+        { type: "create", who: "Ирина К.", when: "20.07.2026 10:00", text: "Возможность создана · Qualification." },
+      ],
+      O4: [
+        { type: "create", who: "Сергей В.", when: "01.08.2026 10:00", text: "Возможность создана · Prospecting." },
+      ],
+      O5: [
+        { type: "status", who: "Ирина К.", when: "15.07.2026 18:00", text: "Стадия → Won. Сумма 250 000 ₽." },
+        { type: "note", who: "Ирина К.", when: "15.07.2026 18:05", text: "Заметка", quote: "Закрыто: VIP-лента на marketplace." },
+      ],
+      K1: [
+        { type: "create", who: "Система", when: "01.08.2026 11:02", text: "Обращение создано · статус Новое." },
+        { type: "note", who: "Анна Смирнова", when: "01.08.2026 11:05", text: "Заметка клиента", quote: "Курьер не выходит на связь, заказ #8841." },
+      ],
+      K2: [
+        { type: "create", who: "Система", when: "31.07.2026 09:10", text: "Обращение создано." },
+        { type: "status", who: "Ирина К.", when: "31.07.2026 09:40", text: "Статус: Новое → Назначено (Ольга В.)." },
+        { type: "note", who: "Ольга В.", when: "31.07.2026 10:00", text: "Заметка", quote: "Предложила эустому вместо пиона." },
+      ],
+      K3: [
+        { type: "create", who: "Система", when: "25.07.2026 18:30", text: "Обращение создано из email." },
+        { type: "status", who: "Ирина К.", when: "26.07.2026 09:00", text: "Статус: Назначено → В работе." },
+        { type: "email", who: "Ирина К.", when: "26.07.2026 11:20", text: "Исходящий: извинения + предложение замены/возврата." },
+        { type: "note", who: "Ирина К.", when: "27.07.2026 15:00", text: "Заметка", quote: "Ждём фото повторной сборки." },
+      ],
+      K4: [
+        { type: "create", who: "Павел М.", when: "20.07.2026 12:00", text: "Обращение создано · Биллинг." },
+        { type: "status", who: "Павел М.", when: "21.07.2026 10:00", text: "Статус → В работе." },
+      ],
+      K5: [
+        { type: "create", who: "Система", when: "10.07.2026 14:00", text: "Обращение создано." },
+        { type: "status", who: "Ирина К.", when: "10.07.2026 14:30", text: "Статус → Закрыто (отмена до сборки)." },
+      ],
+      K6: [
+        { type: "create", who: "Сергей В.", when: "01.08.2026 08:50", text: "Обращение создано · Логистика." },
+      ],
+      K7: [
+        { type: "create", who: "Система", when: "30.07.2026 16:00", text: "Обращение создано." },
+        { type: "status", who: "Ирина К.", when: "30.07.2026 16:20", text: "Статус → Назначено (Сергей В.)." },
+      ],
+      K8: [
+        { type: "create", who: "Система", when: "05.07.2026 19:00", text: "Обращение создано." },
+        { type: "status", who: "Ольга В.", when: "05.07.2026 21:10", text: "Статус → Закрыто (повторная доставка)." },
+      ],
+    };
+
+    const ENTITY_META = {
+      Account: {
+        title: "Аккаунты",
+        singular: "Аккаунт",
+        icon: "🏢",
+        listCols: [
+          { key: "name", label: "Название" },
+          { key: "type", label: "Тип" },
+          { key: "industry", label: "Отрасль" },
+          { key: "phone", label: "Телефон" },
+          { key: "assigned", label: "Ответственный" },
+          { key: "status", label: "Статус" },
+        ],
+      },
+      Contact: {
+        title: "Контакты",
+        singular: "Контакт",
+        icon: "👤",
+        listCols: [
+          { key: "name", label: "Имя" },
+          { key: "title", label: "Должность" },
+          { key: "accountName", label: "Аккаунт" },
+          { key: "email", label: "Email" },
+          { key: "phone", label: "Телефон" },
+          { key: "assigned", label: "Ответственный" },
+        ],
+      },
+      Opportunity: {
+        title: "Возможности",
+        singular: "Возможность",
+        icon: "◇",
+        listCols: [
+          { key: "name", label: "Название" },
+          { key: "accountName", label: "Аккаунт" },
+          { key: "stage", label: "Стадия" },
+          { key: "amount", label: "Сумма" },
+          { key: "closeDate", label: "Закрытие" },
+          { key: "assigned", label: "Ответственный" },
+        ],
+      },
+      Case: {
+        title: "Обращения",
+        singular: "Обращение",
+        icon: "🎫",
+        listCols: [
+          { key: "number", label: "Номер" },
+          { key: "name", label: "Тема" },
+          { key: "status", label: "Статус" },
+          { key: "priority", label: "Приоритет" },
+          { key: "accountName", label: "Аккаунт" },
+          { key: "assigned", label: "Ответственный" },
+        ],
+      },
+    };
+
+    const state = {
+      view: "home",       // home | list | detail | stream-global
+      entity: null,       // Account | Contact | Opportunity | Case
+      id: null,
+      caseMode: "kanban", // list | kanban for Case
+      listFilter: "",
+      detailTab: "overview",
+    };
+
+    function $(sel, root = document) { return root.querySelector(sel); }
+    function el(html) {
+      const t = document.createElement("template");
+      t.innerHTML = html.trim();
+      return t.content.firstElementChild;
+    }
+    function esc(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    function money(n) {
+      if (n == null || n === 0) return "—";
+      return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 }).format(n);
+    }
+    function initials(name) {
+      return String(name || "?")
+        .split(/\s+/).filter(Boolean).slice(0, 2)
+        .map(p => p[0]).join("").toUpperCase();
+    }
+    function toast(msg) {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toast._tm);
+      toast._tm = setTimeout(() => t.classList.remove("show"), 2200);
+    }
+    function findById(entity, id) {
+      return (DB[entity] || []).find(r => r.id === id) || null;
+    }
+    function statusBadge(entity, value) {
+      if (entity === "Case") {
+        const m = STATUS_CASE[value] || { label: value, cls: "st-new" };
+        return `<span class="status ${m.cls}">${esc(m.label)}</span>`;
+      }
+      if (entity === "Opportunity") {
+        const m = STATUS_OPP[value] || { label: value, cls: "st-prospect" };
+        return `<span class="status ${m.cls}">${esc(m.label)}</span>`;
+      }
+      if (value === "Active" || value === "Активен") return `<span class="status st-active">Активен</span>`;
+      if (value === "Inactive" || value === "Неактивен") return `<span class="status st-inactive">Неактивен</span>`;
+      return esc(value);
+    }
+    function prioBadge(p) {
+      const map = { High: ["высокий", "prio-high"], Medium: ["средний", "prio-medium"], Low: ["низкий", "prio-low"] };
+      const [label, cls] = map[p] || [p, "prio-low"];
+      return `<span class="prio ${cls}">${esc(label)}</span>`;
+    }
+    function streamIcon(type) {
+      if (type === "note") return { cls: "note", icon: "✎" };
+      if (type === "email") return { cls: "email", icon: "✉" };
+      if (type === "status") return { cls: "status", icon: "↻" };
+      return { cls: "create", icon: "+" };
+    }
+
+    /* —— Navigation —— */
+    function setNavActive(key) {
+      document.querySelectorAll(".nav-item").forEach(b => {
+        b.classList.toggle("active", b.dataset.nav === key);
+      });
+    }
+    function goHome() {
+      state.view = "home";
+      state.entity = null;
+      state.id = null;
+      setNavActive("home");
+      render();
+    }
+    function goList(entity) {
+      state.view = "list";
+      state.entity = entity;
+      state.id = null;
+      state.listFilter = "";
+      setNavActive(entity);
+      render();
+    }
+    function goDetail(entity, id) {
+      state.view = "detail";
+      state.entity = entity;
+      state.id = id;
+      state.detailTab = "overview";
+      setNavActive(entity);
+      render();
+    }
+    function goStreamGlobal() {
+      state.view = "stream-global";
+      state.entity = null;
+      state.id = null;
+      setNavActive("stream-global");
+      render();
+    }
+
+    /* —— Renderers —— */
+    function render() {
+      updateCounts();
+      const main = $("#main");
+      if (state.view === "home") main.innerHTML = renderHome();
+      else if (state.view === "list") main.innerHTML = renderList();
+      else if (state.view === "detail") main.innerHTML = renderDetail();
+      else if (state.view === "stream-global") main.innerHTML = renderGlobalStream();
+      bindMain();
+    }
+
+    function updateCounts() {
+      for (const e of Object.keys(ENTITY_META)) {
+        const n = document.getElementById("cnt-" + e);
+        if (n) n.textContent = DB[e].length;
+      }
+    }
+
+    function renderHome() {
+      const openCases = DB.Case.filter(c => c.status !== "Closed").length;
+      const openOpp = DB.Opportunity.filter(o => o.stage !== "Won" && o.stage !== "Lost").length;
+      return `
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">EspoCRM · Dashboard (мок)</div>
+            <h1 class="page-title">Главная</h1>
+          </div>
+        </div>
+        <div class="content">
+          <div class="mapping-banner">
+            <strong>Structure MVP EspoCRM</strong> — кликабельная оболочка entity SPA:
+            list / detail / Stream / Kanban. Не продукт Bloom; карта идей для ops-кабинета.
+            <code>Accounts · Contacts · Opportunities · Cases</code>
+          </div>
+          <div class="home-grid">
+            <button type="button" class="stat-card" data-go="Account">
+              <div class="label">Аккаунты</div>
+              <div class="value">${DB.Account.length}</div>
+              <div class="hint">Организации / точки / партнёры</div>
+            </button>
+            <button type="button" class="stat-card" data-go="Contact">
+              <div class="label">Контакты</div>
+              <div class="value">${DB.Contact.length}</div>
+              <div class="hint">Люди, связанные с аккаунтами</div>
+            </button>
+            <button type="button" class="stat-card" data-go="Opportunity">
+              <div class="label">Открытые возможности</div>
+              <div class="value">${openOpp}</div>
+              <div class="hint">Pipeline sales (стадии)</div>
+            </button>
+            <button type="button" class="stat-card" data-go="Case">
+              <div class="label">Открытые обращения</div>
+              <div class="value">${openCases}</div>
+              <div class="hint">Kanban: New → Closed ≈ статусы заказа</div>
+            </button>
+          </div>
+          <div class="panel">
+            <div class="panel-head">Недавние обращения (Stream preview)</div>
+            <div class="panel-body">
+              <div class="stream-list">
+                ${DB.Case.slice(0, 4).map(c => `
+                  <div class="stream-item">
+                    <div class="stream-ico create">🎫</div>
+                    <div class="stream-body">
+                      <div class="stream-head">
+                        <span class="stream-who"><button type="button" data-detail="Case:${c.id}" style="color:var(--accent-dark);font-weight:700;padding:0">${esc(c.name)}</button></span>
+                        ${statusBadge("Case", c.status)}
+                      </div>
+                      <div class="stream-text cell-muted">${esc(c.accountName)} · ${esc(c.number)} · ${esc(c.assigned)}</div>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderList() {
+      const entity = state.entity;
+      const meta = ENTITY_META[entity];
+      const q = state.listFilter.trim().toLowerCase();
+      let rows = DB[entity].slice();
+      if (q) {
+        rows = rows.filter(r => JSON.stringify(r).toLowerCase().includes(q));
+      }
+
+      const isCase = entity === "Case";
+      const mode = isCase ? state.caseMode : "list";
+
+      const viewToggle = isCase ? `
+        <div class="seg" role="group" aria-label="Вид">
+          <button type="button" data-case-mode="list" class="${mode === "list" ? "active" : ""}">Список</button>
+          <button type="button" data-case-mode="kanban" class="${mode === "kanban" ? "active" : ""}">Kanban</button>
+        </div>
+      ` : "";
+
+      let body = "";
+      if (mode === "kanban" && isCase) {
+        body = renderCaseKanban(rows);
+      } else {
+        body = renderTable(entity, rows, meta);
+      }
+
+      return `
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">CRM / ${esc(meta.title)}</div>
+            <h1 class="page-title">${meta.icon} ${esc(meta.title)} <span class="filter-chip">${rows.length} записей</span></h1>
+          </div>
+          <div class="toolbar">
+            ${viewToggle}
+            <div class="search-inline">
+              <span style="color:var(--muted)">⌕</span>
+              <input type="search" id="listSearch" placeholder="Фильтр…" value="${esc(state.listFilter)}" />
+            </div>
+            <button type="button" class="btn btn-primary" id="btnCreate">+ Создать</button>
+          </div>
+        </div>
+        <div class="content">${body}</div>
+      `;
+    }
+
+    function renderTable(entity, rows, meta) {
+      if (!rows.length) return `<div class="panel"><div class="empty">Нет записей</div></div>`;
+      return `
+        <div class="panel">
+          <table class="list-table">
+            <thead>
+              <tr>${meta.listCols.map(c => `<th>${esc(c.label)}</th>`).join("")}</tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr data-detail="${entity}:${r.id}">
+                  ${meta.listCols.map(c => `<td>${cellValue(entity, r, c.key)}</td>`).join("")}
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function cellValue(entity, r, key) {
+      const v = r[key];
+      if (key === "name" || key === "number") return `<span class="cell-name">${esc(v)}</span>`;
+      if (key === "status") return statusBadge(entity === "Case" ? "Case" : "Account", v);
+      if (key === "stage") return statusBadge("Opportunity", v);
+      if (key === "amount") return esc(money(v));
+      if (key === "priority") return prioBadge(v);
+      if (key === "accountName" && r.accountId) {
+        return `<button type="button" data-detail="Account:${r.accountId}" style="color:var(--accent-dark);font-weight:600;padding:0">${esc(v)}</button>`;
+      }
+      return esc(v ?? "—");
+    }
+
+    function renderCaseKanban(rows) {
+      return `
+        <div class="mapping-banner">
+          <strong>Bloom mental model · Cases → статусы цветочного заказа</strong><br/>
+          <code>New</code> → новый / принят ·
+          <code>Assigned</code> → назначен флористу / точке ·
+          <code>In Progress</code> → сборка / в доставке ·
+          <code>Closed</code> → доставлен / отменён / решён.<br/>
+          В EspoCRM Kanban — нативный вид entity со status field; drag-and-drop здесь имитируется кликом «→» на карточке.
+        </div>
+        <div class="kanban">
+          ${CASE_COLUMNS.map(col => {
+            const cards = rows.filter(c => c.status === col);
+            const label = STATUS_CASE[col].label;
+            return `
+              <div class="kanban-col" data-col="${col}">
+                <div class="kanban-col-head ${CASE_COL_CLASS[col]}">
+                  <span>${esc(label)}</span>
+                  <span class="cnt">${cards.length}</span>
+                </div>
+                <div class="kanban-cards">
+                  ${cards.map(c => `
+                    <button type="button" class="k-card" data-detail="Case:${c.id}">
+                      <div class="k-card-title">${esc(c.name)}</div>
+                      <div class="k-card-meta">
+                        <span>${esc(c.number)} · ${esc(c.type)}</span>
+                        <span>${esc(c.accountName)}</span>
+                        <span>→ ${esc(c.assigned)}</span>
+                      </div>
+                      <div class="k-card-foot">
+                        ${prioBadge(c.priority)}
+                        <span class="btn btn-ghost" data-advance="${c.id}" title="Сдвинуть статус вперёд" style="padding:2px 6px;font-size:11px;border:1px solid var(--border)">→ статус</span>
+                      </div>
+                    </button>
+                  `).join("") || `<div class="empty" style="padding:16px 8px;font-size:12px">Пусто</div>`}
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderDetail() {
+      const entity = state.entity;
+      const rec = findById(entity, state.id);
+      if (!rec) {
+        return `
+          <div class="page-head"><h1 class="page-title">Не найдено</h1>
+            <div class="toolbar"><button type="button" class="btn" data-back>← К списку</button></div>
+          </div>
+          <div class="content"><div class="panel"><div class="empty">Запись ${esc(state.id)} отсутствует</div></div></div>
+        `;
+      }
+      const meta = ENTITY_META[entity];
+      const avatarCls = entity === "Case" ? "case" : entity === "Opportunity" ? "opp" : entity === "Contact" ? "contact" : "";
+      const stream = (STREAMS[rec.id] || []).slice().reverse();
+
+      return `
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">
+              <button type="button" data-back>CRM / ${esc(meta.title)}</button>
+              / ${esc(rec.name || rec.number)}
+            </div>
+            <h1 class="page-title">${esc(meta.singular)}</h1>
+          </div>
+          <div class="toolbar">
+            <button type="button" class="btn" data-back>← Список</button>
+            <button type="button" class="btn" id="btnEdit">Изменить</button>
+            <button type="button" class="btn btn-primary" id="btnFollow">+ В ленту</button>
+          </div>
+        </div>
+        <div class="content">
+          <div class="detail-header">
+            <div class="detail-avatar ${avatarCls}">${esc(initials(rec.name))}</div>
+            <div class="detail-meta" style="flex:1;min-width:0">
+              <h2>${esc(rec.name)}</h2>
+              <div class="detail-sub">
+                ${entity === "Case" ? `<span>${esc(rec.number)}</span>${statusBadge("Case", rec.status)}${prioBadge(rec.priority)}` : ""}
+                ${entity === "Opportunity" ? `${statusBadge("Opportunity", rec.stage)}<span>${esc(money(rec.amount))}</span>` : ""}
+                ${entity === "Account" ? `${statusBadge("Account", rec.status)}<span>${esc(rec.type)}</span>` : ""}
+                ${entity === "Contact" ? `<span>${esc(rec.title)}</span>` : ""}
+                <span class="cell-muted">Ответственный: ${esc(rec.assigned || "—")}</span>
+              </div>
+              <div class="detail-actions">
+                <button type="button" class="btn btn-primary" id="btnCompose">✉ Написать</button>
+                <button type="button" class="btn" id="btnTask">✓ Задача</button>
+                ${entity === "Case" ? `<button type="button" class="btn" id="btnAdvanceCase">→ След. статус</button>` : ""}
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-layout">
+            <div class="panel">
+              <div class="tabs">
+                <button type="button" data-tab="overview" class="${state.detailTab === "overview" ? "active" : ""}">Обзор</button>
+                <button type="button" data-tab="stream" class="${state.detailTab === "stream" ? "active" : ""}">Лента (Stream)</button>
+                <button type="button" data-tab="related" class="${state.detailTab === "related" ? "active" : ""}">Связи</button>
+              </div>
+              <div class="panel-body" id="detailTabBody">
+                ${state.detailTab === "overview" ? renderOverviewFields(entity, rec) : ""}
+                ${state.detailTab === "stream" ? renderStreamPanel(stream, true) : ""}
+                ${state.detailTab === "related" ? renderRelated(entity, rec) : ""}
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">Stream · активность</div>
+              <div class="panel-body" style="background:var(--stream-bg)">
+                ${renderStreamPanel(stream, true)}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderOverviewFields(entity, rec) {
+      let fields = [];
+      if (entity === "Account") {
+        fields = [
+          ["Название", rec.name],
+          ["Тип", rec.type],
+          ["Отрасль", rec.industry],
+          ["Статус", statusBadge("Account", rec.status)],
+          ["Телефон", rec.phone],
+          ["Email", rec.email],
+          ["Сайт", rec.website],
+          ["Ответственный", rec.assigned],
+          ["Адрес", rec.billing],
+          ["Описание", rec.description],
+        ];
+      } else if (entity === "Contact") {
+        fields = [
+          ["Имя", rec.name],
+          ["Должность", rec.title],
+          ["Аккаунт", rec.accountId
+            ? `<button type="button" data-detail="Account:${rec.accountId}" style="color:var(--accent-dark);font-weight:600;padding:0">${esc(rec.accountName)}</button>`
+            : "—"],
+          ["Email", rec.email],
+          ["Телефон", rec.phone],
+          ["Ответственный", rec.assigned],
+          ["Статус", statusBadge("Account", rec.status)],
+        ];
+      } else if (entity === "Opportunity") {
+        fields = [
+          ["Название", rec.name],
+          ["Аккаунт", rec.accountId
+            ? `<button type="button" data-detail="Account:${rec.accountId}" style="color:var(--accent-dark);font-weight:600;padding:0">${esc(rec.accountName)}</button>`
+            : "—"],
+          ["Стадия", statusBadge("Opportunity", rec.stage)],
+          ["Сумма", money(rec.amount)],
+          ["Вероятность", rec.probability + "%"],
+          ["Дата закрытия", rec.closeDate],
+          ["Ответственный", rec.assigned],
+        ];
+      } else if (entity === "Case") {
+        fields = [
+          ["Номер", rec.number],
+          ["Тема", rec.name],
+          ["Статус", statusBadge("Case", rec.status)],
+          ["Приоритет", prioBadge(rec.priority)],
+          ["Тип", rec.type],
+          ["Аккаунт", rec.accountId
+            ? `<button type="button" data-detail="Account:${rec.accountId}" style="color:var(--accent-dark);font-weight:600;padding:0">${esc(rec.accountName)}</button>`
+            : "—"],
+          ["Контакт", rec.contactId
+            ? `<button type="button" data-detail="Contact:${rec.contactId}" style="color:var(--accent-dark);font-weight:600;padding:0">${esc(rec.contactName)}</button>`
+            : "—"],
+          ["Ответственный", rec.assigned],
+          ["Описание", rec.description],
+        ];
+      }
+      return `
+        <div class="fields-grid">
+          ${fields.map(([label, val]) => `
+            <div class="field">
+              <div class="field-label">${esc(label)}</div>
+              <div class="field-value">${typeof val === "string" && val.includes("<") ? val : esc(val)}</div>
+            </div>
+          `).join("")}
+        </div>
+        ${entity === "Case" ? `
+          <div class="mapping-banner" style="margin-top:12px">
+            <strong>Bloom:</strong> Case status
+            <code>${esc(rec.status)}</code>
+            ≈ этап заказа/тикета.
+            Цепочка: New → Assigned → In Progress → Closed.
+          </div>
+        ` : ""}
+      `;
+    }
+
+    function renderStreamPanel(items, withCompose) {
+      const compose = withCompose ? `
+        <div class="stream-compose">
+          <textarea id="streamNote" placeholder="Заметка в Stream (мок)…"></textarea>
+          <div class="stream-compose-actions">
+            <button type="button" class="btn btn-primary" id="btnPostStream">Опубликовать</button>
+          </div>
+        </div>
+      ` : "";
+      if (!items.length) {
+        return compose + `<div class="empty">Пока нет событий в ленте</div>`;
+      }
+      return compose + `
+        <div class="stream-list">
+          ${items.map(it => {
+            const ic = streamIcon(it.type);
+            return `
+              <div class="stream-item">
+                <div class="stream-ico ${ic.cls}">${ic.icon}</div>
+                <div class="stream-body">
+                  <div class="stream-head">
+                    <span class="stream-who">${esc(it.who)}</span>
+                    <span class="stream-when">${esc(it.when)}</span>
+                  </div>
+                  <div class="stream-text">
+                    ${esc(it.text)}
+                    ${it.quote ? `<div class="quote">${esc(it.quote)}</div>` : ""}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderRelated(entity, rec) {
+      if (entity === "Account") {
+        const contacts = DB.Contact.filter(c => c.accountId === rec.id);
+        const opps = DB.Opportunity.filter(o => o.accountId === rec.id);
+        const cases = DB.Case.filter(c => c.accountId === rec.id);
+        return `
+          <div style="display:grid;gap:14px">
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Контакты (${contacts.length})</div>
+              <ul class="related-list">
+                ${contacts.map(c => `<li><button type="button" data-detail="Contact:${c.id}">${esc(c.name)}</button><span class="cell-muted">${esc(c.title)}</span></li>`).join("") || "<li class='cell-muted'>Нет</li>"}
+              </ul>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Возможности (${opps.length})</div>
+              <ul class="related-list">
+                ${opps.map(o => `<li><button type="button" data-detail="Opportunity:${o.id}">${esc(o.name)}</button>${statusBadge("Opportunity", o.stage)}</li>`).join("") || "<li class='cell-muted'>Нет</li>"}
+              </ul>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Обращения (${cases.length})</div>
+              <ul class="related-list">
+                ${cases.map(c => `<li><button type="button" data-detail="Case:${c.id}">${esc(c.name)}</button>${statusBadge("Case", c.status)}</li>`).join("") || "<li class='cell-muted'>Нет</li>"}
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+      if (entity === "Contact") {
+        const cases = DB.Case.filter(c => c.contactId === rec.id);
+        return `
+          <ul class="related-list">
+            <li><span class="cell-muted">Аккаунт</span>
+              <button type="button" data-detail="Account:${rec.accountId}">${esc(rec.accountName)}</button>
+            </li>
+          </ul>
+          <div class="field-label" style="margin:12px 0 6px">Обращения (${cases.length})</div>
+          <ul class="related-list">
+            ${cases.map(c => `<li><button type="button" data-detail="Case:${c.id}">${esc(c.name)}</button>${statusBadge("Case", c.status)}</li>`).join("") || "<li class='cell-muted'>Нет</li>"}
+          </ul>
+        `;
+      }
+      if (entity === "Opportunity") {
+        return `
+          <ul class="related-list">
+            <li><span class="cell-muted">Аккаунт</span>
+              <button type="button" data-detail="Account:${rec.accountId}">${esc(rec.accountName)}</button>
+            </li>
+          </ul>
+        `;
+      }
+      if (entity === "Case") {
+        return `
+          <ul class="related-list">
+            <li><span class="cell-muted">Аккаунт</span>
+              <button type="button" data-detail="Account:${rec.accountId}">${esc(rec.accountName)}</button>
+            </li>
+            <li><span class="cell-muted">Контакт</span>
+              <button type="button" data-detail="Contact:${rec.contactId}">${esc(rec.contactName)}</button>
+            </li>
+          </ul>
+        `;
+      }
+      return `<div class="empty">Нет связей</div>`;
+    }
+
+    function renderGlobalStream() {
+      const all = [];
+      for (const [id, items] of Object.entries(STREAMS)) {
+        let entity = null;
+        if (id.startsWith("A")) entity = "Account";
+        else if (id.startsWith("C") && !id.startsWith("CASE")) entity = "Contact";
+        else if (id.startsWith("O")) entity = "Opportunity";
+        else if (id.startsWith("K")) entity = "Case";
+        const rec = entity ? findById(entity, id) : null;
+        items.forEach(it => all.push({ ...it, entity, id, recName: rec ? rec.name : id }));
+      }
+      // rough chrono: keep insertion order reversed per entity already; just reverse all
+      all.reverse();
+
+      return `
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">CRM / Активности</div>
+            <h1 class="page-title">☰ Глобальная лента (Stream)</h1>
+          </div>
+        </div>
+        <div class="content">
+          <div class="mapping-banner">
+            В EspoCRM Stream — единая activity feed на записи и (опционально) глобально:
+            create / note / email / status. Для Bloom ≈ таймлайн заказа + переписка + смены статусов.
+          </div>
+          <div class="panel">
+            <div class="panel-body">
+              <div class="stream-list">
+                ${all.slice(0, 40).map(it => {
+                  const ic = streamIcon(it.type);
+                  return `
+                    <div class="stream-item">
+                      <div class="stream-ico ${ic.cls}">${ic.icon}</div>
+                      <div class="stream-body">
+                        <div class="stream-head">
+                          <span class="stream-who">${esc(it.who)}
+                            ${it.entity ? ` · <button type="button" data-detail="${it.entity}:${it.id}" style="color:var(--accent-dark);font-weight:600;padding:0">${esc(it.recName)}</button>` : ""}
+                          </span>
+                          <span class="stream-when">${esc(it.when)}</span>
+                        </div>
+                        <div class="stream-text">
+                          ${esc(it.text)}
+                          ${it.quote ? `<div class="quote">${esc(it.quote)}</div>` : ""}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* —— Actions —— */
+    function advanceCase(id) {
+      const rec = findById("Case", id);
+      if (!rec) return;
+      const idx = CASE_COLUMNS.indexOf(rec.status);
+      if (idx < 0 || idx >= CASE_COLUMNS.length - 1) {
+        toast("Уже закрыто / нет след. статуса");
+        return;
+      }
+      const prev = rec.status;
+      rec.status = CASE_COLUMNS[idx + 1];
+      if (rec.status === "Assigned" && (!rec.assigned || rec.assigned === "—")) {
+        rec.assigned = "Ирина К.";
+      }
+      const when = new Date().toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+      if (!STREAMS[id]) STREAMS[id] = [];
+      STREAMS[id].push({
+        type: "status",
+        who: "Админ Bloom",
+        when,
+        text: `Статус: ${STATUS_CASE[prev].label} → ${STATUS_CASE[rec.status].label}.`,
+      });
+      toast(`Case → ${STATUS_CASE[rec.status].label}`);
+      render();
+    }
+
+    function postStreamNote() {
+      const ta = $("#streamNote");
+      if (!ta) return;
+      const text = ta.value.trim();
+      if (!text) { toast("Введите текст заметки"); return; }
+      const id = state.id;
+      if (!STREAMS[id]) STREAMS[id] = [];
+      const when = new Date().toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+      STREAMS[id].push({ type: "note", who: "Админ Bloom", when, text: "Заметка", quote: text });
+      toast("Заметка добавлена в Stream");
+      render();
+    }
+
+    function bindMain() {
+      const main = $("#main");
+
+      main.querySelectorAll("[data-go]").forEach(b => {
+        b.addEventListener("click", () => goList(b.dataset.go));
+      });
+      main.querySelectorAll("[data-detail]").forEach(b => {
+        b.addEventListener("click", (e) => {
+          // if click on nested advance, skip
+          if (e.target.closest("[data-advance]")) return;
+          const [entity, id] = b.dataset.detail.split(":");
+          goDetail(entity, id);
+        });
+      });
+      main.querySelectorAll("[data-back]").forEach(b => {
+        b.addEventListener("click", () => {
+          if (state.entity) goList(state.entity);
+          else goHome();
+        });
+      });
+      main.querySelectorAll("[data-case-mode]").forEach(b => {
+        b.addEventListener("click", () => {
+          state.caseMode = b.dataset.caseMode;
+          render();
+        });
+      });
+      main.querySelectorAll("[data-advance]").forEach(b => {
+        b.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          advanceCase(b.dataset.advance);
+        });
+      });
+      main.querySelectorAll("[data-tab]").forEach(b => {
+        b.addEventListener("click", () => {
+          state.detailTab = b.dataset.tab;
+          render();
+        });
+      });
+
+      const listSearch = $("#listSearch");
+      if (listSearch) {
+        listSearch.addEventListener("input", () => {
+          state.listFilter = listSearch.value;
+          // re-render list body only would be nicer; full render is fine for MVP
+          const pos = listSearch.selectionStart;
+          render();
+          const again = $("#listSearch");
+          if (again) { again.focus(); again.setSelectionRange(pos, pos); }
+        });
+      }
+
+      const btnCreate = $("#btnCreate");
+      if (btnCreate) btnCreate.addEventListener("click", () => toast("Создание записи — мок (нет backend)"));
+
+      const btnEdit = $("#btnEdit");
+      if (btnEdit) btnEdit.addEventListener("click", () => toast("Редактирование — мок"));
+
+      const btnFollow = $("#btnFollow");
+      if (btnFollow) btnFollow.addEventListener("click", () => toast("Подписка на Stream — мок"));
+
+      const btnCompose = $("#btnCompose");
+      if (btnCompose) btnCompose.addEventListener("click", () => toast("Email compose — мок EspoCRM"));
+
+      const btnTask = $("#btnTask");
+      if (btnTask) btnTask.addEventListener("click", () => toast("Задача — мок"));
+
+      const btnAdvanceCase = $("#btnAdvanceCase");
+      if (btnAdvanceCase) btnAdvanceCase.addEventListener("click", () => advanceCase(state.id));
+
+      const btnPostStream = $("#btnPostStream");
+      if (btnPostStream) btnPostStream.addEventListener("click", postStreamNote);
+    }
+
+    // Sidebar nav
+    document.querySelectorAll(".nav-item").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.nav;
+        if (key === "home") goHome();
+        else if (key === "stream-global") goStreamGlobal();
+        else goList(key);
+      });
+    });
+
+    $("#globalSearch").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        toast("Глобальный поиск: «" + e.target.value + "» — мок");
+      }
+    });
+
+    // boot
+    render();
+  </script>
+</body>
+</html>

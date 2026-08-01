@@ -1,0 +1,3208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bloom Mega CRM · research MVP</title>
+<meta name="description" content="Interactive Bloom flower-ops CRM structure MVP assembled from OSS CRM patterns (ERPNext, Dolibarr, Chatwoot, Twenty, Krayin, EspoCRM). Offline, no backend." />
+<style>
+/* ═══════════════════════════════════════════════════════════
+   Bloom Mega CRM — research structure MVP
+   Warm neutrals + coral #E06B4A · offline single-file shell
+   Patterns: ERPNext · Dolibarr · Chatwoot · Twenty · Krayin · EspoCRM
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #FBF7F4;
+  --bg-2:      #FFFFFF;
+  --bg-3:      #F3EEEA;
+  --bg-4:      #EBE4DE;
+  --border:    #EDE4DD;
+  --border-2:  #E0D5CC;
+  --ink:       #1C1917;
+  --ink-dim:   #44403C;
+  --ink-mute:  #78716C;
+  --ink-faint: #A8A29E;
+
+  --terra:     #E06B4A;
+  --terra-2:   #C85A3C;
+  --terra-soft:#FCEBE5;
+  --sage:      #6F8F72;
+  --sage-soft: #EAF2EB;
+  --plum:      #7A5A74;
+  --plum-soft: #F3EBF1;
+  --amber:     #D9A441;
+  --amber-soft:#F8F0DC;
+  --red:       #D6493A;
+  --red-soft:  #FBEDEB;
+  --blue:      #3B82C4;
+  --blue-soft: #E8F1F8;
+  --wa:        #25D366;
+  --tg:        #2AABEE;
+  --max:       #7C5CFF;
+
+  --font:    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono:    ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+  --ease:    cubic-bezier(0.16, 1, 0.3, 1);
+  --radius:  14px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --sidebar-w: 248px;
+  --topbar-h: 52px;
+  --shadow:  0 8px 28px rgba(28, 25, 23, 0.06);
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.05);
+  --shadow-lg: 0 20px 50px rgba(28, 25, 23, 0.12);
+}
+
+html { height: 100%; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font);
+  background:
+    radial-gradient(900px 480px at 10% -10%, rgba(224, 107, 74, 0.09), transparent 55%),
+    radial-gradient(700px 400px at 100% 0%, rgba(111, 143, 114, 0.07), transparent 50%),
+    var(--bg);
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.45;
+  height: 100%;
+  overflow: hidden;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: none; background: none; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+table { border-collapse: collapse; width: 100%; }
+.hidden { display: none !important; }
+::selection { background: var(--terra); color: #fff; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Shell ── */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  height: 100vh;
+  min-height: 560px;
+}
+
+/* ── Sidebar (Krayin ACL menu + Twenty polish) ── */
+.sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 40;
+  min-width: 0;
+}
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-mark {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #f08a6a, var(--terra));
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(224, 107, 74, 0.35);
+  flex-shrink: 0;
+}
+.brand-text { min-width: 0; }
+.brand-name { font-weight: 800; font-size: 14px; letter-spacing: -0.02em; }
+.brand-sub { font-size: 11px; color: var(--ink-mute); margin-top: 1px; }
+
+.sb-shop {
+  margin: 12px 12px 4px;
+  padding: 10px 12px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.sb-shop:hover { border-color: var(--border-2); background: var(--bg-4); }
+.sb-shop .label { font-size: 10px; color: var(--ink-faint); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.sb-shop .val { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+.sb-shop .chev { margin-left: auto; color: var(--ink-faint); font-size: 12px; }
+
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sb-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 12px 10px 6px;
+}
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: var(--ink-mute);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+  transition: background .12s, color .12s;
+}
+.sb-link:hover { background: var(--bg-3); color: var(--ink-dim); }
+.sb-link.active {
+  background: var(--terra-soft);
+  color: var(--ink);
+  font-weight: 650;
+}
+.sb-link .ico {
+  width: 20px; height: 20px;
+  display: grid; place-items: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  opacity: .85;
+}
+.sb-link.active .ico { opacity: 1; }
+.sb-link .badge {
+  margin-left: auto;
+  font-size: 10.5px;
+  font-weight: 750;
+  background: var(--terra);
+  color: #fff;
+  border-radius: 999px;
+  min-width: 18px;
+  padding: 2px 7px;
+  text-align: center;
+  line-height: 1.3;
+}
+.sb-link .badge.soft {
+  background: var(--bg-4);
+  color: var(--ink-mute);
+}
+.sb-link .badge.sage { background: var(--sage); }
+
+.sb-foot {
+  border-top: 1px solid var(--border);
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sb-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.av {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.av.sm { width: 28px; height: 28px; font-size: 10px; }
+.av.lg { width: 40px; height: 40px; font-size: 13px; }
+.av.terra { background: linear-gradient(145deg, #f08a6a, var(--terra)); }
+.av.sage { background: linear-gradient(145deg, #8fb592, var(--sage)); }
+.av.plum { background: linear-gradient(145deg, #9a7a94, var(--plum)); }
+.av.amber { background: linear-gradient(145deg, #e0b85a, var(--amber)); color: #3f2e00; }
+.av.wa { background: linear-gradient(145deg, #4ade80, var(--wa)); }
+.av.tg { background: linear-gradient(145deg, #67c5f5, var(--tg)); }
+.av.max { background: linear-gradient(145deg, #a78bfa, var(--max)); }
+.av.fw { background: linear-gradient(145deg, #f08a6a, var(--terra)); }
+.sb-user .nm { font-size: 12.5px; font-weight: 700; }
+.sb-user .role { font-size: 11px; color: var(--ink-mute); }
+
+/* ── Main ── */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100vh;
+}
+.topbar {
+  height: var(--topbar-h);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  background: rgba(251, 247, 244, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  z-index: 30;
+}
+.mvp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--terra);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 14px rgba(224, 107, 74, 0.28);
+  white-space: nowrap;
+}
+.mvp-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 0 rgba(255,255,255,.6);
+  animation: livePulse 1.6s ease infinite;
+}
+.crumb {
+  font-size: 13px;
+  color: var(--ink-mute);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.crumb b { color: var(--ink); font-weight: 700; }
+.crumb .sep { color: var(--ink-faint); }
+.tb-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  color: var(--ink-mute);
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+.chip.sage { color: var(--sage); border-color: transparent; background: var(--sage-soft); }
+.chip.live .ldot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--sage);
+  animation: livePulse 1.4s ease infinite;
+}
+@keyframes livePulse {
+  0% { box-shadow: 0 0 0 0 rgba(111,143,114,.55); }
+  70% { box-shadow: 0 0 0 7px rgba(111,143,114,0); }
+  100% { box-shadow: 0 0 0 0 rgba(111,143,114,0); }
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 14px;
+  min-width: 200px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.search-box:focus-within {
+  border-color: var(--terra);
+  box-shadow: 0 0 0 3px rgba(224,107,74,.12);
+}
+.search-box input {
+  border: 0; outline: 0; background: transparent; width: 100%;
+  font-size: 12.5px; color: var(--ink);
+}
+.search-box input::placeholder { color: var(--ink-faint); }
+.search-box .k {
+  font-size: 10px; font-weight: 700; color: var(--ink-faint);
+  background: var(--bg-3); padding: 2px 6px; border-radius: 4px;
+}
+
+/* ── Content ── */
+.content {
+  flex: 1;
+  overflow: auto;
+  padding: 20px 22px 28px;
+  min-height: 0;
+}
+.content.fullbleed {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.content.tight { padding: 12px 14px 16px; }
+
+.view { display: none; animation: fadeIn .22s var(--ease); }
+.view.on { display: block; }
+.content.fullbleed .view.on {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Shared UI ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  color: var(--ink-dim);
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--ink-mute); color: var(--ink); background: #fff; }
+.btn.terra {
+  background: var(--terra);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(224, 107, 74, 0.25);
+}
+.btn.terra:hover { background: var(--terra-2); }
+.btn.sage {
+  background: var(--sage);
+  border-color: transparent;
+  color: #fff;
+}
+.btn.sage:hover { filter: brightness(.95); }
+.btn.ghost { border-color: transparent; background: transparent; }
+.btn.ghost:hover { background: var(--bg-3); }
+.btn.sm { padding: 5px 10px; font-size: 11.5px; }
+.btn.icon {
+  width: 34px; height: 34px; padding: 0;
+  border-radius: 10px;
+}
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.seg {
+  display: inline-flex;
+  background: var(--bg-3);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+.seg button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-mute);
+  transition: all .12s;
+}
+.seg button:hover { color: var(--ink-dim); }
+.seg button.on {
+  background: var(--bg-2);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.toolbar .spacer { flex: 1; min-width: 8px; }
+.page-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 4px;
+}
+.page-sub {
+  font-size: 13px;
+  color: var(--ink-mute);
+  margin-bottom: 16px;
+}
+
+/* ── Cards / panels ── */
+.panel {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.panel-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #fff 0%, var(--bg) 200%);
+}
+.panel-h h3 {
+  font-size: 13.5px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+.panel-h .meta { margin-left: auto; font-size: 11.5px; color: var(--ink-mute); font-weight: 600; }
+.panel-b { padding: 14px 16px; }
+
+/* ── KPI ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.kpi {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 16px 14px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+  cursor: default;
+}
+.kpi:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+  border-color: var(--border-2);
+}
+.kpi.tick { animation: statTick .4s var(--ease); }
+@keyframes statTick {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.025); border-color: var(--terra); }
+  100% { transform: scale(1); }
+}
+.kpi-label { font-size: 11.5px; font-weight: 650; color: var(--ink-mute); margin-bottom: 8px; }
+.kpi-val { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
+.kpi-delta { font-size: 11.5px; font-weight: 650; margin-top: 6px; color: var(--sage); }
+.kpi-delta.warn { color: var(--terra); }
+.kpi-delta.mute { color: var(--ink-faint); }
+
+/* ── Feed (EspoCRM stream vibe) ── */
+.feed { display: flex; flex-direction: column; gap: 8px; }
+.feed-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid transparent;
+  animation: pop .25s var(--ease);
+}
+.feed-item .ic {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: grid; place-items: center;
+  background: var(--terra-soft);
+  color: var(--terra);
+  font-size: 14px;
+}
+.feed-item .ic.ok { background: var(--sage-soft); color: var(--sage); }
+.feed-item .ic.warn { background: var(--amber-soft); color: #A07A20; }
+.feed-item .ic.info { background: var(--blue-soft); color: var(--blue); }
+.feed-item .ic.chat { background: var(--plum-soft); color: var(--plum); }
+.feed-item .txt { font-size: 13px; color: var(--ink-dim); line-height: 1.4; flex: 1; min-width: 0; }
+.feed-item .txt b { color: var(--ink); font-weight: 700; }
+.feed-item .when { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 2px; font-weight: 600; }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 14px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 750;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+.badge.st-new { background: var(--terra-soft); color: var(--terra); }
+.badge.st-accepted { background: var(--blue-soft); color: var(--blue); }
+.badge.st-assembled { background: var(--amber-soft); color: #A07A20; }
+.badge.st-delivering { background: var(--plum-soft); color: var(--plum); }
+.badge.st-done { background: var(--sage-soft); color: var(--sage); }
+.badge.st-cancelled { background: var(--red-soft); color: var(--red); }
+.badge.ch-marketplace { background: var(--terra-soft); color: var(--terra); }
+.badge.ch-direct { background: var(--bg-4); color: var(--ink-dim); }
+.badge.pay-paid { background: var(--sage-soft); color: var(--sage); }
+.badge.pay-pending { background: var(--amber-soft); color: #A07A20; }
+.badge.pay-cod { background: var(--blue-soft); color: var(--blue); }
+.badge.wa { background: #e8faf0; color: #128c3e; }
+.badge.tg { background: #e6f6fd; color: #1787bd; }
+.badge.max { background: #f0ebff; color: #5b3fd4; }
+.badge.stock-ok { background: var(--sage-soft); color: var(--sage); }
+.badge.stock-low { background: var(--amber-soft); color: #A07A20; }
+.badge.stock-out { background: var(--red-soft); color: var(--red); }
+.badge.hidden-p { background: var(--bg-4); color: var(--ink-mute); }
+.badge.live {
+  background: var(--sage-soft); color: var(--sage);
+}
+.badge .dot {
+  width: 5px; height: 5px; border-radius: 50%; background: currentColor;
+}
+
+/* ── Kanban (EspoCRM + Krayin pipeline) ── */
+.kanban-wrap {
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin: 0 -4px;
+}
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(200px, 1fr));
+  gap: 10px;
+  min-width: 1040px;
+  padding: 0 4px;
+}
+.kb-col {
+  background: rgba(255,255,255,.55);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px;
+  min-height: 160px;
+  transition: background .2s, border-color .2s;
+}
+.kb-col.flash-col {
+  animation: colFlash .7s var(--ease);
+}
+@keyframes colFlash {
+  0% { background: var(--terra-soft); border-color: var(--terra); }
+  100% { background: rgba(255,255,255,.55); border-color: var(--border); }
+}
+.kb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 750;
+  padding: 6px 8px 10px;
+}
+.kb-head .n {
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-weight: 700;
+  background: var(--bg-2);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.kb-body { display: flex; flex-direction: column; gap: 8px; min-height: 48px; }
+
+.kcard {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  width: 100%;
+}
+.kcard:hover {
+  border-color: transparent;
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+.kcard.is-new {
+  animation: cardArrive .55s var(--ease) both;
+  box-shadow: 0 0 0 2px rgba(224,107,74,.4), var(--shadow);
+}
+.kcard.is-moved { animation: cardPop .4s var(--ease) both; }
+@keyframes cardArrive {
+  0% { opacity: 0; transform: translateY(-14px) scale(.93); }
+  60% { opacity: 1; transform: translateY(2px) scale(1.02); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes cardPop {
+  0% { transform: scale(.94); }
+  50% { transform: scale(1.03); }
+  100% { transform: none; }
+}
+.kc-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
+.kc-id { font-size: 10.5px; color: var(--ink-faint); font-weight: 650; font-family: var(--mono); }
+.kc-price { font-size: 13px; font-weight: 800; color: var(--terra); letter-spacing: -0.02em; white-space: nowrap; }
+.kc-name { font-size: 13px; font-weight: 650; margin-bottom: 2px; letter-spacing: -0.01em; }
+.kc-meta { font-size: 11px; color: var(--ink-mute); line-height: 1.35; }
+.kc-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.kc-advance {
+  margin-top: 8px;
+  width: 100%;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: var(--bg-3);
+  color: var(--ink-dim);
+  border: 1px solid transparent;
+  transition: all .12s;
+}
+.kc-advance:hover {
+  background: var(--terra-soft);
+  color: var(--terra);
+  border-color: rgba(224,107,74,.2);
+}
+.kc-advance:disabled { opacity: .4; cursor: default; }
+
+/* ── Table list ── */
+.table-wrap { overflow-x: auto; }
+.data-table th {
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--ink-faint);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  vertical-align: middle;
+}
+.data-table tr { cursor: pointer; transition: background .1s; }
+.data-table tbody tr:hover { background: var(--terra-soft); }
+.data-table .mono { font-family: var(--mono); font-size: 12px; color: var(--ink-mute); }
+.data-table .price { font-weight: 750; color: var(--terra); }
+.data-table .muted { color: var(--ink-mute); font-size: 12px; }
+
+/* ── Live bar ── */
+.live-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--ink-mute);
+  font-weight: 600;
+}
+.live-bar .live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--sage);
+  animation: livePulse 1.4s ease infinite;
+}
+.live-bar b { color: var(--ink); }
+.live-bar .live-event {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--terra);
+  font-weight: 700;
+  max-width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity .25s;
+}
+.live-bar .live-event.show { opacity: 1; }
+
+/* ── Filters ── */
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.filter-chip {
+  font-size: 11.5px;
+  font-weight: 650;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  color: var(--ink-mute);
+  transition: all .12s;
+}
+.filter-chip:hover { border-color: var(--ink-faint); color: var(--ink-dim); }
+.filter-chip.on {
+  background: var(--terra-soft);
+  border-color: transparent;
+  color: var(--terra);
+}
+
+/* ── Drawer (order detail + stream) ── */
+.drawer-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(28, 25, 23, .28);
+  z-index: 80;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+.drawer-backdrop.on { opacity: 1; pointer-events: auto; }
+.drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(440px, 100vw);
+  background: var(--bg-2);
+  z-index: 90;
+  box-shadow: var(--shadow-lg);
+  transform: translateX(100%);
+  transition: transform .28s var(--ease);
+  display: flex;
+  flex-direction: column;
+}
+.drawer.on { transform: none; }
+.drawer-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.drawer-h h2 { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+.drawer-h .close {
+  margin-left: auto;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: grid; place-items: center;
+  color: var(--ink-mute);
+}
+.drawer-h .close:hover { background: var(--bg-3); color: var(--ink); }
+.drawer-b {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+.drawer-f {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.detail-row .l { color: var(--ink-mute); font-weight: 600; }
+.detail-row .v { font-weight: 650; text-align: right; }
+.stream-title {
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-faint);
+  margin: 18px 0 10px;
+}
+.stream { display: flex; flex-direction: column; gap: 0; }
+.stream-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  position: relative;
+}
+.stream-item::before {
+  content: "";
+  position: absolute;
+  left: 11px; top: 28px; bottom: -8px;
+  width: 2px;
+  background: var(--border);
+}
+.stream-item:last-child::before { display: none; }
+.stream-dot {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--bg-3);
+  border: 2px solid var(--border-2);
+  flex-shrink: 0;
+  z-index: 1;
+}
+.stream-dot.active { background: var(--terra); border-color: var(--terra); }
+.stream-body { flex: 1; min-width: 0; padding-top: 2px; }
+.stream-body .t { font-size: 12.5px; font-weight: 650; }
+.stream-body .m { font-size: 11.5px; color: var(--ink-mute); margin-top: 1px; }
+
+/* ── Chats 3-pane (Chatwoot) ── */
+.inbox {
+  display: grid;
+  grid-template-columns: 300px 1fr 280px;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  border-top: 1px solid var(--border);
+  background: var(--bg-2);
+}
+.inbox-list {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #fff;
+}
+.inbox-list-h {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.inbox-list-h h3 {
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.inbox-tabs {
+  display: flex;
+  gap: 4px;
+}
+.inbox-tabs button {
+  flex: 1;
+  padding: 6px;
+  font-size: 11.5px;
+  font-weight: 650;
+  border-radius: 8px;
+  color: var(--ink-mute);
+}
+.inbox-tabs button.on { background: var(--terra-soft); color: var(--terra); }
+.dialogs { flex: 1; overflow-y: auto; padding: 6px; }
+.dialog {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  border-radius: 12px;
+  transition: background .12s;
+}
+.dialog:hover { background: var(--bg-3); }
+.dialog.on { background: var(--terra-soft); }
+.dialog .nm {
+  font-size: 13px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dialog .prev {
+  font-size: 11.5px; color: var(--ink-mute);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 2px;
+}
+.dialog .tm { font-size: 10.5px; color: var(--ink-faint); font-weight: 600; }
+.dialog .unread {
+  margin-top: 4px;
+  font-size: 10px; font-weight: 800;
+  background: var(--sage); color: #fff;
+  border-radius: 999px; min-width: 18px; text-align: center;
+  padding: 1px 6px; float: right;
+}
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #F3EEE9;
+  position: relative;
+}
+.thread::before {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; opacity: .3;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(224,107,74,.07) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 40%, rgba(111,143,114,.08) 0 1px, transparent 1.5px);
+  background-size: 28px 28px;
+}
+.thread-h {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,.93);
+  backdrop-filter: blur(8px);
+  flex-shrink: 0;
+  gap: 10px;
+}
+.thread-h .who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.thread-h .nm { font-size: 14px; font-weight: 800; }
+.thread-h .ch { font-size: 11.5px; color: var(--ink-mute); font-weight: 600; }
+.thread-body {
+  position: relative; z-index: 1;
+  flex: 1; overflow-y: auto;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.bubble {
+  max-width: min(78%, 420px);
+  align-self: flex-start;
+  background: #fff;
+  border-radius: 14px 14px 14px 5px;
+  padding: 8px 11px 6px 12px;
+  font-size: 13px;
+  color: var(--ink-dim);
+  box-shadow: 0 1px 1px rgba(28,25,23,.06);
+  line-height: 1.4;
+  animation: pop .2s var(--ease);
+}
+.bubble.me {
+  align-self: flex-end;
+  background: linear-gradient(180deg, #f4c4b4, #efb39f);
+  color: #3b2219;
+  border-radius: 14px 14px 5px 14px;
+}
+.bubble.sys {
+  align-self: center;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink-mute);
+  font-size: 11.5px;
+  font-weight: 650;
+  max-width: 90%;
+  text-align: center;
+  padding: 4px 8px;
+}
+.bubble.note {
+  align-self: center;
+  background: var(--amber-soft);
+  border: 1px dashed #d4a84a;
+  color: #6b5210;
+  max-width: 90%;
+  border-radius: 10px;
+}
+.bubble .time {
+  display: inline-block; float: right;
+  margin: 5px 0 0 10px;
+  font-size: 10px; opacity: .55; font-weight: 600;
+}
+@keyframes pop {
+  from { transform: translateY(4px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.thread-input {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(255,255,255,.96);
+  flex-shrink: 0;
+}
+.thread-input input {
+  flex: 1;
+  border: 0;
+  border-radius: 20px;
+  padding: 10px 14px;
+  background: var(--bg-3);
+  outline: none;
+  font-size: 13px;
+}
+.thread-input input:focus {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--border-2);
+}
+.thread-input .send {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--terra);
+  color: #fff;
+  display: grid; place-items: center;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(224,107,74,.28);
+  flex-shrink: 0;
+}
+.thread-input .send:hover { background: var(--terra-2); }
+
+.contact-pane {
+  border-left: 1px solid var(--border);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  min-width: 0;
+}
+.contact-pane .cp-h {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.contact-pane .cp-h .nm { font-size: 15px; font-weight: 800; margin-top: 10px; }
+.contact-pane .cp-h .sub { font-size: 12px; color: var(--ink-mute); margin-top: 2px; }
+.cp-section { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.cp-section h4 {
+  font-size: 10.5px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-faint);
+  margin-bottom: 8px;
+}
+.cp-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  padding: 4px 0;
+  gap: 8px;
+}
+.cp-row .l { color: var(--ink-mute); }
+.cp-row .v { font-weight: 650; text-align: right; }
+.order-mini {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: border-color .12s;
+}
+.order-mini:hover { border-color: var(--terra); }
+.order-mini .oid { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); }
+.order-mini .op { font-weight: 800; color: var(--terra); font-size: 13px; }
+.cp-actions {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Vitrina / products ── */
+.prod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.prod-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s, box-shadow .15s;
+  display: flex;
+  flex-direction: column;
+}
+.prod-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.prod-card.is-hidden { opacity: .55; }
+.prod-card.is-hidden .prod-img { filter: grayscale(.4); }
+.prod-img {
+  height: 110px;
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+  background: linear-gradient(160deg, var(--bg-3), var(--terra-soft));
+  position: relative;
+}
+.prod-img .stock-pill {
+  position: absolute;
+  top: 8px; right: 8px;
+}
+.prod-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; }
+.prod-body .sku { font-size: 10.5px; font-family: var(--mono); color: var(--ink-faint); font-weight: 600; }
+.prod-body .name { font-size: 13.5px; font-weight: 750; margin: 4px 0 2px; letter-spacing: -0.01em; }
+.prod-body .cat { font-size: 11.5px; color: var(--ink-mute); }
+.prod-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  gap: 8px;
+}
+.prod-price { font-size: 16px; font-weight: 800; color: var(--terra); letter-spacing: -0.02em; }
+.stock-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.stock-ctrl button {
+  width: 26px; height: 26px;
+  border-radius: 7px;
+  background: var(--bg-3);
+  font-weight: 700;
+  color: var(--ink-dim);
+  font-size: 14px;
+}
+.stock-ctrl button:hover { background: var(--bg-4); }
+.stock-ctrl .qty {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 750;
+  font-size: 13px;
+}
+
+/* ── Reports ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.tabs button {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--ink-mute);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .12s;
+}
+.tabs button:hover { color: var(--ink-dim); }
+.tabs button.on {
+  color: var(--terra);
+  border-bottom-color: var(--terra);
+}
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 160px;
+  padding: 8px 4px 0;
+}
+.chart-bars .bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+.chart-bars .bar {
+  width: 100%;
+  max-width: 36px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, var(--terra), #f0a08a);
+  transition: height .4s var(--ease);
+  min-height: 4px;
+}
+.chart-bars .bar.sage { background: linear-gradient(180deg, var(--sage), #a3c0a5); }
+.chart-bars .bar.plum { background: linear-gradient(180deg, var(--plum), #b89ab2); }
+.chart-bars .lbl {
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.chart-bars .val {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-mute);
+}
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.metric-row:last-child { border-bottom: 0; }
+.metric-row .name { font-weight: 650; }
+.metric-row .nums { display: flex; gap: 16px; align-items: center; }
+.metric-row .amt { font-weight: 800; color: var(--terra); }
+.metric-row .pct { font-size: 11.5px; font-weight: 650; color: var(--ink-mute); min-width: 40px; text-align: right; }
+.bar-inline {
+  height: 6px;
+  background: var(--bg-3);
+  border-radius: 999px;
+  overflow: hidden;
+  width: 100px;
+}
+.bar-inline > i {
+  display: block;
+  height: 100%;
+  background: var(--terra);
+  border-radius: 999px;
+}
+
+/* ── Settings ── */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  min-height: 400px;
+}
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.settings-nav button {
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-mute);
+}
+.settings-nav button:hover { background: var(--bg-3); color: var(--ink-dim); }
+.settings-nav button.on { background: var(--terra-soft); color: var(--ink); }
+.shop-card, .user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  margin-bottom: 8px;
+}
+.shop-card .info, .user-card .info { flex: 1; min-width: 0; }
+.shop-card .nm, .user-card .nm { font-weight: 750; font-size: 13.5px; }
+.shop-card .sub, .user-card .sub { font-size: 12px; color: var(--ink-mute); margin-top: 2px; }
+
+/* ── Modal ── */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(28, 25, 23, .35);
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+.modal-backdrop.on { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--bg-2);
+  border-radius: 16px;
+  width: min(420px, 100%);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(10px) scale(.98);
+  transition: transform .25s var(--ease);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-backdrop.on .modal { transform: none; }
+.modal-h {
+  display: flex;
+  align-items: center;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-h h2 { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
+.modal-h .close {
+  margin-left: auto;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: grid; place-items: center;
+  color: var(--ink-mute);
+}
+.modal-h .close:hover { background: var(--bg-3); }
+.modal-b { padding: 16px 18px; }
+.modal-f {
+  padding: 12px 18px 16px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+}
+.field { margin-bottom: 12px; }
+.field label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-mute);
+  margin-bottom: 5px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  background: var(--bg);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--terra);
+  box-shadow: 0 0 0 3px rgba(224,107,74,.12);
+  background: #fff;
+}
+.field textarea { min-height: 72px; resize: vertical; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 650;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .25s var(--ease);
+  box-shadow: var(--shadow-lg);
+  max-width: 90vw;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.ok { background: var(--sage); }
+.toast.warn { background: var(--terra); }
+
+/* ── Footer ── */
+.mega-footer {
+  margin-top: 28px;
+  padding: 16px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--ink-mute);
+  line-height: 1.55;
+  background: rgba(255,255,255,.5);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.mega-footer b { color: var(--ink-dim); }
+.mega-footer .oss {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.mega-footer .oss span {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--bg-3);
+  color: var(--ink-mute);
+  border: 1px solid var(--border);
+}
+
+/* ── Quick actions ── */
+.qa-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.qa-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  text-align: left;
+  transition: all .12s;
+}
+.qa-btn:hover {
+  border-color: var(--terra);
+  background: var(--terra-soft);
+}
+.qa-btn .ic {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--bg-2);
+  display: grid; place-items: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.qa-btn .t { font-size: 12.5px; font-weight: 750; }
+.qa-btn .s { font-size: 11px; color: var(--ink-mute); margin-top: 1px; }
+
+/* ── Empty ── */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ink-mute);
+}
+.empty .eico { font-size: 32px; margin-bottom: 8px; }
+.empty b { display: block; color: var(--ink); font-size: 14px; margin-bottom: 4px; }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .inbox { grid-template-columns: 260px 1fr; }
+  .contact-pane { display: none; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 820px) {
+  :root { --sidebar-w: 64px; }
+  .brand-text, .sb-label, .sb-link span:not(.ico):not(.badge),
+  .sb-shop .label, .sb-shop .val, .sb-shop .chev,
+  .sb-user .nm, .sb-user .role, .sb-link .badge { display: none; }
+  .sb-link { justify-content: center; padding: 12px; }
+  .sb-link .ico { font-size: 18px; }
+  .sb-brand { justify-content: center; }
+  .sb-shop { justify-content: center; padding: 10px; }
+  .search-box { display: none; }
+  .settings-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- ════════ SIDEBAR ════════ -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="brand-mark">B</div>
+      <div class="brand-text">
+        <div class="brand-name">Bloom CRM</div>
+        <div class="brand-sub">Mega · structure MVP</div>
+      </div>
+    </div>
+
+    <button class="sb-shop" id="shopSwitcher" title="Сменить магазин">
+      <div>
+        <div class="label">Магазин</div>
+        <div class="val" id="currentShopLabel">Букетная · Центр</div>
+      </div>
+      <span class="chev">▾</span>
+    </button>
+
+    <nav class="sb-nav">
+      <div class="sb-label">Операции</div>
+      <button class="sb-link active" data-view="today">
+        <span class="ico">◎</span><span>Сегодня</span>
+      </button>
+      <button class="sb-link" data-view="orders">
+        <span class="ico">▤</span><span>Заказы</span>
+        <span class="badge" id="navOrdersBadge">0</span>
+      </button>
+      <button class="sb-link" data-view="chats">
+        <span class="ico">💬</span><span>Чаты</span>
+        <span class="badge sage" id="navChatsBadge">0</span>
+      </button>
+      <button class="sb-link" data-view="vitrina">
+        <span class="ico">❀</span><span>Витрина</span>
+      </button>
+
+      <div class="sb-label">Аналитика</div>
+      <button class="sb-link" data-view="reports">
+        <span class="ico">▦</span><span>Отчёты</span>
+      </button>
+
+      <div class="sb-label">Система</div>
+      <button class="sb-link" data-view="settings">
+        <span class="ico">⚙</span><span>Настройки</span>
+      </button>
+    </nav>
+
+    <div class="sb-foot">
+      <div class="sb-user">
+        <div class="av terra">АК</div>
+        <div>
+          <div class="nm">Анна К.</div>
+          <div class="role">Менеджер · Букетная</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════════ MAIN ════════ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="mvp-badge"><span class="dot"></span> Bloom Mega CRM · research MVP</div>
+      <div class="crumb" id="crumb"><span class="sep">/</span> <b>Сегодня</b></div>
+      <div class="search-box" title="Awesome-bar style jump (ERPNext)">
+        <span style="opacity:.5">⌕</span>
+        <input type="search" id="globalSearch" placeholder="Заказ, клиент, SKU…" autocomplete="off" />
+        <span class="k">⌘K</span>
+      </div>
+      <div class="tb-right">
+        <span class="chip live"><span class="ldot"></span> Live mock</span>
+        <span class="chip sage" id="shopChip">3 точки</span>
+      </div>
+    </header>
+
+    <div class="content" id="content">
+
+      <!-- ════ СЕГОДНЯ ════ -->
+      <section class="view on" id="view-today" data-view-panel="today">
+        <div class="page-title">Сегодня</div>
+        <div class="page-sub">KPI сети + лента событий · ops dashboard (ERPNext Desk + Twenty density)</div>
+
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi" id="kpiNew">
+            <div class="kpi-label">Новые заказы</div>
+            <div class="kpi-val" id="kpiNewVal">—</div>
+            <div class="kpi-delta" id="kpiNewDelta">ждут принятия</div>
+          </div>
+          <div class="kpi" id="kpiActive">
+            <div class="kpi-label">В работе</div>
+            <div class="kpi-val" id="kpiActiveVal">—</div>
+            <div class="kpi-delta mute">сборка + доставка</div>
+          </div>
+          <div class="kpi" id="kpiRev">
+            <div class="kpi-label">Выручка (заверш.)</div>
+            <div class="kpi-val" id="kpiRevVal">—</div>
+            <div class="kpi-delta up" id="kpiRevDelta">сегодня</div>
+          </div>
+          <div class="kpi" id="kpiUnread">
+            <div class="kpi-label">Непрочитанные чаты</div>
+            <div class="kpi-val" id="kpiUnreadVal">—</div>
+            <div class="kpi-delta warn">WA · TG · MAX</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-h">
+              <h3>Лента событий</h3>
+              <span class="meta">EspoCRM stream</span>
+            </div>
+            <div class="panel-b">
+              <div class="feed" id="liveFeed"></div>
+            </div>
+          </div>
+          <div>
+            <div class="panel" style="margin-bottom:12px">
+              <div class="panel-h">
+                <h3>Быстрые действия</h3>
+              </div>
+              <div class="panel-b">
+                <div class="qa-grid">
+                  <button class="qa-btn" data-goto="orders">
+                    <span class="ic">▤</span>
+                    <span><span class="t">К заказам</span><span class="s">Канбан + статусы</span></span>
+                  </button>
+                  <button class="qa-btn" data-goto="chats">
+                    <span class="ic">💬</span>
+                    <span><span class="t">Входящие</span><span class="s">Omni-inbox</span></span>
+                  </button>
+                  <button class="qa-btn" id="qaNewOrder">
+                    <span class="ic">＋</span>
+                    <span><span class="t">Новый заказ</span><span class="s">Прямой канал</span></span>
+                  </button>
+                  <button class="qa-btn" data-goto="vitrina">
+                    <span class="ic">❀</span>
+                    <span><span class="t">Витрина</span><span class="s">Остатки · цены</span></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-h">
+                <h3>По точкам</h3>
+                <span class="meta">multi-shop</span>
+              </div>
+              <div class="panel-b" id="shopSummary"></div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="mega-footer">
+          <b>Assembled from OSS CRM patterns (structure study)</b> — not a product clone.
+          Interactive research MVP for Bloom flower-network ops cabinet.
+          <div class="oss">
+            <span>ERPNext · multi-axis status, multi-shop</span>
+            <span>Dolibarr · document chain, stock</span>
+            <span>Chatwoot · omni-inbox WA/TG/MAX</span>
+            <span>Twenty · modern UX density</span>
+            <span>Krayin · pipeline + ACL menu</span>
+            <span>EspoCRM · list/detail + stream + kanban</span>
+          </div>
+        </footer>
+      </section>
+
+      <!-- ════ ЗАКАЗЫ ════ -->
+      <section class="view" id="view-orders" data-view-panel="orders">
+        <div class="toolbar">
+          <div>
+            <div class="page-title" style="margin:0">Заказы</div>
+            <div class="page-sub" style="margin:2px 0 0">Dual badges: fulfillment × channel · ERPNext + EspoCRM kanban</div>
+          </div>
+          <div class="spacer"></div>
+          <div class="seg" id="ordersViewSeg">
+            <button class="on" data-mode="kanban">Канбан</button>
+            <button data-mode="list">Список</button>
+          </div>
+          <button class="btn sm" id="btnSimToggle" title="Симуляция новых заказов">⏸ Пауза sim</button>
+          <button class="btn terra sm" id="btnNewOrder">＋ Заказ</button>
+        </div>
+
+        <div class="live-bar">
+          <span class="live-dot"></span>
+          <span>Симуляция: <b id="simState">вкл</b> (новые заказы на этом экране)</span>
+          <span class="live-event" id="liveEvent"></span>
+        </div>
+
+        <div class="filter-row" id="orderFilters">
+          <button class="filter-chip on" data-f="all">Все</button>
+          <button class="filter-chip" data-f="marketplace">Маркетплейс</button>
+          <button class="filter-chip" data-f="direct">Прямые</button>
+          <button class="filter-chip" data-f="shop-center">Центр</button>
+          <button class="filter-chip" data-f="shop-south">Юг</button>
+          <button class="filter-chip" data-f="shop-north">Север</button>
+        </div>
+
+        <div id="ordersKanban"></div>
+        <div id="ordersList" class="hidden">
+          <div class="panel">
+            <div class="table-wrap">
+              <table class="data-table" id="ordersTable">
+                <thead>
+                  <tr>
+                    <th>№</th>
+                    <th>Клиент</th>
+                    <th>Состав</th>
+                    <th>Статус</th>
+                    <th>Канал</th>
+                    <th>Точка</th>
+                    <th>Сумма</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ ЧАТЫ ════ -->
+      <section class="view" id="view-chats" data-view-panel="chats">
+        <div class="inbox" id="inbox">
+          <div class="inbox-list">
+            <div class="inbox-list-h">
+              <h3>Входящие <span class="badge live" id="inboxCount">0</span></h3>
+              <div class="inbox-tabs" id="inboxTabs">
+                <button class="on" data-tab="all">Все</button>
+                <button data-tab="mine">Мои</button>
+                <button data-tab="unassigned">Свободные</button>
+              </div>
+              <div class="filter-row" style="margin:0" id="channelFilters">
+                <button class="filter-chip on" data-ch="all">Все</button>
+                <button class="filter-chip" data-ch="wa">WA</button>
+                <button class="filter-chip" data-ch="tg">TG</button>
+                <button class="filter-chip" data-ch="max">MAX</button>
+              </div>
+              <div class="search-box" style="min-width:0;width:100%;border-radius:10px">
+                <span style="opacity:.5">⌕</span>
+                <input type="search" id="chatSearch" placeholder="Поиск диалогов…" />
+              </div>
+            </div>
+            <div class="dialogs" id="dialogs"></div>
+          </div>
+
+          <div class="thread" id="thread">
+            <div class="thread-h">
+              <div class="who">
+                <div class="av lg terra" id="threadAv">—</div>
+                <div>
+                  <div class="nm" id="threadName">Выберите чат</div>
+                  <div class="ch" id="threadMeta">—</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px;flex-shrink:0">
+                <button class="btn sm terra" id="btnCreateOrderFromChat" disabled>＋ Заказ</button>
+                <button class="btn sm" id="btnResolveChat" disabled>Решить</button>
+              </div>
+            </div>
+            <div class="thread-body" id="threadBody">
+              <div class="empty"><div class="eico">💬</div><b>Omni-inbox</b>Выберите диалог слева · Chatwoot 3-pane</div>
+            </div>
+            <div class="thread-input">
+              <button class="btn icon ghost" id="btnNoteMode" title="Приватная заметка">📝</button>
+              <input type="text" id="chatInput" placeholder="Ответить клиенту…" disabled />
+              <button class="send" id="btnSendChat" disabled>➤</button>
+            </div>
+          </div>
+
+          <div class="contact-pane" id="contactPane">
+            <div class="cp-h">
+              <div class="av lg terra" id="cpAv" style="margin:0 auto">?</div>
+              <div class="nm" id="cpName">Контакт</div>
+              <div class="sub" id="cpSub">Chatwoot right pane</div>
+            </div>
+            <div class="cp-section">
+              <h4>Атрибуты</h4>
+              <div class="cp-row"><span class="l">Телефон</span><span class="v" id="cpPhone">—</span></div>
+              <div class="cp-row"><span class="l">Канал</span><span class="v" id="cpChannel">—</span></div>
+              <div class="cp-row"><span class="l">Статус</span><span class="v" id="cpStatus">—</span></div>
+              <div class="cp-row"><span class="l">Агент</span><span class="v" id="cpAgent">—</span></div>
+            </div>
+            <div class="cp-section">
+              <h4>Заказы клиента</h4>
+              <div id="cpOrders"><div class="muted" style="font-size:12px;color:var(--ink-mute)">Нет связанных</div></div>
+            </div>
+            <div class="cp-actions">
+              <button class="btn terra" id="btnAssignMe" disabled style="width:100%">Назначить мне</button>
+              <button class="btn" id="btnOpenOrders" style="width:100%">Все заказы →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ ВИТРИНА ════ -->
+      <section class="view" id="view-vitrina" data-view-panel="vitrina">
+        <div class="toolbar">
+          <div>
+            <div class="page-title" style="margin:0">Витрина</div>
+            <div class="page-sub" style="margin:2px 0 0">Номенклатура · цена · остаток · hide/show · Dolibarr stock + ERPNext Item</div>
+          </div>
+          <div class="spacer"></div>
+          <div class="seg" id="vitrinaFilter">
+            <button class="on" data-vf="all">Все</button>
+            <button data-vf="visible">На витрине</button>
+            <button data-vf="hidden">Скрытые</button>
+            <button data-vf="low">Мало</button>
+          </div>
+        </div>
+        <div class="prod-grid" id="prodGrid"></div>
+      </section>
+
+      <!-- ════ ОТЧЁТЫ ════ -->
+      <section class="view" id="view-reports" data-view-panel="reports">
+        <div class="page-title">Отчёты</div>
+        <div class="page-sub">Sales · Channels · Shops · ops analytics rollups</div>
+        <div class="tabs" id="reportTabs">
+          <button class="on" data-rtab="sales">Продажи</button>
+          <button data-rtab="channels">Каналы</button>
+          <button data-rtab="shops">Точки</button>
+        </div>
+        <div id="reportBody"></div>
+      </section>
+
+      <!-- ════ НАСТРОЙКИ ════ -->
+      <section class="view" id="view-settings" data-view-panel="settings">
+        <div class="page-title">Настройки</div>
+        <div class="page-sub">Магазины · пользователи · stubs (Krayin ACL menu shape)</div>
+        <div class="settings-grid">
+          <div class="settings-nav" id="settingsNav">
+            <button class="on" data-set="shops">Магазины</button>
+            <button data-set="users">Пользователи</button>
+            <button data-set="channels">Каналы</button>
+            <button data-set="roles">Роли (stub)</button>
+          </div>
+          <div class="panel">
+            <div class="panel-b" id="settingsBody"></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Drawer: order detail -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="orderDrawer">
+  <div class="drawer-h">
+    <h2 id="drTitle">Заказ</h2>
+    <button class="close" id="drClose" aria-label="Закрыть">✕</button>
+  </div>
+  <div class="drawer-b" id="drBody"></div>
+  <div class="drawer-f">
+    <button class="btn terra" id="drAdvance" style="flex:1">Продвинуть статус →</button>
+    <button class="btn" id="drClose2">Закрыть</button>
+  </div>
+</aside>
+
+<!-- Modal: new order -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-h">
+      <h2 id="modalTitle">Новый заказ</h2>
+      <button class="close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-b" id="modalBody">
+      <div class="field">
+        <label>Клиент</label>
+        <input type="text" id="mClient" placeholder="Имя клиента" />
+      </div>
+      <div class="field">
+        <label>Телефон</label>
+        <input type="text" id="mPhone" placeholder="+7 …" />
+      </div>
+      <div class="field">
+        <label>Состав / букет</label>
+        <input type="text" id="mProduct" placeholder="Розы 25 шт · лента" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Сумма ₽</label>
+          <input type="number" id="mPrice" value="4500" min="500" step="100" />
+        </div>
+        <div class="field">
+          <label>Канал</label>
+          <select id="mChannel">
+            <option value="direct">Прямой</option>
+            <option value="marketplace">Маркетплейс</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Точка</label>
+        <select id="mShop">
+          <option value="center">Букетная · Центр</option>
+          <option value="south">Букетная · Юг</option>
+          <option value="north">Букетная · Север</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Комментарий</label>
+        <textarea id="mNote" placeholder="Доставка к 18:00, без открытки…"></textarea>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn" id="modalCancel">Отмена</button>
+      <button class="btn terra" id="modalSave">Создать</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ═══════════════ Constants ═══════════════ */
+  var STATUSES = [
+    { id: 'new',        label: 'Новый',      next: 'accepted',   nextLabel: 'Принять' },
+    { id: 'accepted',   label: 'Принят',     next: 'assembled',  nextLabel: 'В сборку' },
+    { id: 'assembled',  label: 'Собран',     next: 'delivering', nextLabel: 'В доставку' },
+    { id: 'delivering', label: 'В пути',     next: 'done',       nextLabel: 'Доставлен' },
+    { id: 'done',       label: 'Доставлен',  next: null,         nextLabel: null }
+  ];
+  var STATUS_MAP = {};
+  STATUSES.forEach(function (s) { STATUS_MAP[s.id] = s; });
+
+  var SHOPS = {
+    center: { id: 'center', name: 'Букетная · Центр', short: 'Центр' },
+    south:  { id: 'south',  name: 'Букетная · Юг',    short: 'Юг' },
+    north:  { id: 'north',  name: 'Букетная · Север', short: 'Север' }
+  };
+
+  var CHANNEL_LABEL = { marketplace: 'Маркетплейс', direct: 'Прямой' };
+  var MSG_CH = { wa: 'WhatsApp', tg: 'Telegram', max: 'MAX' };
+
+  var NAMES = ['Мария С.', 'Олег К.', 'Елена В.', 'Игорь П.', 'Анна Д.', 'Сергей М.', 'Наталья Р.', 'Дмитрий Л.', 'Ольга Т.', 'Павел Н.'];
+  var BOUQUETS = [
+    'Розы 25 · красные', 'Пионы mix 15', 'Тюльпаны 31 · белые',
+    'Авторский «Закат»', 'Хризантемы 9', 'Гортензия + эустома',
+    'Розы 51 · cream', 'Лилии 7', 'Сезонный mono', 'Коробка с розами'
+  ];
+  var PRICES = [2900, 3500, 4200, 4800, 5500, 6200, 7500, 8900, 12000];
+
+  /* ═══════════════ State ═══════════════ */
+  var state = {
+    view: 'today',
+    shop: 'center',
+    ordersMode: 'kanban',
+    orderFilter: 'all',
+    orders: [],
+    products: [],
+    chats: [],
+    activeChat: null,
+    activeOrder: null,
+    feed: [],
+    simPaused: false,
+    simTimer: null,
+    noteMode: false,
+    chatTab: 'all',
+    chatChannel: 'all',
+    chatSearch: '',
+    vitrinaFilter: 'all',
+    reportTab: 'sales',
+    settingsTab: 'shops',
+    orderSeq: 1042,
+    modalFromChat: null
+  };
+
+  /* ═══════════════ Seed data ═══════════════ */
+  function seedOrders() {
+    var rows = [
+      { client: 'Мария С.', product: 'Розы 25 · красные', price: 5500, status: 'new', channel: 'marketplace', shop: 'center', pay: 'paid', phone: '+7 900 111-22-33' },
+      { client: 'Олег К.', product: 'Авторский «Закат»', price: 8900, status: 'new', channel: 'direct', shop: 'center', pay: 'cod', phone: '+7 900 222-33-44' },
+      { client: 'Елена В.', product: 'Пионы mix 15', price: 7200, status: 'accepted', channel: 'marketplace', shop: 'south', pay: 'paid', phone: '+7 900 333-44-55' },
+      { client: 'Игорь П.', product: 'Тюльпаны 31', price: 4200, status: 'accepted', channel: 'direct', shop: 'north', pay: 'pending', phone: '+7 900 444-55-66' },
+      { client: 'Анна Д.', product: 'Коробка с розами', price: 6500, status: 'assembled', channel: 'marketplace', shop: 'center', pay: 'paid', phone: '+7 900 555-66-77' },
+      { client: 'Сергей М.', product: 'Гортензия + эустома', price: 7800, status: 'assembled', channel: 'direct', shop: 'south', pay: 'paid', phone: '+7 900 666-77-88' },
+      { client: 'Наталья Р.', product: 'Розы 51 · cream', price: 12000, status: 'delivering', channel: 'marketplace', shop: 'center', pay: 'paid', phone: '+7 900 777-88-99' },
+      { client: 'Дмитрий Л.', product: 'Лилии 7', price: 3900, status: 'delivering', channel: 'direct', shop: 'north', pay: 'cod', phone: '+7 900 888-99-00' },
+      { client: 'Ольга Т.', product: 'Хризантемы 9', price: 2900, status: 'done', channel: 'marketplace', shop: 'south', pay: 'paid', phone: '+7 900 999-00-11' },
+      { client: 'Павел Н.', product: 'Сезонный mono', price: 4800, status: 'done', channel: 'direct', shop: 'center', pay: 'paid', phone: '+7 900 100-20-30' },
+      { client: 'Виктория Б.', product: 'Розы 15 · pink', price: 3800, status: 'new', channel: 'marketplace', shop: 'north', pay: 'paid', phone: '+7 900 200-30-40' },
+      { client: 'Артём Г.', product: 'Эустома 11', price: 5100, status: 'accepted', channel: 'direct', shop: 'center', pay: 'pending', phone: '+7 900 300-40-50' }
+    ];
+    state.orders = rows.map(function (r, i) {
+      return {
+        id: 'BL-' + (1030 + i),
+        client: r.client,
+        product: r.product,
+        price: r.price,
+        status: r.status,
+        channel: r.channel,
+        shop: r.shop,
+        pay: r.pay,
+        phone: r.phone,
+        note: '',
+        createdAt: Date.now() - (rows.length - i) * 3600000,
+        history: [{ at: Date.now() - (rows.length - i) * 3600000, text: 'Заказ создан', status: r.status }]
+      };
+    });
+    state.orderSeq = 1042;
+  }
+
+  function seedProducts() {
+    state.products = [
+      { id: 'p1', sku: 'RS-25-RD', name: 'Розы 25 · красные', cat: 'Розы', price: 5500, stock: 12, visible: true, emoji: '🌹' },
+      { id: 'p2', sku: 'PN-15-MX', name: 'Пионы mix 15', cat: 'Пионы', price: 7200, stock: 4, visible: true, emoji: '🌸' },
+      { id: 'p3', sku: 'TL-31-WH', name: 'Тюльпаны 31 · белые', cat: 'Тюльпаны', price: 4200, stock: 18, visible: true, emoji: '🌷' },
+      { id: 'p4', sku: 'AU-ZAKAT', name: 'Авторский «Закат»', cat: 'Авторские', price: 8900, stock: 3, visible: true, emoji: '💐' },
+      { id: 'p5', sku: 'HZ-09', name: 'Хризантемы 9', cat: 'Хризантемы', price: 2900, stock: 0, visible: false, emoji: '🌼' },
+      { id: 'p6', sku: 'HR-EU', name: 'Гортензия + эустома', cat: 'Миксы', price: 7800, stock: 7, visible: true, emoji: '🌺' },
+      { id: 'p7', sku: 'RS-51-CR', name: 'Розы 51 · cream', cat: 'Розы', price: 12000, stock: 2, visible: true, emoji: '🤍' },
+      { id: 'p8', sku: 'LL-07', name: 'Лилии 7', cat: 'Лилии', price: 3900, stock: 9, visible: true, emoji: '🪷' },
+      { id: 'p9', sku: 'BOX-RS', name: 'Коробка с розами', cat: 'Коробки', price: 6500, stock: 5, visible: true, emoji: '📦' },
+      { id: 'p10', sku: 'MONO-S', name: 'Сезонный mono', cat: 'Сезон', price: 4800, stock: 1, visible: false, emoji: '🌿' },
+      { id: 'p11', sku: 'EU-11', name: 'Эустома 11', cat: 'Эустома', price: 5100, stock: 6, visible: true, emoji: '💜' },
+      { id: 'p12', sku: 'RS-15-PK', name: 'Розы 15 · pink', cat: 'Розы', price: 3800, stock: 14, visible: true, emoji: '💗' }
+    ];
+  }
+
+  function seedChats() {
+    state.chats = [
+      {
+        id: 'c1', name: 'Мария С.', phone: '+7 900 111-22-33', channel: 'wa',
+        assignee: 'Анна К.', status: 'open', unread: 2,
+        preview: 'Можно доставить к 18:00?',
+        msgs: [
+          { from: 'them', text: 'Здравствуйте! Хочу розы 25 красные', time: '10:12' },
+          { from: 'me', text: 'Добрый день! Конечно, оформим. Куда доставить?', time: '10:14' },
+          { from: 'them', text: 'ул. Тверская 12, к 18:00. Можно открытку?', time: '10:15' },
+          { from: 'them', text: 'Можно доставить к 18:00?', time: '10:16' }
+        ],
+        orderIds: ['BL-1030']
+      },
+      {
+        id: 'c2', name: 'Олег К.', phone: '+7 900 222-33-44', channel: 'tg',
+        assignee: null, status: 'open', unread: 1,
+        preview: 'Какой букет на юбилей?',
+        msgs: [
+          { from: 'them', text: 'Какой букет на юбилей маме, бюджет ~8к?', time: '09:40' }
+        ],
+        orderIds: ['BL-1031']
+      },
+      {
+        id: 'c3', name: 'Елена В.', phone: '+7 900 333-44-55', channel: 'max',
+        assignee: 'Анна К.', status: 'open', unread: 0,
+        preview: 'Спасибо, жду курьера',
+        msgs: [
+          { from: 'them', text: 'Заказ BL-1032 — можно заменить ленту на белую?', time: 'Вчера' },
+          { from: 'me', text: 'Да, отметила в сборке. Белая атласная.', time: 'Вчера' },
+          { from: 'them', text: 'Спасибо, жду курьера', time: '09:05' }
+        ],
+        orderIds: ['BL-1032']
+      },
+      {
+        id: 'c4', name: 'Виктория Б.', phone: '+7 900 200-30-40', channel: 'wa',
+        assignee: null, status: 'open', unread: 3,
+        preview: 'Есть розовые розы?',
+        msgs: [
+          { from: 'them', text: 'Добрый день', time: '11:02' },
+          { from: 'them', text: 'Есть розовые розы 15 шт?', time: '11:02' },
+          { from: 'them', text: 'И доставка на Север сегодня?', time: '11:03' }
+        ],
+        orderIds: []
+      },
+      {
+        id: 'c5', name: 'Артём Г.', phone: '+7 900 300-40-50', channel: 'tg',
+        assignee: 'Анна К.', status: 'pending', unread: 0,
+        preview: 'Ок, жду счёт',
+        msgs: [
+          { from: 'them', text: 'Нужна эустома на корпоратив, 11 шт', time: '08:55' },
+          { from: 'me', text: 'Есть в наличии. Выставлю счёт на 5100 ₽', time: '09:01' },
+          { from: 'them', text: 'Ок, жду счёт', time: '09:02' },
+          { from: 'sys', text: 'Заказ BL-1041 создан из чата', time: '09:03' }
+        ],
+        orderIds: ['BL-1041']
+      },
+      {
+        id: 'c6', name: 'Светлана М.', phone: '+7 900 555-01-02', channel: 'max',
+        assignee: null, status: 'open', unread: 1,
+        preview: 'Подскажите адрес магазина на Юге',
+        msgs: [
+          { from: 'them', text: 'Подскажите адрес магазина на Юге', time: '12:20' }
+        ],
+        orderIds: []
+      }
+    ];
+  }
+
+  function seedFeed() {
+    state.feed = [
+      { ic: 'ok', kind: 'ok', text: 'Заказ <b>BL-1038</b> доставлен · Ольга Т.', when: '12 мин назад' },
+      { ic: '📦', kind: 'info', text: 'Собран <b>BL-1034</b> · Анна Д. · Центр', when: '28 мин назад' },
+      { ic: '💬', kind: 'chat', text: 'Новое сообщение WA · <b>Мария С.</b>', when: '35 мин назад' },
+      { ic: '⚠', kind: 'warn', text: 'Низкий остаток: <b>Розы 51 · cream</b> (2 шт)', when: '1 ч назад' },
+      { ic: '🛒', kind: '', text: 'Маркетплейс: новый заказ <b>BL-1030</b>', when: '1 ч назад' },
+      { ic: 'ok', kind: 'ok', text: 'Оплата получена · <b>BL-1036</b> · 12 000 ₽', when: '2 ч назад' }
+    ];
+  }
+
+  /* ═══════════════ Helpers ═══════════════ */
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+
+  function fmtPrice(n) {
+    return new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
+  }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function nowTime() {
+    var d = new Date();
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+  function toast(msg, kind) {
+    var el = $('#toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (kind ? ' ' + kind : '');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { el.classList.remove('show'); }, 2600);
+  }
+  function liveSay(text) {
+    var el = $('#liveEvent');
+    if (!el) return;
+    el.textContent = text;
+    el.classList.add('show');
+    clearTimeout(liveSay._t);
+    liveSay._t = setTimeout(function () { el.classList.remove('show'); }, 2800);
+  }
+  function pushFeed(item) {
+    state.feed.unshift({
+      ic: item.ic || '•',
+      kind: item.kind || '',
+      text: item.text,
+      when: item.when || 'только что'
+    });
+    if (state.feed.length > 40) state.feed.pop();
+    if (state.view === 'today') renderFeed();
+  }
+  function statusBadge(st) {
+    var s = STATUS_MAP[st] || { label: st };
+    return '<span class="badge st-' + st + '">' + s.label + '</span>';
+  }
+  function channelBadge(ch) {
+    return '<span class="badge ch-' + ch + '">' + (CHANNEL_LABEL[ch] || ch) + '</span>';
+  }
+  function payBadge(pay) {
+    var map = { paid: 'Оплачен', pending: 'Ожидает', cod: 'При получении' };
+    return '<span class="badge pay-' + pay + '">' + (map[pay] || pay) + '</span>';
+  }
+  function stockBadge(n) {
+    if (n <= 0) return '<span class="badge stock-out">Нет</span>';
+    if (n <= 3) return '<span class="badge stock-low">Мало · ' + n + '</span>';
+    return '<span class="badge stock-ok">' + n + ' шт</span>';
+  }
+  function filteredOrders() {
+    var f = state.orderFilter;
+    return state.orders.filter(function (o) {
+      if (f === 'all') return true;
+      if (f === 'marketplace' || f === 'direct') return o.channel === f;
+      if (f.indexOf('shop-') === 0) return o.shop === f.replace('shop-', '');
+      return true;
+    });
+  }
+
+  /* ═══════════════ Navigation ═══════════════ */
+  var CRUMBS = {
+    today: 'Сегодня',
+    orders: 'Заказы',
+    chats: 'Чаты',
+    vitrina: 'Витрина',
+    reports: 'Отчёты',
+    settings: 'Настройки'
+  };
+
+  function switchView(view) {
+    state.view = view;
+    $$('.sb-link').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-view') === view);
+    });
+    $$('.view').forEach(function (v) {
+      v.classList.toggle('on', v.getAttribute('data-view-panel') === view);
+    });
+    $('#crumb').innerHTML = '<span class="sep">/</span> <b>' + (CRUMBS[view] || view) + '</b>';
+
+    var content = $('#content');
+    content.classList.toggle('fullbleed', view === 'chats');
+    content.classList.toggle('tight', false);
+
+    if (view === 'today') { renderToday(); }
+    if (view === 'orders') { renderOrders(); startSimIfNeeded(); }
+    else { stopSimInterval(); }
+    if (view === 'chats') { renderChats(); renderThread(); renderContact(); }
+    if (view === 'vitrina') { renderVitrina(); }
+    if (view === 'reports') { renderReports(); }
+    if (view === 'settings') { renderSettings(); }
+
+    updateNavBadges();
+  }
+
+  /* ═══════════════ KPIs / badges ═══════════════ */
+  function updateNavBadges() {
+    var nNew = state.orders.filter(function (o) { return o.status === 'new'; }).length;
+    var unread = state.chats.reduce(function (s, c) { return s + c.unread; }, 0);
+    var ob = $('#navOrdersBadge');
+    var cb = $('#navChatsBadge');
+    if (nNew > 0) { ob.textContent = nNew; ob.classList.remove('hidden'); }
+    else { ob.textContent = '0'; ob.style.display = nNew ? '' : 'none'; }
+    ob.style.display = nNew ? '' : 'none';
+    cb.textContent = unread;
+    cb.style.display = unread ? '' : 'none';
+    var ic = $('#inboxCount');
+    if (ic) ic.textContent = state.chats.filter(function (c) { return c.status !== 'resolved'; }).length;
+  }
+
+  function updateKpis() {
+    var o = state.orders;
+    var nNew = o.filter(function (x) { return x.status === 'new'; }).length;
+    var nActive = o.filter(function (x) { return ['accepted', 'assembled', 'delivering'].indexOf(x.status) >= 0; }).length;
+    var done = o.filter(function (x) { return x.status === 'done'; });
+    var rev = done.reduce(function (s, x) { return s + x.price; }, 0);
+    var unread = state.chats.reduce(function (s, c) { return s + c.unread; }, 0);
+
+    setText('#kpiNewVal', nNew);
+    setText('#kpiActiveVal', nActive);
+    setText('#kpiRevVal', fmtPrice(rev));
+    setText('#kpiUnreadVal', unread);
+    setText('#kpiNewDelta', nNew ? nNew + ' ждут принятия' : 'очередь пуста');
+    $$('#kpiGrid .kpi').forEach(function (k) {
+      k.classList.remove('tick');
+      void k.offsetWidth;
+      k.classList.add('tick');
+    });
+  }
+
+  function setText(sel, v) {
+    var el = $(sel);
+    if (el) el.textContent = v;
+  }
+
+  /* ═══════════════ Today ═══════════════ */
+  function renderToday() {
+    updateKpis();
+    renderFeed();
+    renderShopSummary();
+  }
+
+  function renderFeed() {
+    var el = $('#liveFeed');
+    if (!el) return;
+    el.innerHTML = state.feed.map(function (f) {
+      return '<div class="feed-item">' +
+        '<div class="ic ' + (f.kind || '') + '">' + f.ic + '</div>' +
+        '<div class="txt">' + f.text + '<span class="when">' + f.when + '</span></div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderShopSummary() {
+    var el = $('#shopSummary');
+    if (!el) return;
+    el.innerHTML = Object.keys(SHOPS).map(function (id) {
+      var s = SHOPS[id];
+      var cnt = state.orders.filter(function (o) { return o.shop === id && o.status !== 'done'; }).length;
+      var rev = state.orders.filter(function (o) { return o.shop === id && o.status === 'done'; })
+        .reduce(function (a, b) { return a + b.price; }, 0);
+      return '<div class="metric-row">' +
+        '<span class="name">' + s.short + '</span>' +
+        '<span class="nums">' +
+        '<span class="pct">' + cnt + ' в работе</span>' +
+        '<span class="amt">' + fmtPrice(rev) + '</span>' +
+        '</span></div>';
+    }).join('');
+  }
+
+  /* ═══════════════ Orders ═══════════════ */
+  function renderOrders() {
+    if (state.ordersMode === 'kanban') {
+      $('#ordersKanban').classList.remove('hidden');
+      $('#ordersList').classList.add('hidden');
+      renderKanban();
+    } else {
+      $('#ordersKanban').classList.add('hidden');
+      $('#ordersList').classList.remove('hidden');
+      renderOrderList();
+    }
+    $('#simState').textContent = state.simPaused ? 'пауза' : 'вкл';
+    $('#btnSimToggle').textContent = state.simPaused ? '▶ Sim' : '⏸ Пауза sim';
+    updateNavBadges();
+  }
+
+  function renderKanban() {
+    var list = filteredOrders();
+    var html = '<div class="kanban-wrap"><div class="kanban">';
+    STATUSES.forEach(function (st) {
+      var cards = list.filter(function (o) { return o.status === st.id; });
+      html += '<div class="kb-col" data-status="' + st.id + '">';
+      html += '<div class="kb-head"><span>' + st.label + '</span><span class="n">' + cards.length + '</span></div>';
+      html += '<div class="kb-body">';
+      cards.forEach(function (o) {
+        html += cardHtml(o);
+      });
+      html += '</div></div>';
+    });
+    html += '</div></div>';
+    $('#ordersKanban').innerHTML = html;
+
+    $$('#ordersKanban .kcard').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('.kc-advance')) return;
+        openOrder(card.getAttribute('data-id'));
+      });
+    });
+    $$('#ordersKanban .kc-advance').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        advanceOrder(btn.getAttribute('data-id'));
+      });
+    });
+  }
+
+  function cardHtml(o) {
+    var st = STATUS_MAP[o.status];
+    var canAdv = st && st.next;
+    var flash = o._flash || '';
+    return '<div class="kcard ' + flash + '" data-id="' + o.id + '">' +
+      '<div class="kc-top"><span class="kc-id">' + o.id + '</span><span class="kc-price">' + fmtPrice(o.price) + '</span></div>' +
+      '<div class="kc-name">' + esc(o.client) + '</div>' +
+      '<div class="kc-meta">' + esc(o.product) + ' · ' + SHOPS[o.shop].short + '</div>' +
+      '<div class="kc-tags">' + statusBadge(o.status) + channelBadge(o.channel) + '</div>' +
+      (canAdv
+        ? '<button class="kc-advance" data-id="' + o.id + '">' + st.nextLabel + ' →</button>'
+        : '<button class="kc-advance" disabled>Готово</button>') +
+      '</div>';
+  }
+
+  function renderOrderList() {
+    var list = filteredOrders();
+    var tb = $('#ordersTable tbody');
+    tb.innerHTML = list.map(function (o) {
+      var st = STATUS_MAP[o.status];
+      return '<tr data-id="' + o.id + '">' +
+        '<td class="mono">' + o.id + '</td>' +
+        '<td><b>' + esc(o.client) + '</b><div class="muted">' + esc(o.phone) + '</div></td>' +
+        '<td>' + esc(o.product) + '</td>' +
+        '<td>' + statusBadge(o.status) + '</td>' +
+        '<td>' + channelBadge(o.channel) + '</td>' +
+        '<td class="muted">' + SHOPS[o.shop].short + '</td>' +
+        '<td class="price">' + fmtPrice(o.price) + '</td>' +
+        '<td>' + (st && st.next
+          ? '<button class="btn sm terra adv-btn" data-id="' + o.id + '">' + st.nextLabel + '</button>'
+          : '') + '</td>' +
+        '</tr>';
+    }).join('');
+
+    $$('#ordersTable tbody tr').forEach(function (tr) {
+      tr.addEventListener('click', function (e) {
+        if (e.target.closest('.adv-btn')) return;
+        openOrder(tr.getAttribute('data-id'));
+      });
+    });
+    $$('#ordersTable .adv-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        advanceOrder(btn.getAttribute('data-id'));
+      });
+    });
+  }
+
+  function advanceOrder(id) {
+    var order = state.orders.find(function (o) { return o.id === id; });
+    if (!order) return;
+    var st = STATUS_MAP[order.status];
+    if (!st || !st.next) {
+      toast('Заказ уже завершён', 'ok');
+      return;
+    }
+    var prev = order.status;
+    order.status = st.next;
+    order.history.push({
+      at: Date.now(),
+      text: st.label + ' → ' + STATUS_MAP[st.next].label,
+      status: st.next
+    });
+    order._flash = 'is-moved';
+    pushFeed({
+      ic: order.status === 'done' ? 'ok' : '📦',
+      kind: order.status === 'done' ? 'ok' : 'info',
+      text: 'Статус <b>' + order.id + '</b>: ' + STATUS_MAP[st.next].label + ' · ' + esc(order.client)
+    });
+    liveSay(order.id + ' → ' + STATUS_MAP[st.next].label);
+    toast(order.id + ': ' + STATUS_MAP[st.next].label, order.status === 'done' ? 'ok' : '');
+    flashCol(st.next);
+    renderOrders();
+    updateKpis();
+    if (state.activeOrder === id) renderDrawer(order);
+    setTimeout(function () {
+      var o2 = state.orders.find(function (x) { return x.id === id; });
+      if (o2) o2._flash = '';
+    }, 500);
+  }
+
+  function flashCol(status) {
+    $$('.kb-col[data-status="' + status + '"]').forEach(function (col) {
+      col.classList.remove('flash-col');
+      void col.offsetWidth;
+      col.classList.add('flash-col');
+      setTimeout(function () { col.classList.remove('flash-col'); }, 700);
+    });
+  }
+
+  /* ═══════════════ Order drawer (EspoCRM detail + stream) ═══════════════ */
+  function openOrder(id) {
+    var order = state.orders.find(function (o) { return o.id === id; });
+    if (!order) return;
+    state.activeOrder = id;
+    renderDrawer(order);
+    $('#drawerBackdrop').classList.add('on');
+    $('#orderDrawer').classList.add('on');
+  }
+
+  function closeDrawer() {
+    state.activeOrder = null;
+    $('#drawerBackdrop').classList.remove('on');
+    $('#orderDrawer').classList.remove('on');
+  }
+
+  function renderDrawer(o) {
+    $('#drTitle').textContent = o.id;
+    var st = STATUS_MAP[o.status];
+    var html = '';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">';
+    html += statusBadge(o.status) + channelBadge(o.channel) + payBadge(o.pay);
+    html += '</div>';
+    html += detail('Клиент', esc(o.client));
+    html += detail('Телефон', esc(o.phone));
+    html += detail('Состав', esc(o.product));
+    html += detail('Сумма', '<span style="color:var(--terra);font-weight:800">' + fmtPrice(o.price) + '</span>');
+    html += detail('Точка', SHOPS[o.shop].name);
+    html += detail('Канал', CHANNEL_LABEL[o.channel]);
+    if (o.note) html += detail('Комментарий', esc(o.note));
+
+    html += '<div class="stream-title">Stream / история (EspoCRM)</div><div class="stream">';
+    var hist = o.history.slice().reverse();
+    hist.forEach(function (h, i) {
+      html += '<div class="stream-item">';
+      html += '<div class="stream-dot' + (i === 0 ? ' active' : '') + '"></div>';
+      html += '<div class="stream-body"><div class="t">' + esc(h.text) + '</div>';
+      html += '<div class="m">' + new Date(h.at).toLocaleString('ru-RU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      html += ' · ' + (STATUS_MAP[h.status] ? STATUS_MAP[h.status].label : '') + '</div></div></div>';
+    });
+    html += '</div>';
+
+    // Document chain stub (Dolibarr)
+    html += '<div class="stream-title">Цепочка документов (Dolibarr)</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+    html += '<span class="badge st-done">Заказ</span><span style="color:var(--ink-faint)">→</span>';
+    html += '<span class="badge ' + (o.pay === 'paid' ? 'pay-paid' : 'pay-pending') + '">Оплата</span><span style="color:var(--ink-faint)">→</span>';
+    html += '<span class="badge ' + (['assembled','delivering','done'].indexOf(o.status) >= 0 ? 'st-assembled' : 'ch-direct') + '">Сборка</span><span style="color:var(--ink-faint)">→</span>';
+    html += '<span class="badge ' + (o.status === 'done' ? 'st-done' : 'ch-direct') + '">Доставка</span>';
+    html += '</div>';
+
+    $('#drBody').innerHTML = html;
+    var adv = $('#drAdvance');
+    if (st && st.next) {
+      adv.disabled = false;
+      adv.textContent = st.nextLabel + ' →';
+    } else {
+      adv.disabled = true;
+      adv.textContent = 'Завершён';
+    }
+  }
+
+  function detail(l, v) {
+    return '<div class="detail-row"><span class="l">' + l + '</span><span class="v">' + v + '</span></div>';
+  }
+
+  /* ═══════════════ Sim new orders ═══════════════ */
+  function startSimIfNeeded() {
+    stopSimInterval();
+    if (state.simPaused || state.view !== 'orders') return;
+    state.simTimer = setInterval(function () {
+      if (state.simPaused || state.view !== 'orders') return;
+      if (Math.random() < 0.55) simNewOrder();
+      else if (Math.random() < 0.4) {
+        var pool = state.orders.filter(function (o) { return o.status !== 'done'; });
+        if (pool.length) advanceOrder(pick(pool).id);
+      }
+    }, 7000);
+    // first kicks
+    setTimeout(function () {
+      if (!state.simPaused && state.view === 'orders') simNewOrder();
+    }, 2500);
+  }
+
+  function stopSimInterval() {
+    if (state.simTimer) {
+      clearInterval(state.simTimer);
+      state.simTimer = null;
+    }
+  }
+
+  function simNewOrder() {
+    // keep list bounded
+    var done = state.orders.filter(function (o) { return o.status === 'done'; });
+    if (state.orders.length > 22 && done.length) {
+      var drop = done[0];
+      state.orders = state.orders.filter(function (o) { return o.id !== drop.id; });
+    }
+    state.orderSeq++;
+    var id = 'BL-' + state.orderSeq;
+    var order = {
+      id: id,
+      client: pick(NAMES),
+      product: pick(BOUQUETS),
+      price: pick(PRICES),
+      status: 'new',
+      channel: Math.random() > 0.45 ? 'marketplace' : 'direct',
+      shop: pick(['center', 'south', 'north']),
+      pay: Math.random() > 0.3 ? 'paid' : (Math.random() > 0.5 ? 'cod' : 'pending'),
+      phone: '+7 900 ' + Math.floor(100 + Math.random() * 900) + '-' + Math.floor(10 + Math.random() * 90) + '-' + Math.floor(10 + Math.random() * 90),
+      note: '',
+      createdAt: Date.now(),
+      history: [{ at: Date.now(), text: 'Заказ создан (симуляция)', status: 'new' }],
+      _flash: 'is-new'
+    };
+    state.orders.unshift(order);
+    liveSay('Новый ' + id + ' · ' + order.client);
+    pushFeed({
+      ic: '🛒',
+      kind: '',
+      text: (order.channel === 'marketplace' ? 'Маркетплейс' : 'Прямой') + ': новый заказ <b>' + id + '</b> · ' + esc(order.client)
+    });
+    toast('Новый заказ ' + id, 'warn');
+    if (state.view === 'orders') renderOrders();
+    updateNavBadges();
+    updateKpis();
+    setTimeout(function () {
+      var o2 = state.orders.find(function (x) { return x.id === id; });
+      if (o2) o2._flash = '';
+    }, 800);
+  }
+
+  function createOrderFromForm(opts) {
+    opts = opts || {};
+    var client = ($('#mClient').value || '').trim() || 'Гость';
+    var phone = ($('#mPhone').value || '').trim() || '—';
+    var product = ($('#mProduct').value || '').trim() || 'Букет на выбор';
+    var price = parseInt($('#mPrice').value, 10) || 4500;
+    var channel = $('#mChannel').value || 'direct';
+    var shop = $('#mShop').value || 'center';
+    var note = ($('#mNote').value || '').trim();
+
+    state.orderSeq++;
+    var id = 'BL-' + state.orderSeq;
+    var order = {
+      id: id,
+      client: client,
+      product: product,
+      price: price,
+      status: 'new',
+      channel: channel,
+      shop: shop,
+      pay: channel === 'marketplace' ? 'paid' : 'pending',
+      phone: phone,
+      note: note,
+      createdAt: Date.now(),
+      history: [{ at: Date.now(), text: opts.fromChat ? 'Создан из чата' : 'Создан вручную', status: 'new' }],
+      _flash: 'is-new'
+    };
+    state.orders.unshift(order);
+
+    if (opts.fromChat && state.activeChat) {
+      var chat = state.chats.find(function (c) { return c.id === state.activeChat; });
+      if (chat) {
+        chat.orderIds = chat.orderIds || [];
+        chat.orderIds.push(id);
+        chat.msgs.push({ from: 'sys', text: 'Заказ ' + id + ' создан из чата · ' + fmtPrice(price), time: nowTime() });
+        renderThread();
+        renderContact();
+      }
+    }
+
+    pushFeed({ ic: '＋', kind: 'ok', text: 'Создан заказ <b>' + id + '</b> · ' + esc(client) });
+    toast('Заказ ' + id + ' создан', 'ok');
+    closeModal();
+    updateNavBadges();
+    if (state.view === 'orders') renderOrders();
+    if (state.view === 'today') renderToday();
+    return order;
+  }
+
+  /* ═══════════════ Chats (Chatwoot) ═══════════════ */
+  function filteredChats() {
+    return state.chats.filter(function (c) {
+      if (state.chatTab === 'mine' && c.assignee !== 'Анна К.') return false;
+      if (state.chatTab === 'unassigned' && c.assignee) return false;
+      if (state.chatChannel !== 'all' && c.channel !== state.chatChannel) return false;
+      if (state.chatSearch) {
+        var q = state.chatSearch.toLowerCase();
+        if (c.name.toLowerCase().indexOf(q) < 0 && (c.preview || '').toLowerCase().indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderChats() {
+    var list = filteredChats();
+    var el = $('#dialogs');
+    el.innerHTML = list.map(function (c) {
+      var on = c.id === state.activeChat ? ' on' : '';
+      return '<button class="dialog' + on + '" data-id="' + c.id + '">' +
+        '<div class="av ' + c.channel + '">' + initials(c.name) + '</div>' +
+        '<div style="min-width:0">' +
+        '<div class="nm">' + esc(c.name) + '</div>' +
+        '<div class="prev">' + esc(c.preview || '') + '</div>' +
+        '</div>' +
+        '<div style="text-align:right">' +
+        '<div class="tm">' + (c.msgs.length ? c.msgs[c.msgs.length - 1].time : '') + '</div>' +
+        (c.unread ? '<span class="unread">' + c.unread + '</span>' : '') +
+        '<div style="margin-top:4px"><span class="badge ' + c.channel + '">' + c.channel.toUpperCase() + '</span></div>' +
+        '</div></button>';
+    }).join('') || '<div class="empty"><div class="eico">∅</div><b>Нет диалогов</b>Смените фильтр</div>';
+
+    $$('#dialogs .dialog').forEach(function (d) {
+      d.addEventListener('click', function () { selectChat(d.getAttribute('data-id')); });
+    });
+    updateNavBadges();
+  }
+
+  function selectChat(id) {
+    var chat = state.chats.find(function (c) { return c.id === id; });
+    if (!chat) return;
+    state.activeChat = id;
+    chat.unread = 0;
+    renderChats();
+    renderThread();
+    renderContact();
+  }
+
+  function renderThread() {
+    var chat = state.chats.find(function (c) { return c.id === state.activeChat; });
+    var body = $('#threadBody');
+    var input = $('#chatInput');
+    var send = $('#btnSendChat');
+    var createBtn = $('#btnCreateOrderFromChat');
+    var resolveBtn = $('#btnResolveChat');
+    var assignBtn = $('#btnAssignMe');
+
+    if (!chat) {
+      $('#threadAv').textContent = '—';
+      $('#threadAv').className = 'av lg terra';
+      $('#threadName').textContent = 'Выберите чат';
+      $('#threadMeta').textContent = 'Chatwoot-style 3-pane inbox';
+      body.innerHTML = '<div class="empty"><div class="eico">💬</div><b>Omni-inbox</b>Выберите диалог слева</div>';
+      input.disabled = true; send.disabled = true;
+      createBtn.disabled = true; resolveBtn.disabled = true; assignBtn.disabled = true;
+      return;
+    }
+
+    $('#threadAv').textContent = initials(chat.name);
+    $('#threadAv').className = 'av lg ' + chat.channel;
+    $('#threadName').textContent = chat.name;
+    $('#threadMeta').textContent = MSG_CH[chat.channel] + ' · ' + (chat.assignee || 'не назначен') + ' · ' + chat.status;
+    input.disabled = false; send.disabled = false;
+    createBtn.disabled = false; resolveBtn.disabled = false; assignBtn.disabled = false;
+
+    body.innerHTML = chat.msgs.map(function (m) {
+      if (m.from === 'sys') return '<div class="bubble sys">' + esc(m.text) + ' · ' + m.time + '</div>';
+      if (m.from === 'note') return '<div class="bubble note">📝 ' + esc(m.text) + '<span class="time">' + m.time + '</span></div>';
+      return '<div class="bubble ' + (m.from === 'me' ? 'me' : '') + '">' + esc(m.text) +
+        '<span class="time">' + m.time + '</span></div>';
+    }).join('');
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function renderContact() {
+    var chat = state.chats.find(function (c) { return c.id === state.activeChat; });
+    if (!chat) {
+      $('#cpName').textContent = 'Контакт';
+      $('#cpSub').textContent = 'Chatwoot right pane';
+      $('#cpAv').textContent = '?';
+      $('#cpPhone').textContent = '—';
+      $('#cpChannel').textContent = '—';
+      $('#cpStatus').textContent = '—';
+      $('#cpAgent').textContent = '—';
+      $('#cpOrders').innerHTML = '<div style="font-size:12px;color:var(--ink-mute)">Нет связанных</div>';
+      return;
+    }
+    $('#cpAv').textContent = initials(chat.name);
+    $('#cpAv').className = 'av lg ' + chat.channel;
+    $('#cpName').textContent = chat.name;
+    $('#cpSub').textContent = MSG_CH[chat.channel];
+    $('#cpPhone').textContent = chat.phone;
+    $('#cpChannel').innerHTML = '<span class="badge ' + chat.channel + '">' + chat.channel.toUpperCase() + '</span>';
+    $('#cpStatus').textContent = chat.status;
+    $('#cpAgent').textContent = chat.assignee || '—';
+
+    var orders = (chat.orderIds || []).map(function (oid) {
+      return state.orders.find(function (o) { return o.id === oid; });
+    }).filter(Boolean);
+
+    if (!orders.length) {
+      $('#cpOrders').innerHTML = '<div style="font-size:12px;color:var(--ink-mute)">Нет связанных заказов</div>';
+    } else {
+      $('#cpOrders').innerHTML = orders.map(function (o) {
+        return '<div class="order-mini" data-id="' + o.id + '">' +
+          '<div style="display:flex;justify-content:space-between"><span class="oid">' + o.id + '</span><span class="op">' + fmtPrice(o.price) + '</span></div>' +
+          '<div style="margin-top:6px">' + statusBadge(o.status) + ' ' + channelBadge(o.channel) + '</div>' +
+          '</div>';
+      }).join('');
+      $$('#cpOrders .order-mini').forEach(function (el) {
+        el.addEventListener('click', function () { openOrder(el.getAttribute('data-id')); });
+      });
+    }
+  }
+
+  function sendChat() {
+    var chat = state.chats.find(function (c) { return c.id === state.activeChat; });
+    if (!chat) return;
+    var input = $('#chatInput');
+    var text = (input.value || '').trim();
+    if (!text) return;
+    if (state.noteMode) {
+      chat.msgs.push({ from: 'note', text: text, time: nowTime() });
+      toast('Приватная заметка сохранена');
+    } else {
+      chat.msgs.push({ from: 'me', text: text, time: nowTime() });
+      chat.preview = text;
+      // mock auto-reply sometimes
+      setTimeout(function () {
+        if (state.activeChat !== chat.id) return;
+        if (Math.random() > 0.55) return;
+        var replies = ['Спасибо!', 'Хорошо, жду', 'А можно пораньше?', 'Ок 👍', 'Пришлите фото букета'];
+        var r = pick(replies);
+        chat.msgs.push({ from: 'them', text: r, time: nowTime() });
+        chat.preview = r;
+        chat.unread = state.view === 'chats' && state.activeChat === chat.id ? 0 : (chat.unread || 0) + 1;
+        renderThread();
+        renderChats();
+      }, 1200 + Math.random() * 1500);
+    }
+    input.value = '';
+    renderThread();
+    renderChats();
+  }
+
+  /* ═══════════════ Vitrina ═══════════════ */
+  function renderVitrina() {
+    var f = state.vitrinaFilter;
+    var list = state.products.filter(function (p) {
+      if (f === 'visible') return p.visible;
+      if (f === 'hidden') return !p.visible;
+      if (f === 'low') return p.stock <= 3;
+      return true;
+    });
+    var el = $('#prodGrid');
+    el.innerHTML = list.map(function (p) {
+      return '<div class="prod-card' + (p.visible ? '' : ' is-hidden') + '" data-id="' + p.id + '">' +
+        '<div class="prod-img">' + p.emoji +
+        '<span class="stock-pill">' + stockBadge(p.stock) + '</span></div>' +
+        '<div class="prod-body">' +
+        '<div class="sku">' + p.sku + '</div>' +
+        '<div class="name">' + esc(p.name) + '</div>' +
+        '<div class="cat">' + esc(p.cat) + (p.visible ? '' : ' · <span class="badge hidden-p">скрыт</span>') + '</div>' +
+        '<div class="prod-foot">' +
+        '<div class="prod-price">' + fmtPrice(p.price) + '</div>' +
+        '<div class="stock-ctrl">' +
+        '<button data-act="dec" data-id="' + p.id + '" title="-1">−</button>' +
+        '<span class="qty">' + p.stock + '</span>' +
+        '<button data-act="inc" data-id="' + p.id + '" title="+1">+</button>' +
+        '</div></div>' +
+        '<div style="margin-top:10px;display:flex;gap:6px">' +
+        '<button class="btn sm" style="flex:1" data-act="toggle" data-id="' + p.id + '">' +
+        (p.visible ? 'Скрыть' : 'Показать') + '</button>' +
+        '<button class="btn sm" data-act="price" data-id="' + p.id + '">± цена</button>' +
+        '</div></div></div>';
+    }).join('') || '<div class="empty"><div class="eico">❀</div><b>Пусто</b>Нет позиций по фильтру</div>';
+
+    $$('#prodGrid [data-act]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var id = btn.getAttribute('data-id');
+        var act = btn.getAttribute('data-act');
+        var p = state.products.find(function (x) { return x.id === id; });
+        if (!p) return;
+        if (act === 'inc') { p.stock++; toast(p.name + ': ' + p.stock + ' шт', 'ok'); }
+        if (act === 'dec') { p.stock = Math.max(0, p.stock - 1); toast(p.name + ': ' + p.stock + ' шт'); }
+        if (act === 'toggle') {
+          p.visible = !p.visible;
+          toast(p.visible ? p.name + ' на витрине' : p.name + ' скрыт', p.visible ? 'ok' : '');
+          pushFeed({ ic: '❀', kind: 'info', text: (p.visible ? 'Показан' : 'Скрыт') + ' товар <b>' + esc(p.name) + '</b>' });
+        }
+        if (act === 'price') {
+          var delta = Math.random() > 0.5 ? 200 : -200;
+          p.price = Math.max(500, p.price + delta);
+          toast(p.name + ': ' + fmtPrice(p.price));
+        }
+        if (p.stock <= 3 && p.stock > 0) {
+          pushFeed({ ic: '⚠', kind: 'warn', text: 'Низкий остаток: <b>' + esc(p.name) + '</b> (' + p.stock + ' шт)' });
+        }
+        renderVitrina();
+      });
+    });
+  }
+
+  /* ═══════════════ Reports ═══════════════ */
+  function renderReports() {
+    var tab = state.reportTab;
+    var body = $('#reportBody');
+    var done = state.orders.filter(function (o) { return o.status === 'done'; });
+    var all = state.orders;
+
+    if (tab === 'sales') {
+      var days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+      var vals = [42, 55, 48, 61, 70, 88, 65];
+      var max = Math.max.apply(null, vals);
+      var html = '<div class="grid-2">';
+      html += '<div class="panel"><div class="panel-h"><h3>Выручка по дням (mock)</h3><span class="meta">тыс. ₽</span></div><div class="panel-b">';
+      html += '<div class="chart-bars">';
+      days.forEach(function (d, i) {
+        var h = Math.round((vals[i] / max) * 100);
+        html += '<div class="bar-col"><span class="val">' + vals[i] + '</span><div class="bar" style="height:' + h + '%"></div><span class="lbl">' + d + '</span></div>';
+      });
+      html += '</div></div></div>';
+      html += '<div class="panel"><div class="panel-h"><h3>Сводка</h3></div><div class="panel-b">';
+      var rev = done.reduce(function (s, o) { return s + o.price; }, 0);
+      var aov = done.length ? Math.round(rev / done.length) : 0;
+      html += metric('Завершено заказов', done.length + ' шт');
+      html += metric('Выручка (заверш.)', fmtPrice(rev));
+      html += metric('Средний чек', fmtPrice(aov));
+      html += metric('Всего в системе', all.length + ' заказов');
+      html += metric('Новых в очереди', all.filter(function (o) { return o.status === 'new'; }).length);
+      html += '</div></div></div>';
+      // funnel
+      html += '<div class="panel" style="margin-top:12px"><div class="panel-h"><h3>Воронка статусов</h3><span class="meta">ERPNext multi-axis + Krayin pipeline</span></div><div class="panel-b">';
+      STATUSES.forEach(function (st) {
+        var n = all.filter(function (o) { return o.status === st.id; }).length;
+        var pct = all.length ? Math.round(n / all.length * 100) : 0;
+        html += '<div class="metric-row"><span class="name">' + statusBadge(st.id) + '</span>' +
+          '<span class="nums"><div class="bar-inline"><i style="width:' + pct + '%"></i></div>' +
+          '<span class="pct">' + n + ' · ' + pct + '%</span></span></div>';
+      });
+      html += '</div></div>';
+      body.innerHTML = html;
+    } else if (tab === 'channels') {
+      var channels = [
+        { id: 'marketplace', name: 'Маркетплейс', color: 'terra' },
+        { id: 'direct', name: 'Прямые', color: 'sage' }
+      ];
+      var html2 = '<div class="panel"><div class="panel-h"><h3>Каналы продаж</h3><span class="meta">marketplace vs direct</span></div><div class="panel-b">';
+      channels.forEach(function (ch) {
+        var list = all.filter(function (o) { return o.channel === ch.id; });
+        var rev = list.filter(function (o) { return o.status === 'done'; }).reduce(function (s, o) { return s + o.price; }, 0);
+        var pct = all.length ? Math.round(list.length / all.length * 100) : 0;
+        html2 += '<div class="metric-row"><span class="name">' + channelBadge(ch.id) + ' · ' + list.length + ' заказов</span>' +
+          '<span class="nums"><div class="bar-inline"><i style="width:' + pct + '%;background:' + (ch.id === 'marketplace' ? 'var(--terra)' : 'var(--sage)') + '"></i></div>' +
+          '<span class="amt">' + fmtPrice(rev) + '</span></span></div>';
+      });
+      html2 += '</div></div>';
+      // messenger split
+      html2 += '<div class="panel" style="margin-top:12px"><div class="panel-h"><h3>Мессенджеры (чаты)</h3><span class="meta">Chatwoot channels</span></div><div class="panel-b">';
+      ['wa', 'tg', 'max'].forEach(function (ch) {
+        var list = state.chats.filter(function (c) { return c.channel === ch; });
+        var unread = list.reduce(function (s, c) { return s + c.unread; }, 0);
+        html2 += '<div class="metric-row"><span class="name"><span class="badge ' + ch + '">' + ch.toUpperCase() + '</span> ' + MSG_CH[ch] + '</span>' +
+          '<span class="nums"><span class="pct">' + list.length + ' диалогов</span>' +
+          (unread ? '<span class="badge sage">' + unread + ' unread</span>' : '') +
+          '</span></div>';
+      });
+      html2 += '</div></div>';
+      body.innerHTML = html2;
+    } else {
+      // shops
+      var html3 = '<div class="panel"><div class="panel-h"><h3>По точкам</h3><span class="meta">ERPNext multi-company / multi-shop</span></div><div class="panel-b">';
+      var maxRev = 1;
+      var shopStats = Object.keys(SHOPS).map(function (id) {
+        var list = all.filter(function (o) { return o.shop === id; });
+        var rev = list.filter(function (o) { return o.status === 'done'; }).reduce(function (s, o) { return s + o.price; }, 0);
+        var active = list.filter(function (o) { return o.status !== 'done'; }).length;
+        if (rev > maxRev) maxRev = rev;
+        return { id: id, list: list, rev: rev, active: active };
+      });
+      html3 += '<div class="chart-bars" style="height:140px;margin-bottom:16px">';
+      shopStats.forEach(function (s, i) {
+        var h = Math.round((s.rev / maxRev) * 100) || 4;
+        var cls = i === 1 ? ' sage' : (i === 2 ? ' plum' : '');
+        html3 += '<div class="bar-col"><span class="val">' + Math.round(s.rev / 1000) + 'k</span>' +
+          '<div class="bar' + cls + '" style="height:' + h + '%"></div>' +
+          '<span class="lbl">' + SHOPS[s.id].short + '</span></div>';
+      });
+      html3 += '</div>';
+      shopStats.forEach(function (s) {
+        html3 += '<div class="metric-row"><span class="name">' + SHOPS[s.id].name + '</span>' +
+          '<span class="nums"><span class="pct">' + s.active + ' в работе · ' + s.list.length + ' всего</span>' +
+          '<span class="amt">' + fmtPrice(s.rev) + '</span></span></div>';
+      });
+      html3 += '</div></div>';
+      body.innerHTML = html3;
+    }
+  }
+
+  function metric(name, val) {
+    return '<div class="metric-row"><span class="name">' + name + '</span><span class="amt">' + val + '</span></div>';
+  }
+
+  /* ═══════════════ Settings ═══════════════ */
+  function renderSettings() {
+    var tab = state.settingsTab;
+    var body = $('#settingsBody');
+    if (tab === 'shops') {
+      body.innerHTML = '<h3 style="font-size:14px;font-weight:800;margin-bottom:12px">Магазины сети</h3>' +
+        Object.keys(SHOPS).map(function (id) {
+          var s = SHOPS[id];
+          var active = state.orders.filter(function (o) { return o.shop === id && o.status !== 'done'; }).length;
+          var isCur = state.shop === id;
+          return '<div class="shop-card">' +
+            '<div class="av terra">' + s.short.charAt(0) + '</div>' +
+            '<div class="info"><div class="nm">' + s.name + (isCur ? ' · <span class="badge live">текущий</span>' : '') + '</div>' +
+            '<div class="sub">' + active + ' заказов в работе</div></div>' +
+            '<button class="btn sm' + (isCur ? ' sage' : '') + '" data-set-shop="' + id + '">' +
+            (isCur ? 'Активен' : 'Выбрать') + '</button></div>';
+        }).join('') +
+        '<p style="margin-top:12px;font-size:12px;color:var(--ink-mute)">Multi-shop isolation pattern · ERPNext company / branch</p>';
+      $$('[data-set-shop]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.shop = btn.getAttribute('data-set-shop');
+          $('#currentShopLabel').textContent = SHOPS[state.shop].name;
+          toast('Точка: ' + SHOPS[state.shop].short, 'ok');
+          renderSettings();
+        });
+      });
+    } else if (tab === 'users') {
+      var users = [
+        { name: 'Анна К.', role: 'Менеджер', shop: 'Центр', av: 'АК' },
+        { name: 'Ирина В.', role: 'Флорист', shop: 'Центр', av: 'ИВ' },
+        { name: 'Максим Д.', role: 'Курьер', shop: 'Юг', av: 'МД' },
+        { name: 'Ольга С.', role: 'Менеджер', shop: 'Север', av: 'ОС' },
+        { name: 'Админ Bloom', role: 'Владелец сети', shop: 'Все', av: 'AB' }
+      ];
+      body.innerHTML = '<h3 style="font-size:14px;font-weight:800;margin-bottom:12px">Пользователи</h3>' +
+        users.map(function (u) {
+          return '<div class="user-card"><div class="av sage">' + u.av + '</div>' +
+            '<div class="info"><div class="nm">' + u.name + '</div>' +
+            '<div class="sub">' + u.role + ' · ' + u.shop + '</div></div>' +
+            '<span class="badge live">active</span></div>';
+        }).join('') +
+        '<p style="margin-top:12px;font-size:12px;color:var(--ink-mute)">Krayin-style ACL roles stub — permissions not enforced in MVP</p>';
+    } else if (tab === 'channels') {
+      body.innerHTML = '<h3 style="font-size:14px;font-weight:800;margin-bottom:12px">Каналы связи</h3>' +
+        [
+          { ch: 'wa', name: 'WhatsApp Business', status: 'подключён' },
+          { ch: 'tg', name: 'Telegram Bot', status: 'подключён' },
+          { ch: 'max', name: 'MAX', status: 'подключён' },
+          { ch: 'fw', name: 'Маркетплейс API', status: 'mock' }
+        ].map(function (c) {
+          return '<div class="shop-card"><div class="av ' + c.ch + '">' + c.ch.toUpperCase().slice(0, 2) + '</div>' +
+            '<div class="info"><div class="nm">' + c.name + '</div><div class="sub">' + c.status + '</div></div>' +
+            '<span class="badge sage">ok</span></div>';
+        }).join('') +
+        '<p style="margin-top:12px;font-size:12px;color:var(--ink-mute)">Chatwoot omni-channel inboxes · mock only</p>';
+    } else {
+      body.innerHTML = '<div class="empty"><div class="eico">🔐</div><b>Роли и ACL</b>' +
+        'Stub: Owner · Network Manager · Shop Manager · Florist · Courier<br>' +
+        '<span style="font-size:12px">Krayin permission menu shape — not interactive</span></div>';
+    }
+  }
+
+  /* ═══════════════ Modal ═══════════════ */
+  function openModal(opts) {
+    opts = opts || {};
+    state.modalFromChat = opts.fromChat || null;
+    $('#modalTitle').textContent = opts.fromChat ? 'Заказ из чата' : 'Новый заказ';
+    if (opts.fromChat) {
+      var chat = state.chats.find(function (c) { return c.id === state.activeChat; });
+      if (chat) {
+        $('#mClient').value = chat.name;
+        $('#mPhone').value = chat.phone;
+        $('#mChannel').value = 'direct';
+        $('#mProduct').value = '';
+        $('#mNote').value = 'Из чата ' + MSG_CH[chat.channel];
+      }
+    } else {
+      $('#mClient').value = '';
+      $('#mPhone').value = '';
+      $('#mProduct').value = '';
+      $('#mPrice').value = '4500';
+      $('#mChannel').value = 'direct';
+      $('#mShop').value = state.shop;
+      $('#mNote').value = '';
+    }
+    $('#modalBackdrop').classList.add('on');
+    setTimeout(function () { $('#mClient').focus(); }, 150);
+  }
+
+  function closeModal() {
+    $('#modalBackdrop').classList.remove('on');
+    state.modalFromChat = null;
+  }
+
+  /* ═══════════════ Utils ═══════════════ */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+  function initials(name) {
+    var p = String(name).split(/\s+/);
+    return ((p[0] && p[0][0]) || '') + ((p[1] && p[1][0]) || '');
+  }
+
+  /* ═══════════════ Bindings ═══════════════ */
+  function bind() {
+    $$('.sb-link').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        switchView(btn.getAttribute('data-view'));
+      });
+    });
+
+    $$('[data-goto]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        switchView(btn.getAttribute('data-goto'));
+      });
+    });
+
+    $('#qaNewOrder').addEventListener('click', function () { openModal(); });
+    $('#btnNewOrder').addEventListener('click', function () { openModal(); });
+
+    $('#ordersViewSeg').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-mode]');
+      if (!b) return;
+      state.ordersMode = b.getAttribute('data-mode');
+      $$('#ordersViewSeg button').forEach(function (x) {
+        x.classList.toggle('on', x === b);
+      });
+      renderOrders();
+    });
+
+    $('#orderFilters').addEventListener('click', function (e) {
+      var b = e.target.closest('.filter-chip');
+      if (!b) return;
+      state.orderFilter = b.getAttribute('data-f');
+      $$('#orderFilters .filter-chip').forEach(function (x) {
+        x.classList.toggle('on', x === b);
+      });
+      renderOrders();
+    });
+
+    $('#btnSimToggle').addEventListener('click', function () {
+      state.simPaused = !state.simPaused;
+      if (state.simPaused) {
+        stopSimInterval();
+        toast('Симуляция на паузе');
+      } else {
+        toast('Симуляция включена', 'ok');
+        startSimIfNeeded();
+      }
+      renderOrders();
+    });
+
+    $('#drClose').addEventListener('click', closeDrawer);
+    $('#drClose2').addEventListener('click', closeDrawer);
+    $('#drawerBackdrop').addEventListener('click', closeDrawer);
+    $('#drAdvance').addEventListener('click', function () {
+      if (state.activeOrder) advanceOrder(state.activeOrder);
+    });
+
+    $('#modalClose').addEventListener('click', closeModal);
+    $('#modalCancel').addEventListener('click', closeModal);
+    $('#modalBackdrop').addEventListener('click', function (e) {
+      if (e.target === $('#modalBackdrop')) closeModal();
+    });
+    $('#modalSave').addEventListener('click', function () {
+      createOrderFromForm({ fromChat: !!state.modalFromChat });
+    });
+
+    // Chats
+    $('#inboxTabs').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-tab]');
+      if (!b) return;
+      state.chatTab = b.getAttribute('data-tab');
+      $$('#inboxTabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      renderChats();
+    });
+    $('#channelFilters').addEventListener('click', function (e) {
+      var b = e.target.closest('.filter-chip');
+      if (!b) return;
+      state.chatChannel = b.getAttribute('data-ch');
+      $$('#channelFilters .filter-chip').forEach(function (x) { x.classList.toggle('on', x === b); });
+      renderChats();
+    });
+    $('#chatSearch').addEventListener('input', function () {
+      state.chatSearch = $('#chatSearch').value;
+      renderChats();
+    });
+    $('#btnSendChat').addEventListener('click', sendChat);
+    $('#chatInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') sendChat();
+    });
+    $('#btnNoteMode').addEventListener('click', function () {
+      state.noteMode = !state.noteMode;
+      $('#btnNoteMode').style.background = state.noteMode ? 'var(--amber-soft)' : '';
+      $('#chatInput').placeholder = state.noteMode ? 'Приватная заметка…' : 'Ответить клиенту…';
+      toast(state.noteMode ? 'Режим заметки' : 'Режим ответа');
+    });
+    $('#btnCreateOrderFromChat').addEventListener('click', function () {
+      openModal({ fromChat: true });
+    });
+    $('#btnResolveChat').addEventListener('click', function () {
+      var chat = state.chats.find(function (c) { return c.id === state.activeChat; });
+      if (!chat) return;
+      chat.status = chat.status === 'resolved' ? 'open' : 'resolved';
+      chat.msgs.push({ from: 'sys', text: chat.status === 'resolved' ? 'Диалог решён' : 'Диалог открыт снова', time: nowTime() });
+      toast(chat.status === 'resolved' ? 'Чат решён' : 'Чат открыт', 'ok');
+      renderThread();
+      renderContact();
+      renderChats();
+    });
+    $('#btnAssignMe').addEventListener('click', function () {
+      var chat = state.chats.find(function (c) { return c.id === state.activeChat; });
+      if (!chat) return;
+      chat.assignee = 'Анна К.';
+      chat.msgs.push({ from: 'sys', text: 'Назначен агент Анна К.', time: nowTime() });
+      toast('Назначено вам', 'ok');
+      renderThread();
+      renderContact();
+      renderChats();
+    });
+    $('#btnOpenOrders').addEventListener('click', function () { switchView('orders'); });
+
+    // Vitrina
+    $('#vitrinaFilter').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-vf]');
+      if (!b) return;
+      state.vitrinaFilter = b.getAttribute('data-vf');
+      $$('#vitrinaFilter button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      renderVitrina();
+    });
+
+    // Reports
+    $('#reportTabs').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-rtab]');
+      if (!b) return;
+      state.reportTab = b.getAttribute('data-rtab');
+      $$('#reportTabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      renderReports();
+    });
+
+    // Settings
+    $('#settingsNav').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-set]');
+      if (!b) return;
+      state.settingsTab = b.getAttribute('data-set');
+      $$('#settingsNav button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      renderSettings();
+    });
+
+    $('#shopSwitcher').addEventListener('click', function () {
+      var ids = Object.keys(SHOPS);
+      var idx = ids.indexOf(state.shop);
+      state.shop = ids[(idx + 1) % ids.length];
+      $('#currentShopLabel').textContent = SHOPS[state.shop].name;
+      toast('Точка: ' + SHOPS[state.shop].short, 'ok');
+    });
+
+    // Global search jump
+    $('#globalSearch').addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      var q = ($('#globalSearch').value || '').trim().toLowerCase();
+      if (!q) return;
+      var order = state.orders.find(function (o) {
+        return o.id.toLowerCase().indexOf(q) >= 0 || o.client.toLowerCase().indexOf(q) >= 0;
+      });
+      if (order) {
+        switchView('orders');
+        openOrder(order.id);
+        toast('Найден ' + order.id, 'ok');
+        return;
+      }
+      var chat = state.chats.find(function (c) { return c.name.toLowerCase().indexOf(q) >= 0; });
+      if (chat) {
+        switchView('chats');
+        selectChat(chat.id);
+        toast('Чат: ' + chat.name, 'ok');
+        return;
+      }
+      var prod = state.products.find(function (p) {
+        return p.name.toLowerCase().indexOf(q) >= 0 || p.sku.toLowerCase().indexOf(q) >= 0;
+      });
+      if (prod) {
+        switchView('vitrina');
+        toast('Товар: ' + prod.name, 'ok');
+        return;
+      }
+      toast('Ничего не найдено');
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeDrawer();
+        closeModal();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        $('#globalSearch').focus();
+      }
+    });
+  }
+
+  /* ═══════════════ Boot ═══════════════ */
+  seedOrders();
+  seedProducts();
+  seedChats();
+  seedFeed();
+  bind();
+  switchView('today');
+  updateNavBadges();
+})();
+</script>
+</body>
+</html>
