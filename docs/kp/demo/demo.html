@@ -10,8 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="auth.js"></script>
 <style>
-  /* ═══════════════ BLOOM × MARKETPLACE DEMO ═══════════════ */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
  /* Bloom × Marketplace hybrid: soft coral marketplace + warm neutrals */
@@ -69,9 +68,7 @@
   ::-webkit-scrollbar-track { background: transparent; }
 
   .app { display: flex; min-height: 100vh; }
-
-  /* ═════════════ SIDEBAR ═════════════ */
-  .sidebar {
+.sidebar {
  position: fixed; top: 0; left: 0; bottom: 0; z-index: 60;
  width: var(--sidebar-w);
  display: flex; flex-direction: column;
@@ -121,9 +118,7 @@
   .dot.ok { background: var(--terra); }
   .dot.warn { background: var(--amber); }
   .dot.bad { background: var(--red); }
-
-  /* ═════════════ TOPBAR ═════════════ */
-  .main { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-width: 0; }
+.main { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-width: 0; }
   .topbar {
  position: sticky; top: 0; z-index: 50;
  height: var(--topbar-h);
@@ -168,24 +163,8 @@
   }
   .chip .dot.ok { background: var(--terra); }
   .chip .dot.online { background: var(--sage); }
-
-  /* ═════════════ CONTENT ═════════════ */
-  .content { padding: 28px 32px 80px; max-width: 1200px; width: 100%; margin: 0 auto; }
-
-  .demo-note {
- display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
- font-size: 0.9rem; color: var(--ink-dim); line-height: 1.45;
- background: rgba(255,255,255,0.72);
- border: 1px solid rgba(255,255,255,0.8);
- border-radius: var(--radius);
- padding: 14px 16px; margin-bottom: 22px;
- box-shadow: var(--shadow-sm);
- backdrop-filter: blur(10px);
-  }
-  .demo-note b { color: var(--ink); font-weight: 700; }
-  .demo-note .dn-right { margin-left: auto; display: flex; gap: 8px; }
-
-  .btn {
+.content { padding: 28px 32px 80px; max-width: 1200px; width: 100%; margin: 0 auto; }
+.btn {
  font-size: 0.82rem; font-weight: 600;
  padding: 9px 14px; border-radius: 999px; border: 1px solid var(--border-2);
  background: var(--bg-2); color: var(--ink-dim); cursor: pointer; transition: all 0.2s;
@@ -199,9 +178,7 @@
   .btn.terra:hover { background: var(--terra-2); }
   .btn.ghost { border-color: transparent; background: transparent; }
   .btn.ghost:hover { background: var(--bg-3); }
-
-  /* ═════════════ STATS ═════════════ */
-  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
   .stat {
  background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
  padding: 18px 18px; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
@@ -213,9 +190,7 @@
   .stat-delta { font-size: 0.78rem; font-weight: 600; color: var(--sage); margin-top: 8px; }
   .stat-delta.up { color: var(--sage); }
   .stat-delta.warn { color: var(--terra); }
-
-  /* ═════════════ KANBAN ═════════════ */
-  .sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
   .sec-num {
  font-size: 0.72rem; color: var(--terra); font-weight: 700;
  background: var(--terra-soft); padding: 3px 10px; border-radius: 999px;
@@ -279,28 +254,7 @@
  0% { background: var(--terra-soft); border-color: var(--terra); }
  100% { background: rgba(255,255,255,0.55); border-color: var(--border); }
   }
-  .live-bar {
- display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
- margin-bottom: 12px; font-size: 0.82rem; color: var(--ink-mute); font-weight: 600;
-  }
-  .live-bar .live-dot {
- width: 8px; height: 8px; border-radius: 50%; background: var(--sage);
- box-shadow: 0 0 0 0 rgba(111,143,114,0.6);
- animation: livePulse 1.4s ease infinite;
-  }
-  @keyframes livePulse {
- 0% { box-shadow: 0 0 0 0 rgba(111,143,114,0.55); }
- 70% { box-shadow: 0 0 0 8px rgba(111,143,114,0); }
- 100% { box-shadow: 0 0 0 0 rgba(111,143,114,0); }
-  }
-  .live-bar b { color: var(--ink); }
-  .live-bar .live-event {
- margin-left: auto; font-size: 0.78rem; color: var(--terra); font-weight: 700;
- max-width: 55%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
- opacity: 0; transition: opacity 0.25s;
-  }
-  .live-bar .live-event.show { opacity: 1; }
-  .stat.tick { animation: statTick 0.45s var(--ease); }
+.stat.tick { animation: statTick 0.45s var(--ease); }
   @keyframes statTick {
  0% { transform: scale(1); }
  40% { transform: scale(1.03); border-color: var(--terra); }
@@ -319,9 +273,7 @@
   .kc-tag.tg { background: var(--plum-soft); color: var(--plum); }
   .kc-tag.max { background: var(--amber-soft); color: #A07A20; }
   .kc-tag.fw { background: var(--terra-soft); color: var(--terra); }
-
-  /* ═════════════ CHAT / PANELS ═════════════ */
-  .panel {
+.panel {
  background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
  overflow: hidden; box-shadow: var(--shadow-sm);
   }
@@ -350,15 +302,11 @@
   .feed-item .txt { font-size: 0.88rem; color: var(--ink-dim); line-height: 1.45; }
   .feed-item .txt b { color: var(--ink); font-weight: 700; }
   .feed-item .when { display: block; font-size: 0.72rem; color: var(--ink-faint); margin-top: 2px; }
-
-  /* ═════════════ TG-LIKE CHATS (Bloom tokens) ═════════════ */
-  .content.chat-mode {
+.content.chat-mode {
  max-width: none;
  padding: 12px 16px 16px;
   }
-  .content.chat-mode .demo-note,
-  .content.chat-mode .footer { display: none; }
-  .content.reports-mode { max-width: 1280px; }
+.content.reports-mode { max-width: 1280px; }
 
   .tg-app {
  display: grid;
@@ -533,9 +481,7 @@
  box-shadow: 0 6px 16px rgba(224,107,74,0.28);
   }
   .chat-input .send:hover { background: var(--terra-2); }
-
-  /* ═════════════ REPORTS ═════════════ */
-  .rep-tabs {
+.rep-tabs {
  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
   }
   .rep-tab {
@@ -740,9 +686,7 @@
   .g { color: var(--sage); font-weight: 700; }
   .g { color: var(--sage); font-weight: 700; }
   .o { color: var(--terra); font-weight: 700; }
-
-  /* ═════════════ FOOTER ═════════════ */
-  .footer {
+.footer {
  border-top: 1px solid var(--border); margin-top: 48px; padding-top: 20px;
  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
  font-size: 0.84rem; color: var(--ink-mute);
@@ -750,9 +694,7 @@
   .footer .links { display: flex; gap: 16px; }
   .footer a { color: var(--ink-mute); text-decoration: none; transition: color 0.2s; font-weight: 600; }
   .footer a:hover { color: var(--terra); }
-
-  /* ═════════════ MODAL ═════════════ */
-  .scrim {
+.scrim {
  position: fixed; inset: 0; z-index: 90; background: rgba(24,24,27,0.5); opacity: 0; pointer-events: none;
  transition: opacity 0.3s var(--ease);
   }
@@ -787,9 +729,7 @@
   @media (max-width: 560px) {
     .modal-body { grid-template-columns: 1fr; }
   }
-
-  /* ═════════════ TOAST ═════════════ */
-  .toast {
+.toast {
  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
  z-index: 110; background: var(--ink); color: #fff;
  font-size: 0.88rem; font-weight: 600; padding: 12px 18px; border-radius: 999px;
@@ -799,9 +739,7 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast .g { color: #B8D8A8; }
-
-  /* ═════════════ RESPONSIVE ═════════════ */
-  @media (max-width: 1024px) {
+@media (max-width: 1024px) {
  .kanban { grid-template-columns: repeat(3, 1fr); }
  .stat-grid { grid-template-columns: repeat(2, 1fr); }
   }
@@ -827,10 +765,7 @@
 
   /* product modules */
   .content.chat-mode { max-width: none; padding: 12px 16px 16px; }
-  .content.chat-mode .demo-note,
-  .content.chat-mode .footer { display: none; }
-
-  .tg-app { grid-template-columns: 280px 1fr 260px; }
+.tg-app { grid-template-columns: 280px 1fr 260px; }
   .tg-contact {
  border-left: 1px solid var(--border); background: #fff;
  display: flex; flex-direction: column; min-width: 0; overflow: hidden;
@@ -1503,13 +1438,7 @@
   .set-panel .set-lead {
  font-size: 0.82rem; color: var(--ink-mute); margin-bottom: 14px; line-height: 1.45;
   }
-  .set-qref {
- display: inline-flex; align-items: center; gap: 6px;
- font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
- color: var(--plum); background: var(--plum-soft); padding: 3px 8px; border-radius: 999px;
- margin-bottom: 12px;
-  }
-  .set-block { margin-bottom: 16px; }
+.set-block { margin-bottom: 16px; }
   .set-block h4 {
  font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
  color: var(--ink-faint); margin-bottom: 8px;
@@ -1540,13 +1469,7 @@
   .set-matrix td:first-child, .set-matrix th:first-child { text-align: left; font-weight: 700; }
   .set-matrix .y { color: var(--sage); font-weight: 800; }
   .set-matrix .n { color: var(--ink-faint); }
-  .set-max {
- margin-top: 14px; padding: 12px 14px; border-radius: 12px;
- background: linear-gradient(135deg, var(--terra-soft), var(--plum-soft));
- border: 1px solid var(--border); font-size: 0.8rem; color: var(--ink-dim); line-height: 1.45;
-  }
-  .set-max b { color: var(--ink); }
-  .set-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.set-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
   @media (max-width: 900px) {
  .mail-layout { grid-template-columns: 1fr; }
  .mail-folders { display: flex; flex-wrap: wrap; gap: 4px; border-right: 0; border-bottom: 1px solid var(--border); }
@@ -1808,21 +1731,13 @@
 
  <div class="panel" style="margin-bottom:22px">
  <div class="panel-head">
- <div class="panel-title">Что сейчас происходит</div>
+ <div class="panel-title">Лента</div>
  </div>
  <div class="panel-body" style="padding:12px 14px">
  <div class="feed" id="termLog">
  <div class="feed-item">
  <div class="ic ok">✓</div>
- <div class="txt"><b>Маркетплейс подключён</b> — новые заказы появляются в кабинете<span class="when">только что</span></div>
- </div>
- <div class="feed-item">
- <div class="ic">💬</div>
- <div class="txt"><b>Чаты собраны</b> — WhatsApp, Telegram и MAX в одном окне<span class="when">сегодня</span></div>
- </div>
- <div class="feed-item">
- <div class="ic warn">✿</div>
- <div class="txt"><b>Витрина общая</b> — цены и букеты для всех точек<span class="when">сегодня</span></div>
+ <div class="txt"><b>Смена открыта</b> · 3 точки<span class="when">сегодня</span></div>
  </div>
  </div>
  </div>
@@ -1831,12 +1746,7 @@
 
  <!-- ═════════════ 02 · ORDERS ═════════════ -->
  <section data-section="orders" style="display:none">
- <div class="live-bar" id="ordersLive">
- <span class="live-dot" aria-hidden="true"></span>
- <span>Живой поток · <b>новые заказы и смена статусов</b></span>
- <span class="live-event" id="liveEvent"></span>
- </div>
- <div class="orders-toolbar">
+<div class="orders-toolbar">
  <div class="view-toggle" id="ordersViewToggle">
  <button type="button" data-oview="kanban">Канбан</button>
  <button type="button" class="on" data-oview="list">Список</button>
@@ -1956,7 +1866,6 @@
  <div class="rep-head">
  <div>
  <h2>Отчёты</h2>
- <div class="sub">Сеть · продажи, точки, каналы, операции, жалобы</div>
  </div>
  <div class="rep-period" id="repPeriod">
  <button type="button" data-period="today">Сегодня</button>
@@ -4404,12 +4313,9 @@
  renderReports();
  if (termLog) {
  termLog.innerHTML =
- '<div class="feed-item"><div class="ic ok">✓</div><div class="txt"><b>Начали сначала</b> — заказы и чаты как в начале дня<span class="when">только что</span></div></div>' +
- '<div class="feed-item"><div class="ic ok">✓</div><div class="txt"><b>Маркетплейс подключён</b> — новые заказы появляются в кабинете<span class="when">сегодня</span></div></div>' +
- '<div class="feed-item"><div class="ic">💬</div><div class="txt"><b>Чаты собраны</b> — WhatsApp, Telegram и MAX в одном окне<span class="when">сегодня</span></div></div>';
+ '<div class="feed-item"><div class="ic ok">✓</div><div class="txt"><b>Смена открыта</b> · 3 точки<span class="when">только что</span></div></div>';
  }
- toast('Начали сначала');
- liveSay('Поток заказов перезапущен');
+ toast('Сброшено');
  startSim();
   }
 
@@ -5087,57 +4993,52 @@
  var panel = $('#setPanel');
  if (!panel) return;
  var sec = SET_SECTIONS.filter(function (s) { return s.id === state.setSection; })[0] || SET_SECTIONS[0];
- var html = '<span class="set-qref">Бриф · ' + esc(sec.q) + '</span>';
- html += '<h2>' + esc(sec.title) + '</h2>';
- html += '<div class="set-lead">' + esc(sec.sub) + '</div>';
+ var html = '<h2>' + esc(sec.title) + '</h2>';
 
  if (sec.id === 'channels') {
- html += '<div class="set-block"><h4>WhatsApp · Q1–2</h4>';
+ html += '<div class="set-block"><h4>WhatsApp</h4>';
  html += setRow('Модель подключения', '<b>Личные номера менеджеров</b> через дешёвую платформу', setTag('risk', 'риск бана'));
  html += setRow('Риск блокировки', 'Заказчик <b>принимает</b>; план Б: 3 запасных SIM + резервные аккаунты', setTag('warn', 'план Б'));
  html += setRow('История WA', 'Только диалоги <b>после</b> подключения; выгрузка со старых телефонов — вручную Excel', setTag('ok', 'ок'));
- html += '</div><div class="set-block"><h4>Telegram · Q3</h4>';
+ html += '</div><div class="set-block"><h4>Telegram</h4>';
  html += setRow('Режим', '<b>Бот</b> с именем/аватаром менеджера (для клиента — как личный чат)', setTag('ok', 'официально'));
  html += setRow('Личные аккаунты TG', 'Не используем (риск бана) — зафиксировано', setTag('off', 'выкл'));
- html += '</div><div class="set-block"><h4>MAX · Q4</h4>';
+ html += '</div><div class="set-block"><h4>MAX</h4>';
  html += setRow('Подключение', 'Официальный business API / бот', setTag('ok', 'без бана'));
  html += setRow('Объём', '<b>~800–1500</b> сообщений/мес в пик (8 Марта ×2)', setTag('warn', 'пик'));
- html += '</div><div class="set-block"><h4>Платформа чатов · Q5</h4>';
+ html += '</div><div class="set-block"><h4>Платформа чатов</h4>';
  html += setRow('Платформа', '<b>Указать после ответа заказчика</b> (цитата ТЗ: «платформу прислали»)', setTag('warn', 'ждём'));
  html += setRow('Каналы платформы', 'WA + TG + MAX (+ опц. VK Community Messages)', setTag('ok', 'мульти'));
  html += setRow('Алерты менеджерам', 'Telegram <b>и</b> VK (по ТЗ «или») — оба канала', setTag('ok', 'TG+VK'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> WhatsApp с личных номеров (с планом Б), Telegram как привычный чат, MAX для бизнеса, все диалоги в одном окне; уведомления в Telegram и VK.</div>';
- } else if (sec.id === 'marketplace') {
- html += '<div class="set-block"><h4>API маркетплейса · Q6</h4>';
+} else if (sec.id === 'marketplace') {
+ html += '<div class="set-block"><h4>API маркетплейса</h4>';
  html += setRow('Чтение заказов', '<b>Да</b> — список + карточка', setTag('ok', 'read'));
  html += setRow('Смена статусов / отмена', '<b>Да</b>', setTag('ok', 'write'));
  html += setRow('Фото букета', '<b>Загрузка</b> в карточку заказа', setTag('ok', 'photo'));
  html += setRow('Цены и остатки', '<b>Двусторонняя синхронизация</b> каталога', setTag('ok', 'stock'));
- html += '</div><div class="set-block"><h4>Аккаунты · Q7</h4>';
+ html += '</div><div class="set-block"><h4>Аккаунты</h4>';
  html += setRow('Сайт', 'Общий маркетплейс', setTag('ok', '1 сайт'));
  html += setRow('Аккаунты', '<b>Отдельный аккаунт на каждую точку</b>', setTag('ok', 'N keys'));
  html += setRow('Bloom', 'Один кабинет на всю сеть; ключи API per-shop', setTag('ok', 'multi-tenant'));
  html += setRow('Каталоги', 'Разные витрины / цены по точкам', setTag('warn', 'сложнее'));
- html += '</div><div class="set-block"><h4>Прямые заказы · Q8</h4>';
+ html += '</div><div class="set-block"><h4>Прямые заказы</h4>';
  html += setRow('Ручное создание', '<b>Обязательно</b> (телефон, чат, постоянные)', setTag('ok', 'manual'));
  html += setRow('Поля', 'Источник · оплата · магазин-исполнитель · канал', setTag('ok', 'full'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> полный обмен с маркетплейсом, ключи на каждую точку, один кабинет Bloom, ручные заказы с телефоном и из чатов.</div>';
- } else if (sec.id === 'data') {
- html += '<div class="set-block"><h4>Клиентская база · Q9–10</h4>';
+} else if (sec.id === 'data') {
+ html += '<div class="set-block"><h4>Клиентская база</h4>';
  html += setRow('Источники', 'Маркетплейс + Excel менеджеров + старая база', setTag('ok', '3+'));
  html += setRow('Объём', '<b>~25–40 тыс</b> контактов по сети (оценка max)', setTag('warn', 'объём'));
  html += setRow('Чистота', 'Дубли, битые телефоны — <b>чистим при импорте</b> (dedupe)', setTag('ok', 'clean'));
  html += setRow('Правила dedupe', 'Телефон primary · email secondary · merge tags', setTag('ok', 'rules'));
- html += '</div><div class="set-block"><h4>Склад · Q11</h4>';
+ html += '</div><div class="set-block"><h4>Склад</h4>';
  html += setRow('Режим v1', '<b>Учёт в Bloom</b> (остатки по точкам + хаб)', setTag('ok', 'native'));
  html += setRow('Внешний склад', 'Позже: связь со своей складской системой, если есть', setTag('off', 'later'));
  html += setRow('Синхронизация', 'Bloom → витрина маркетплейса (остатки/цены)', setTag('ok', 'push'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> импорт из нескольких источников, очистка дублей, склад в Bloom (внешний — при необходимости).</div>';
- } else if (sec.id === 'staff') {
- html += '<div class="set-block"><h4>Роли · Q12</h4>';
+} else if (sec.id === 'staff') {
+ html += '<div class="set-block"><h4>Роли</h4>';
  html += '<table class="set-matrix"><thead><tr><th>Действие</th><th>Флорист</th><th>Менеджер</th><th>Старший</th><th>Директор</th></tr></thead><tbody>';
  html += '<tr><td>Принять / собрать заказ</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>';
  html += '<tr><td>Отменить заказ</td><td class="n">—</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>';
@@ -5145,67 +5046,61 @@
  html += '<tr><td>Все точки сети</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="y">✓</td></tr>';
  html += '<tr><td>Настройки / API-ключи</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="y">✓</td></tr>';
  html += '</tbody></table></div>';
- html += '<div class="set-block"><h4>Вход · Q13</h4>';
+ html += '<div class="set-block"><h4>Вход</h4>';
  html += setRow('Аутентификация', 'Логин + пароль (без SMS в v1)', setTag('ok', 'simple'));
  html += setRow('Восстановление', '<b>Админ сети сбрасывает</b> + опц. секретный вопрос', setTag('ok', 'admin reset'));
  html += setRow('Сейчас в демо', 'Анна К. · менеджер · ' + esc(state.shop === '*' ? 'сеть' : state.shop), setTag('ok', 'scope'));
  html += setRow('Пользователи', 'Игорь М. (Мира 14) · Света П. (флорист) · директор (все)', '');
  html += '</div>';
  html += '<div class="set-actions" style="margin-bottom:10px"><a class="btn terra" href="admin-access.html" style="display:inline-block;text-decoration:none">Открыть админку доступа →</a></div>';
- html += '<div class="set-max"><b>Итог:</b> роли флорист → директор, доступ по точкам, сброс пароля админом. Полная матрица — в админке доступа.</div>';
- } else if (sec.id === 'pay') {
- html += '<div class="set-block"><h4>Лояльность · Q14</h4>';
+} else if (sec.id === 'pay') {
+ html += '<div class="set-block"><h4>Лояльность</h4>';
  html += setRow('ТЗ по бонусам', '<b>Отдельный документ</b> — ждём от заказчика (критично для схемы БД)', setTag('warn', 'блокер'));
  html += setRow('Задел в схеме', 'Поля баллов / уровней — reserved', setTag('ok', 'schema'));
- html += '</div><div class="set-block"><h4>Банк · Q15</h4>';
+ html += '</div><div class="set-block"><h4>Банк</h4>';
  html += setRow('v1', 'Только отметка <b>«оплачено»</b> вручную', setTag('ok', 'manual pay'));
  html += setRow('Эквайринг', 'Отдельный этап: банк + схема + договор', setTag('off', 'v2+'));
- html += '</div><div class="set-block"><h4>ОФД · Q16</h4>';
+ html += '</div><div class="set-block"><h4>ОФД</h4>';
  html += setRow('Онлайн-чеки', '<b>Не в v1</b>', setTag('off', 'v2'));
  html += setRow('Если критично сразу', 'Заложить 2-ю очередь: касса + ОФД + интеграция', setTag('warn', 'queue'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> бонусы — по отдельному ТЗ; банк и онлайн-чеки — следующие этапы после запуска.</div>';
- } else if (sec.id === 'sla') {
- html += '<div class="set-block"><h4>Надёжность · Q17</h4>';
+} else if (sec.id === 'sla') {
+ html += '<div class="set-block"><h4>Надёжность</h4>';
  html += setRow('SLA в договоре', 'Реакция <b>≤ 4 ч</b> · восстановление <b>≤ 8 ч</b> (рабочее время)', setTag('ok', 'SLA'));
  html += setRow('SLA / бэкапы', 'В договоре · ежедневные бэкапы + мониторинг', setTag('ok', 'SLA'));
  html += setRow('Особые требования', 'Пик 8 Марта: capacity plan + hot standby (если запросят)', setTag('warn', 'пик'));
- html += '</div><div class="set-block"><h4>Модель оплаты · Q18</h4>';
+ html += '</div><div class="set-block"><h4>Модель оплаты</h4>';
  html += setRow('A · Выкуп', 'Разовая оплата разработки · софт и исходники у заказчика', setTag('ok', 'buyout'));
  html += setRow('B · Подписка', 'Ежемесячная оплата + <b>почасовка</b> за доп. фичи', setTag('warn', 'SaaS-like'));
  html += setRow('Выбор', 'Ждём ответ в форме вопросов', setTag('warn', 'Q18'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> модель оплаты — <b>выкуп</b> или <b>подписка + почасовые доработки</b>.</div>';
- } else if (sec.id === 'pdn') {
- html += '<div class="set-block"><h4>Персональные данные · Q19</h4>';
+} else if (sec.id === 'pdn') {
+ html += '<div class="set-block"><h4>Персональные данные</h4>';
  html += setRow('Сервера', 'РФ (соответствие 152‑ФЗ)', setTag('ok', 'RU'));
  html += setRow('Документы', '<b>В рамках проекта</b>: политика, согласия, журнал действий', setTag('ok', 'в проекте'));
  html += setRow('У заказчика уже есть', 'Частично — сводим и дополняем', setTag('warn', 'merge'));
  html += setRow('Хранение', 'Имена, телефоны, переписка — срок и основания в политике', setTag('ok', 'policy'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> сервера в РФ, документы по ПДн в проекте, журнал действий сотрудников.</div>';
- } else if (sec.id === 'scale') {
- html += '<div class="set-block"><h4>Объём · Q20–22</h4>';
+} else if (sec.id === 'scale') {
+ html += '<div class="set-block"><h4>Объём</h4>';
  html += setRow('Точки сейчас', '<b>3</b> (Мира 14 · Ленина 92 · Рижская 8)', setTag('ok', 'demo'));
  html += setRow('Через год', 'До <b>12–15</b> (рост ×4–5)', setTag('warn', 'scale'));
  html += setRow('Менеджеры одновременно', '<b>8–12</b> в пик (не «2 или 20» — точное число ждём)', setTag('ok', 'concurrent'));
  html += setRow('Заказов в пик / день', '<b>400–800</b> сеть (8 Марта / НГ) — для sizing серверов', setTag('warn', 'peak'));
- html += '</div><div class="set-block"><h4>Партнёры · Q23</h4>';
+ html += '</div><div class="set-block"><h4>Партнёры</h4>';
  html += setRow('Партнёрские точки', 'Точки маркетплейса + франчайзи с ограниченным доступом', setTag('ok', 'partners'));
  html += setRow('Права партнёра', 'Только свои заказы / свой склад · без сети', setTag('ok', 'isolate'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> рост до 15 точек, пиковые дни, партнёры со своим ограниченным доступом.</div>';
- } else if (sec.id === 'delivery') {
- html += '<div class="set-block"><h4>Кто доставляет · Q24</h4>';
+} else if (sec.id === 'delivery') {
+ html += '<div class="set-block"><h4>Кто доставляет</h4>';
  html += setRow('Модель', '<b>Смешанная:</b> курьеры маркетплейса + свои + сторонняя служба', setTag('ok', 'hybrid'));
  html += setRow('Статус «В доставке»', 'Единый статус; источник курьера — поле на заказе', setTag('ok', 'field'));
- html += '</div><div class="set-block"><h4>Трек · Q25</h4>';
+ html += '</div><div class="set-block"><h4>Трек</h4>';
  html += setRow('Карта / GPS', 'Желательно для своих курьеров (2-я очередь)', setTag('warn', 'v2 map'));
  html += setRow('v1', 'Статус + сообщение клиенту «заказ в пути» + трек-номер если есть', setTag('ok', 'status'));
  html += setRow('Маркетплейс-курьер', 'Трек из API маркетплейса (если отдаёт)', setTag('ok', 'API track'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> свои курьеры, маркетплейс и службы; статус «в пути» и трек-номер клиенту.</div>';
- } else if (sec.id === 'mailcfg') {
+} else if (sec.id === 'mailcfg') {
  html += '<div class="set-block"><h4>Почтовые ящики</h4>';
  html += setRow('Ящик сети', 'orders@bloom.local', setTag('ok', 'почта'));
  html += setRow('SMTP', 'smtp.bloom.local:587 · TLS', setTag('ok', 'send'));
@@ -5214,8 +5109,7 @@
  html += setRow('Связь', 'Письмо привязано к клиенту и заказу', setTag('ok', 'link'));
  html += '</div>';
  html += '<div class="set-actions"><button type="button" class="btn terra" id="btnGoMail">Открыть Почту</button></div>';
- html += '<div class="set-max"><b>Почта</b> — отдельный канал рядом с мессенджерами: папки, ответ, связь с заказом.</div>';
- } else if (sec.id === 'shops') {
+} else if (sec.id === 'shops') {
  var shops = ['Мира 14', 'Ленина 92', 'Рижская 8'];
  html += '<div class="set-block"><h4>Точки</h4>';
  shops.forEach(function (s, i) {
@@ -5235,8 +5129,7 @@
  html += setRow('Webhooks', 'order.created · status.changed · stock.low', setTag('ok', 'hooks'));
  html += setRow('Статус', 'Каналы подключены · демо-данные', setTag('ok', 'ok'));
  html += '</div>';
- html += '<div class="set-max"><b>Итог:</b> здесь собраны решения по каналам, точкам, правам и доставке для вашей сети.</div>';
- }
+}
 
  html += '<div class="set-actions">';
  html += '<button type="button" class="btn ghost" id="btnSetSave">Сохранить (демо)</button>';
