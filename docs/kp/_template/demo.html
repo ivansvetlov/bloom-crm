@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="auth.js"></script>
 <style>
   /* ═══════════════ BLOOM × MARKETPLACE DEMO ═══════════════ */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -4117,14 +4118,14 @@
     } else if (sec.id === 'sla') {
       html += '<div class="set-block"><h4>Надёжность · Q17</h4>';
       html += setRow('SLA в договоре', 'Реакция <b>≤ 4 ч</b> · восстановление <b>≤ 8 ч</b> (рабочее время)', setTag('ok', 'SLA'));
-      html += setRow('Код и доступы', 'Полная передача заказчику при сдаче', setTag('ok', 'escrow-free'));
-      html += setRow('Бэкапы', 'Ежедневные + мониторинг uptime в базе', setTag('ok', 'backup'));
+      html += setRow('SLA / бэкапы', 'В договоре · ежедневные бэкапы + мониторинг', setTag('ok', 'SLA'));
       html += setRow('Особые требования', 'Пик 8 Марта: capacity plan + hot standby (если запросят)', setTag('warn', 'пик'));
-      html += '</div><div class="set-block"><h4>Сопровождение · Q18</h4>';
-      html += setRow('Модель', '<b>Поддержка инфраструктуры</b> (сервер, обновления, реакция) — рекомендуем', setTag('ok', 'managed'));
-      html += setRow('Альтернатива', 'Полная передача: код + доступы + сервер — клиент сам', setTag('off', 'hand-off'));
+      html += '</div><div class="set-block"><h4>Модель оплаты · Q18</h4>';
+      html += setRow('A · Выкуп', 'Разовая оплата разработки · софт и исходники у заказчика', setTag('ok', 'buyout'));
+      html += setRow('B · Подписка', 'Ежемесячная оплата + <b>почасовка</b> за доп. фичи', setTag('warn', 'SaaS-like'));
+      html += setRow('Выбор', 'Ждём ответ в форме вопросов', setTag('warn', 'Q18'));
       html += '</div>';
-      html += '<div class="set-max"><b>Максимум:</b> жёсткий SLA + managed support + capacity на пик; код всё равно у клиента.</div>';
+      html += '<div class="set-max"><b>Суть Q18:</b> не «эскроу ради эскроу», а модель: <b>выкуп</b> vs <b>подписка + hourly</b> на доработки.</div>';
     } else if (sec.id === 'pdn') {
       html += '<div class="set-block"><h4>Персональные данные · Q19</h4>';
       html += setRow('Сервера', 'РФ (соответствие 152‑ФЗ)', setTag('ok', 'RU'));
@@ -4836,23 +4837,36 @@
   }
 
   /* ────────────────────────── INIT ────────────────────────── */
-  renderAllKanban();
-  renderChats();
-  renderChat();
-  renderChart();
-  renderReports();
-  renderVitrina();
-  renderSettings();
-  renderMail();
-  updateMailBadge();
-  renderCases();
-  updateCasesBadge();
-  updateShopBanner();
-  renderClients();
-  setOrdersView('list');
-  if (typeof initStockMatrix === 'function') initStockMatrix();
-  bind();
-  startSim();
+  function bootDemo() {
+    renderAllKanban();
+    renderChats();
+    renderChat();
+    renderChart();
+    renderReports();
+    renderVitrina();
+    renderSettings();
+    renderMail();
+    updateMailBadge();
+    renderCases();
+    updateCasesBadge();
+    updateShopBanner();
+    renderClients();
+    setOrdersView('list');
+    if (typeof initStockMatrix === 'function') initStockMatrix();
+    bind();
+    startSim();
+  }
+
+  if (window.BloomAuth) {
+    BloomAuth.requireAuth({
+      title: 'Вход в кабинет',
+      subtitle: 'Демо Bloom CRM · test login',
+      userbarParent: '.tb-chips',
+      onReady: function () { bootDemo(); }
+    });
+  } else {
+    bootDemo();
+  }
 })();
 </script>
 </body>

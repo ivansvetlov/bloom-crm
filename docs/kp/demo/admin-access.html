@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="auth.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -1194,9 +1195,21 @@
     }
   });
 
-  // init
-  renderNav();
-  go('overview');
+  // init (behind auth gate)
+  function bootAdmin() {
+    renderNav();
+    go('overview');
+  }
+  if (window.BloomAuth) {
+    BloomAuth.requireAuth({
+      title: 'Вход в админку доступа',
+      subtitle: 'Только access_admin · test login',
+      userbarParent: '.tb-right',
+      onReady: function () { bootAdmin(); }
+    });
+  } else {
+    bootAdmin();
+  }
 })();
 </script>
 </body>
