@@ -1,0 +1,21 @@
+{
+  "slug": "SLUG",
+  "title": "Bloom CRM — КП для КЛИЕНТ",
+  "client": "Название клиента",
+  "status": "draft",
+  "created": "YYYY-MM-DD",
+  "contact": {
+    "telegram": "https://t.me/vanyasvetlov",
+    "whatsapp": "https://wa.me/79111472928",
+    "max": ""
+  },
+  "pages": {
+    "kp": "index.html",
+    "demo": "demo.html",
+    "questions": "questions.html",
+    "landing": "landing.html",
+    "roles": "test-dynamic.html",
+    "security": "security.html"
+  },
+  "notes": "Скопировано из _template. Замените SLUG, тексты под клиента, при необходимости лого и цены."
+}

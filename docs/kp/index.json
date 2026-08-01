@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "product": "Bloom CRM",
+  "description": "Реестр коммерческих предложений (КП) для заказчиков. Каждый клиент — папка /kp/{slug}/.",
+  "clients": [
+    {
+      "slug": "flowwow",
+      "title": "Bloom CRM — Flowwow + мессенджеры",
+      "client": "Цветочный магазин (Flowwow)",
+      "status": "active",
+      "created": "2026-08-01",
+      "summary": "Pre-sales: КП, демо интерфейса, опросник 25 вопросов, роли и 12 недель.",
+      "entry": "index.html"
+    }
+  ]
+}

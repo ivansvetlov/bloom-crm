@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom · product card ref (Flowwow → наш стиль)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F6F6F4;
+    --bg-2: #FFFFFF;
+    --bg-3: #EFEFEC;
+    --border: #E5E5E1;
+    --border-2: #D8D8D3;
+    --ink: #18181B;
+    --ink-dim: #3F3F46;
+    --ink-mute: #8E8E93;
+    --ink-faint: #B4B4B8;
+    --terra: #C76B47;
+    --terra-2: #B5573A;
+    --terra-soft: #FAEFE8;
+    --sage: #7C8B6F;
+    --sage-soft: #EFF3EB;
+    --plum: #6B4865;
+    --plum-soft: #F1EAEE;
+    --amber: #D9A441;
+    --amber-soft: #F8F0DC;
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --r: 16px;
+    --r-sm: 12px;
+  }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+
+  .bar {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 22px;
+    background: rgba(246,246,244,0.9);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .bar h1 { font-size: 0.92rem; font-weight: 800; letter-spacing: -0.02em; }
+  .bar p { font-size: 0.74rem; color: var(--ink-mute); margin-top: 2px; max-width: 520px; }
+  .bar a {
+    font-family: var(--mono); font-size: 0.64rem; font-weight: 600;
+    text-decoration: none; border: 1px solid var(--border); border-radius: 999px;
+    padding: 8px 12px; background: var(--bg-2); white-space: nowrap;
+  }
+
+  .page { max-width: 1120px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  .note {
+    margin-bottom: 22px; padding: 14px 16px; border-radius: var(--r-sm);
+    border: 1px dashed var(--border-2); background: var(--bg-2);
+    font-size: 0.86rem; color: var(--ink-mute); line-height: 1.5;
+  }
+  .note strong { color: var(--ink); }
+  .note code { font-family: var(--mono); font-size: 0.78em; }
+
+  /* breadcrumbs */
+  .crumbs {
+    display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center;
+    font-size: 0.78rem; color: var(--ink-mute); margin-bottom: 18px;
+  }
+  .crumbs span { color: var(--ink-faint); }
+  .crumbs b { color: var(--ink-dim); font-weight: 500; }
+
+  /* ═══ MODULE: product hero grid ═══ */
+  .product {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* gallery module */
+  .gallery {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(24,24,27,0.06);
+  }
+  .gallery-main {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--bg-3);
+    overflow: hidden;
+  }
+  .gallery-main img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .gallery-badge {
+    position: absolute; top: 14px; left: 14px;
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 600;
+    padding: 7px 10px; border-radius: 999px;
+    background: rgba(255,255,255,0.92); color: var(--sage);
+    border: 1px solid rgba(255,255,255,0.8);
+    backdrop-filter: blur(8px);
+  }
+  .thumbs {
+    display: flex; gap: 8px; padding: 12px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-2);
+    overflow-x: auto;
+  }
+  .thumbs button {
+    flex: 0 0 64px; height: 64px; border-radius: 12px; overflow: hidden;
+    border: 2px solid transparent; padding: 0; cursor: pointer; background: var(--bg-3);
+  }
+  .thumbs button.on { border-color: var(--terra); }
+  .thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* buy module */
+  .buy {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px 22px 20px;
+    box-shadow: 0 16px 40px rgba(24,24,27,0.05);
+    position: sticky; top: 72px;
+  }
+  .live {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 0.66rem; font-weight: 600;
+    color: var(--sage); background: var(--sage-soft);
+    padding: 6px 10px; border-radius: 999px; margin-bottom: 12px;
+  }
+  .live::before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--sage); box-shadow: 0 0 0 3px rgba(124,139,111,0.25);
+  }
+  .buy h2 {
+    font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+    font-weight: 800; letter-spacing: -0.03em; line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .rating {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; color: var(--ink-mute); margin-bottom: 16px;
+  }
+  .rating .stars { color: var(--amber); letter-spacing: 1px; }
+  .price-row {
+    display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px;
+  }
+  .price {
+    font-size: 2rem; font-weight: 900; letter-spacing: -0.03em;
+  }
+  .price-note { font-size: 0.8rem; color: var(--ink-mute); }
+  .split {
+    font-size: 0.8rem; color: var(--ink-mute); margin-bottom: 16px;
+  }
+  .split b { color: var(--ink-dim); font-weight: 600; }
+
+  .cta-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .btn {
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer;
+    border-radius: 12px; padding: 14px 16px; transition: transform 0.15s var(--ease);
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--terra); color: #fff; }
+  .btn-primary:hover { background: var(--terra-2); }
+  .btn-ghost {
+    background: var(--bg); color: var(--ink);
+    border: 1px solid var(--border-2);
+  }
+
+  .trust {
+    display: grid; gap: 8px; margin-top: 4px;
+  }
+  .trust-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px; border-radius: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    font-size: 0.8rem; color: var(--ink-dim); line-height: 1.35;
+  }
+  .trust-item .ic {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--terra-soft); font-size: 0.85rem;
+  }
+
+  /* shop chip */
+  .shop {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  .shop .avatar {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--terra-soft), var(--plum-soft));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: var(--terra); font-size: 0.85rem;
+  }
+  .shop .name { font-weight: 700; font-size: 0.9rem; }
+  .shop .meta { font-size: 0.74rem; color: var(--ink-mute); }
+  .shop .tag {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
+    padding: 5px 8px; border-radius: 999px;
+    background: var(--amber-soft); color: #9a7420;
+  }
+
+  /* ═══ MODULES stack below ═══ */
+  .modules {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 16px;
+  }
+  .mod {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 18px 16px;
+  }
+  .mod h3 {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 12px;
+    font-family: var(--mono);
+  }
+  .mod.full { grid-column: 1 / -1; }
+
+  .comp-list { display: flex; flex-direction: column; gap: 8px; }
+  .comp-list li {
+    list-style: none; display: flex; justify-content: space-between; gap: 12px;
+    padding: 10px 12px; border-radius: 10px; background: var(--bg);
+    border: 1px solid var(--border); font-size: 0.88rem; color: var(--ink-dim);
+  }
+  .comp-list .qty {
+    font-family: var(--mono); font-size: 0.74rem; color: var(--terra); font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .size-row {
+    display: flex; gap: 16px; align-items: center;
+  }
+  .size-chip {
+    flex: 1; text-align: center; padding: 16px 12px;
+    border-radius: 14px; background: var(--bg); border: 1px solid var(--border);
+  }
+  .size-chip .v {
+    font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; color: var(--ink);
+  }
+  .size-chip .l {
+    font-family: var(--mono); font-size: 0.62rem; color: var(--ink-mute);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4px;
+  }
+
+  .desc { font-size: 0.92rem; color: var(--ink-dim); line-height: 1.55; }
+
+  /* reviews */
+  .reviews { display: flex; flex-direction: column; gap: 10px; }
+  .rev {
+    padding: 12px 14px; border-radius: 14px;
+    background: var(--bg); border: 1px solid var(--border);
+  }
+  .rev-top {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .rev-av {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--plum-soft); color: var(--plum);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.75rem;
+  }
+  .rev-name { font-weight: 700; font-size: 0.86rem; }
+  .rev-when { font-size: 0.72rem; color: var(--ink-mute); }
+  .rev-scores {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+  }
+  .rev-scores span {
+    font-family: var(--mono); font-size: 0.62rem;
+    padding: 4px 8px; border-radius: 999px;
+    background: var(--sage-soft); color: var(--sage);
+  }
+  .rev p { font-size: 0.84rem; color: var(--ink-dim); line-height: 1.45; }
+
+  .map {
+    margin-top: 22px; padding: 16px 18px; border-radius: 16px;
+    background: var(--ink); color: #fff;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px;
+  }
+  .map h3 { grid-column: 1 / -1; font-size: 0.9rem; font-weight: 800; margin-bottom: 4px; }
+  .map .row { font-size: 0.8rem; color: rgba(255,255,255,0.72); }
+  .map .row b { display: block; color: #fff; font-weight: 600; margin-bottom: 2px; font-size: 0.84rem; }
+
+  @media (max-width: 860px) {
+    .product, .modules { grid-template-columns: 1fr; }
+    .buy { position: static; }
+    .map { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div>
+    <h1>Product card · Flowwow → Bloom</h1>
+    <p>Модули с <code>flowwow.com/flowers/rozoviy-flamingo-3765</code>, переложенные на токены Bloom (terra / glass / mono). Не клон бренда Flowwow.</p>
+  </div>
+  <a href="test-dynamic.html">← test-dynamic</a>
+</header>
+
+<main class="page">
+  <div class="note">
+    <strong>Что взяли как референс (модули):</strong>
+    галерея + thumbs · live-наличие · title/rating/price · CTA · trust · shop chip ·
+    состав · размер · описание · отзывы с оценками.
+    <strong>Что не копируем:</strong> логотип, lime/blue Flowwow, нативные шрифты маркетплейса.
+    Фото — с CDN Flowwow только для локального референса.
+  </div>
+
+  <nav class="crumbs" aria-label="Хлебные крошки">
+    Цветы <span>›</span> Монобукеты <span>›</span>
+    <b>Розовый фламинго</b>
+  </nav>
+
+  <!-- HERO: gallery + buy -->
+  <div class="product">
+    <div class="gallery">
+      <div class="gallery-main">
+        <span class="gallery-badge">наличие · 5 мин назад</span>
+        <img id="mainImg"
+          src="https://content2.flowwow-images.com/data/flowers/1000x1000/79/1710670160_65650379.jpg"
+          alt="Букет Розовый фламинго">
+      </div>
+      <div class="thumbs" id="thumbs">
+        <button type="button" class="on" data-src="https://content2.flowwow-images.com/data/flowers/1000x1000/79/1710670160_65650379.jpg">
+          <img src="https://content2.flowwow-images.com/data/flowers/150x150/79/1710670160_65650379.jpg" alt="">
+        </button>
+        <button type="button" data-src="https://content2.flowwow-images.com/data/flowers/1000x1000/43/1710670160_59569043.jpg">
+          <img src="https://content2.flowwow-images.com/data/flowers/150x150/43/1710670160_59569043.jpg" alt="">
+        </button>
+        <button type="button" data-src="https://content2.flowwow-images.com/data/flowers/1000x1000/81/1775794099_15279781.jpg">
+          <img src="https://content2.flowwow-images.com/data/flowers/150x150/81/1775794099_15279781.jpg" alt="">
+        </button>
+        <button type="button" data-src="https://content2.flowwow-images.com/data/flowers/1000x1000/56/1775794100_57978456.jpg">
+          <img src="https://content2.flowwow-images.com/data/flowers/150x150/56/1775794100_57978456.jpg" alt="">
+        </button>
+      </div>
+    </div>
+
+    <aside class="buy">
+      <div class="live">наличие подтверждено</div>
+      <h2>Букет «Розовый фламинго» — пионовидная кустовая роза с эвкалиптом</h2>
+      <div class="rating">
+        <span class="stars">★★★★★</span>
+        <span>1 тыс. оценок</span>
+      </div>
+      <div class="price-row">
+        <div class="price">3 700 ₽</div>
+        <div class="price-note">с доставкой от 30 мин</div>
+      </div>
+      <div class="split"><b>925 ₽</b> × 4 платежа · или сразу</div>
+
+      <div class="cta-row">
+        <button type="button" class="btn btn-primary">Добавить в заказ</button>
+        <button type="button" class="btn btn-ghost">Создать прямой заказ</button>
+      </div>
+
+      <div class="trust">
+        <div class="trust-item">
+          <div class="ic">📷</div>
+          <div>Фото букета до доставки — клиент видит, что уедет</div>
+        </div>
+        <div class="trust-item">
+          <div class="ic">↩</div>
+          <div>Отмена до старта доставки — без комиссии</div>
+        </div>
+        <div class="trust-item">
+          <div class="ic">✦</div>
+          <div>185 бонусов за покупку · супермагазин</div>
+        </div>
+      </div>
+
+      <div class="shop">
+        <div class="avatar">J</div>
+        <div>
+          <div class="name">J’ador</div>
+          <div class="meta">4.89 · 11 845 оценок · 7 085 покупок</div>
+        </div>
+        <div class="tag">супер</div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- MODULES -->
+  <div class="modules">
+    <div class="mod">
+      <h3>Состав</h3>
+      <ul class="comp-list">
+        <li><span>Кустовая пионовидная роза</span><span class="qty">7 шт.</span></li>
+        <li><span>Эвкалипт</span><span class="qty">3 шт.</span></li>
+        <li><span>Дизайнерская упаковка</span><span class="qty">1 шт.</span></li>
+        <li><span>Открытка с пожеланиями</span><span class="qty">1 шт.</span></li>
+      </ul>
+    </div>
+
+    <div class="mod">
+      <h3>Размер</h3>
+      <div class="size-row">
+        <div class="size-chip">
+          <div class="v">35 см</div>
+          <div class="l">ширина</div>
+        </div>
+        <div class="size-chip">
+          <div class="v">50 см</div>
+          <div class="l">высота</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod full">
+      <h3>Описание</h3>
+      <p class="desc">
+        Эффектный букет из пионовидной кустовой розы с эвкалиптом — для любого повода.
+        В кабинете Bloom такая карточка живёт и во Flowwow, и в прямых продажах:
+        один состав, одна цена, остатки по точкам.
+      </p>
+    </div>
+
+    <div class="mod full">
+      <h3>Оценки и отзывы</h3>
+      <div class="reviews">
+        <article class="rev">
+          <div class="rev-top">
+            <div class="rev-av">М</div>
+            <div>
+              <div class="rev-name">Магомед</div>
+              <div class="rev-when">на этой неделе</div>
+            </div>
+          </div>
+          <div class="rev-scores">
+            <span>сервис 5</span><span>цена 5</span><span>доставка 5</span><span>соответствие 5</span>
+          </div>
+        </article>
+        <article class="rev">
+          <div class="rev-top">
+            <div class="rev-av">А</div>
+            <div>
+              <div class="rev-name">Александр</div>
+              <div class="rev-when">на этой неделе</div>
+            </div>
+          </div>
+          <div class="rev-scores">
+            <span>сервис 3</span><span>цена 3</span><span>доставка 5</span><span>соответствие 4</span>
+          </div>
+          <p>Открытку написали очень неаккуратно. Остальное ок, доставка вовремя.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <div class="map">
+    <h3>Карта модулей → куда в CRM</h3>
+    <div class="row"><b>gallery + thumbs</b>фото букета до/после в карточке заказа</div>
+    <div class="row"><b>buy / price / CTA</b>прямая продажа + синк цены с Flowwow</div>
+    <div class="row"><b>состав / размер</b>карточка товара витрины (нед. 02)</div>
+    <div class="row"><b>отзывы / shop</b>рейтинги точек (п.10 ТЗ, «насколько возможно»)</div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var main = document.getElementById('mainImg');
+  var thumbs = document.getElementById('thumbs');
+  if (!main || !thumbs) return;
+  thumbs.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-src]');
+    if (!btn) return;
+    main.src = btn.getAttribute('data-src');
+    thumbs.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b === btn); });
+  });
+})();
+</script>
+</body>
+</html>

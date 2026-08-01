@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM · защита и надёжность</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F6F6F4; --bg-2: #fff; --bg-3: #EFEFEC;
+    --border: #E5E5E1; --border-2: #D8D8D3;
+    --ink: #18181B; --ink-dim: #3F3F46; --ink-mute: #8E8E93; --ink-faint: #B4B4B8;
+    --terra: #C76B47; --terra-2: #B5573A; --terra-soft: #FAEFE8;
+    --sage: #7C8B6F; --sage-soft: #EFF3EB;
+    --plum: #6B4865; --plum-soft: #F1EAEE;
+    --amber: #D9A441; --amber-soft: #F8F0DC;
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  body {
+    font-family: var(--font); background: var(--bg); color: var(--ink);
+    line-height: 1.55; font-size: 15px; -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .bar {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 22px; background: rgba(246,246,244,0.92);
+    backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+  }
+  .bar .brand { font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+  .bar a {
+    font-family: var(--mono); font-size: 0.64rem; font-weight: 600;
+    text-decoration: none; border: 1px solid var(--border); border-radius: 999px;
+    padding: 8px 12px; background: var(--bg-2);
+  }
+  .page { max-width: 920px; margin: 0 auto; padding: 36px 20px 80px; }
+
+  .hero-block {
+    background: var(--ink); color: #fff; border-radius: 24px; padding: 40px 32px;
+    position: relative; overflow: hidden; margin-bottom: 22px;
+  }
+  .hero-block::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(420px 220px at 10% 0%, rgba(199,107,71,0.45), transparent 55%),
+      radial-gradient(360px 200px at 100% 100%, rgba(124,139,111,0.35), transparent 50%);
+  }
+  .hero-block > * { position: relative; z-index: 1; }
+  .kicker {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 12px;
+  }
+  .hero-block h1 {
+    font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 900;
+    letter-spacing: -0.03em; line-height: 1.1; max-width: 16ch;
+  }
+  .hero-block p {
+    margin-top: 12px; color: rgba(255,255,255,0.68); max-width: 42ch; font-size: 1rem;
+  }
+
+  .grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;
+  }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: 18px;
+    padding: 20px 18px; box-shadow: 0 10px 28px rgba(24,24,27,0.05);
+  }
+  .card.full { grid-column: 1 / -1; }
+  .card h2 {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 12px;
+  }
+  .item {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px; border-radius: 14px; background: var(--bg);
+    border: 1px solid var(--border); margin-bottom: 8px;
+  }
+  .item:last-child { margin-bottom: 0; }
+  .item .ic {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    background: var(--terra-soft);
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  }
+  .item .t { font-weight: 700; font-size: 0.92rem; color: var(--ink); }
+  .item .d { font-size: 0.82rem; color: var(--ink-mute); margin-top: 3px; line-height: 1.4; }
+
+  .shop-head {
+    display: flex; gap: 12px; align-items: center; margin-bottom: 14px;
+  }
+  .shop-head .av {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--terra-soft), var(--plum-soft));
+    color: var(--terra); font-weight: 800; font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shop-head .nm { font-weight: 800; font-size: 1.05rem; }
+  .shop-head .mt { font-size: 0.78rem; color: var(--ink-mute); }
+  .tag {
+    margin-left: auto; font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
+    padding: 6px 10px; border-radius: 999px; background: var(--amber-soft); color: #9a7420;
+  }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;
+  }
+  .stats .s {
+    text-align: center; padding: 12px 8px; border-radius: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+  }
+  .stats .s b { display: block; font-size: 1.1rem; font-weight: 800; }
+  .stats .s i {
+    font-style: normal; font-family: var(--mono); font-size: 0.58rem;
+    color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  .cta-wrap {
+    margin-top: 28px; padding: 28px 24px; border-radius: 20px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    text-align: center; box-shadow: 0 16px 40px rgba(24,24,27,0.06);
+  }
+  .cta-wrap h3 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
+  .cta-wrap p { color: var(--ink-mute); margin: 8px 0 18px; font-size: 0.92rem; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-width: min(100%, 360px); min-height: 56px;
+    font-weight: 800; font-size: 1.02rem; text-decoration: none;
+    background: var(--terra); color: #fff; border-radius: 14px;
+    padding: 16px 28px; border: none; cursor: pointer;
+    box-shadow: 0 12px 28px rgba(199,107,71,0.28);
+    transition: transform 0.15s var(--ease), background 0.15s;
+  }
+  .btn:hover { background: var(--terra-2); transform: translateY(-1px); }
+  .foot {
+    margin-top: 40px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 0.66rem; color: var(--ink-mute);
+  }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="brand">Bloom CRM · защита</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="test-dynamic.html">← 12 недель</a>
+    <a href="index.html">КП</a>
+  </div>
+</header>
+
+<main class="page">
+  <div class="hero-block">
+    <div class="kicker">неделя 11 · надёжность</div>
+    <h1>Защита как у маркетплейса — плюс ваш SLA</h1>
+    <p>Те же понятные правила, что клиенты видят на Flowwow (фото, отмена, соответствие), и жёсткие гарантии по коду, бэкапам и времени реакции — в договоре.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card full">
+      <div class="shop-head">
+        <div class="av">B</div>
+        <div>
+          <div class="nm">Bloom CRM · контур доверия</div>
+          <div class="mt">для сети и для покупателя</div>
+        </div>
+        <span class="tag">SLA</span>
+      </div>
+      <div class="stats">
+        <div class="s"><b>фото</b><i>до выезда</i></div>
+        <div class="s"><b>отмена</b><i>до старта</i></div>
+        <div class="s"><b>эскроу</b><i>исходники</i></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Для покупателя · как на витрине</h2>
+      <div class="item">
+        <div class="ic">📷</div>
+        <div>
+          <div class="t">Фото до доставки</div>
+          <div class="d">Клиент видит букет до выезда. Несоответствие составу — возврат или компенсация.</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="ic">↩</div>
+        <div>
+          <div class="t">Правила отмены</div>
+          <div class="d">Бесплатная отмена до передачи в доставку — деньги возвращаются полностью.</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="ic">✦</div>
+        <div>
+          <div class="t">Защита заказа</div>
+          <div class="d">Прозрачный статус: принят → собран → в пути → доставлен.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Для бизнеса · частная разработка без страха</h2>
+      <div class="item">
+        <div class="ic">💾</div>
+        <div>
+          <div class="t">Бэкапы каждый день</div>
+          <div class="d">Автоматические копии базы и медиа. План восстановления — заранее.</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="ic">📦</div>
+        <div>
+          <div class="t">Эскроу исходников</div>
+          <div class="d">Код у независимой стороны (например, ваш юрист). Бизнес не «висит» на одном человеке.</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="ic">⏱</div>
+        <div>
+          <div class="t">SLA в договоре</div>
+          <div class="d">Время реакции и восстановления — цифрами, не обещаниями.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <h2>152‑ФЗ и доступ</h2>
+      <div class="item">
+        <div class="ic">🇷🇺</div>
+        <div>
+          <div class="t">Сервера в РФ</div>
+          <div class="d">Персональные данные клиентов — с политикой, согласием и журналом доступа.</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="ic">🔑</div>
+        <div>
+          <div class="t">Роли и аудит</div>
+          <div class="d">Менеджер / старший / директор. Кто что менял — видно всегда.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <h3>Дальше — уточним детали под вашу сеть</h3>
+    <p>Короткий опрос (те же блоки, что в КП). После ответов можно написать нам лично в мессенджер.</p>
+    <a class="btn" href="questions.html">Ответить на вопросы <span>→</span></a>
+  </div>
+
+  <div class="foot">
+    <span>© 2026 Bloom CRM</span>
+    <span><a href="index.html" style="color:var(--ink-mute)">к КП →</a></span>
+  </div>
+</main>
+</body>
+</html>

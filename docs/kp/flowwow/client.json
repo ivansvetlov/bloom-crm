@@ -1,0 +1,21 @@
+{
+  "slug": "flowwow",
+  "title": "Bloom CRM — Flowwow + мессенджеры",
+  "client": "Цветочный магазин (Flowwow)",
+  "status": "active",
+  "created": "2026-08-01",
+  "contact": {
+    "telegram": "https://t.me/vanyasvetlov",
+    "whatsapp": "https://wa.me/79111472928",
+    "max": "https://max.ru/u/..."
+  },
+  "pages": {
+    "kp": "index.html",
+    "demo": "demo.html",
+    "questions": "questions.html",
+    "landing": "landing.html",
+    "roles": "test-dynamic.html",
+    "security": "security.html"
+  },
+  "notes": "Первое КП. Шаблон для следующих клиентов — docs/kp/_template."
+}
