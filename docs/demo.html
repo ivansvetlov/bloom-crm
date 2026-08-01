@@ -231,6 +231,64 @@
   }
   .kcard:hover { border-color: transparent; box-shadow: var(--shadow); transform: translateY(-1px); }
   .kcard.dragging { opacity: 0.4; }
+  .kcard.is-new {
+    animation: cardArrive 0.55s var(--ease) both;
+    box-shadow: 0 0 0 2px rgba(224,107,74,0.45), var(--shadow);
+  }
+  .kcard.is-moved {
+    animation: cardPop 0.4s var(--ease) both;
+  }
+  .kcard.is-done-flash {
+    animation: cardDone 0.65s var(--ease) both;
+  }
+  @keyframes cardArrive {
+    0% { opacity: 0; transform: translateY(-16px) scale(0.92); }
+    60% { opacity: 1; transform: translateY(2px) scale(1.02); }
+    100% { opacity: 1; transform: none; }
+  }
+  @keyframes cardPop {
+    0% { transform: scale(0.94); box-shadow: 0 0 0 0 rgba(111,143,114,0.4); }
+    50% { transform: scale(1.03); box-shadow: 0 0 0 4px rgba(111,143,114,0.15); }
+    100% { transform: none; box-shadow: var(--shadow-sm); }
+  }
+  @keyframes cardDone {
+    0% { background: var(--sage-soft); }
+    100% { background: var(--bg-2); }
+  }
+  .kb-col.flash-col {
+    animation: colFlash 0.7s var(--ease);
+  }
+  @keyframes colFlash {
+    0% { background: var(--terra-soft); border-color: var(--terra); }
+    100% { background: rgba(255,255,255,0.55); border-color: var(--border); }
+  }
+  .live-bar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 12px; font-size: 0.82rem; color: var(--ink-mute); font-weight: 600;
+  }
+  .live-bar .live-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--sage);
+    box-shadow: 0 0 0 0 rgba(111,143,114,0.6);
+    animation: livePulse 1.4s ease infinite;
+  }
+  @keyframes livePulse {
+    0% { box-shadow: 0 0 0 0 rgba(111,143,114,0.55); }
+    70% { box-shadow: 0 0 0 8px rgba(111,143,114,0); }
+    100% { box-shadow: 0 0 0 0 rgba(111,143,114,0); }
+  }
+  .live-bar b { color: var(--ink); }
+  .live-bar .live-event {
+    margin-left: auto; font-size: 0.78rem; color: var(--terra); font-weight: 700;
+    max-width: 55%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .live-bar .live-event.show { opacity: 1; }
+  .stat.tick { animation: statTick 0.45s var(--ease); }
+  @keyframes statTick {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.03); border-color: var(--terra); }
+    100% { transform: scale(1); }
+  }
   .kc-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
   .kc-id { font-size: 0.68rem; color: var(--ink-faint); font-weight: 600; }
   .kc-price { font-size: 0.84rem; font-weight: 800; color: var(--terra); white-space: nowrap; letter-spacing: -0.02em; }
@@ -733,6 +791,11 @@
 
     <!-- ═════════════ 02 · ORDERS ═════════════ -->
     <section data-section="orders" style="display:none">
+      <div class="live-bar" id="ordersLive">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span>Живая имитация · <b>новые заказы и смена статусов</b></span>
+        <span class="live-event" id="liveEvent"></span>
+      </div>
       <div class="kanban" id="kanban2">
         <div class="kb-col" data-status="new">
           <div class="kb-head">Новый <span class="n">01</span></div>
@@ -1060,8 +1123,21 @@
     orders: JSON.parse(JSON.stringify(seed)),
     nextOrder: 1043,
     chatIdx: 0,
-    typing: false
+    typing: false,
+    view: 'overview',
+    simTimer: null,
+    animIds: {},
+    simPaused: false
   };
+
+  var SIM_BOUQUETS = [
+    'Букет роз, 25 шт.', 'Пионы + эустома', 'Композиция «Утро»',
+    'Герберы микс, 15 шт.', 'Орхидея фаленопсис', 'Букет «Для неё»',
+    'Корзина с зеленью', 'Тюльпаны, 31 шт.', 'Авторский букет L',
+    'Хризантемы + роза', 'Монобукет ранункулюс', 'Набор «Сюрприз»'
+  ];
+  var SIM_SHOPS = ['Мира 14', 'Ленина 92', 'Рижская 8'];
+  var SIM_CH = ['fw', 'fw', 'fw', 'wa', 'tg', 'max'];
 
   /* ────────────────────────── CACHED ────────────────────────── */
   var $ = function (sel) { return document.querySelector(sel); };
@@ -1075,12 +1151,41 @@
   /* ────────────────────────── RENDER: KANBAN ────────────────────────── */
   function cardHtml(o) {
     var shopBadge = SHOP_N[o.shop] ? ' · точка ' + SHOP_N[o.shop] : '';
-    return '<div class="kcard" draggable="true" data-id="' + o.id + '">' +
+    var anim = state.animIds[o.id] || '';
+    var cls = 'kcard' + (anim ? ' ' + anim : '');
+    return '<div class="' + cls + '" draggable="true" data-id="' + o.id + '">' +
       '<div class="kc-top"><span class="kc-id">' + o.id + '</span><span class="kc-price">' + fmtPrice(o.price) + '</span></div>' +
       '<div class="kc-name">' + esc(o.name) + '</div>' +
       '<div class="kc-meta">' + esc(o.shop) + shopBadge + '</div>' +
       '<span class="kc-tag ' + o.channel + '">' + CH_NAMES[o.channel] + '</span>' +
       '</div>';
+  }
+
+  function flashCard(id, cls, ms) {
+    state.animIds[id] = cls;
+    setTimeout(function () {
+      if (state.animIds[id] === cls) delete state.animIds[id];
+      var el = document.querySelector('.kcard[data-id="' + id + '"]');
+      if (el) el.classList.remove(cls);
+    }, ms || 700);
+  }
+
+  function flashCol(status) {
+    $$('.kb-col[data-status="' + status + '"]').forEach(function (col) {
+      col.classList.remove('flash-col');
+      void col.offsetWidth;
+      col.classList.add('flash-col');
+      setTimeout(function () { col.classList.remove('flash-col'); }, 700);
+    });
+  }
+
+  function liveSay(text) {
+    var el = $('#liveEvent');
+    if (!el) return;
+    el.textContent = text;
+    el.classList.add('show');
+    clearTimeout(liveSay._t);
+    liveSay._t = setTimeout(function () { el.classList.remove('show'); }, 2800);
   }
 
   function renderKanban(container) {
@@ -1099,6 +1204,11 @@
     if (kanban1) renderKanban(kanban1);
     if (kanban2) renderKanban(kanban2);
     updateStats();
+    $$('.stat').forEach(function (s) {
+      s.classList.remove('tick');
+      void s.offsetWidth;
+      s.classList.add('tick');
+    });
   }
 
   /* ────────────────────────── STATS ────────────────────────── */
@@ -1190,24 +1300,102 @@
     });
   }
 
-  function moveOrder(id, status) {
+  function moveOrder(id, status, opts) {
+    opts = opts || {};
     var order = null;
     state.orders.forEach(function (o) { if (o.id === id) order = o; });
     if (!order || order.status === status) return;
     var from = order.status;
     order.status = status;
+    flashCard(id, status === 'done' ? 'is-done-flash' : 'is-moved', 650);
+    flashCol(status);
     renderAllKanban();
     log('<b>' + esc(order.name) + '</b> — ' + NAMES[from] + ' → <span class="o">' + NAMES[status] + '</span>', status === 'done' ? 'ok' : '');
-    if (status === 'done') {
-      log('Статус ушёл в <b>Маркетплейс</b> — клиент видит «доставлен»', 'ok');
-      toast('Заказ доставлен');
-    } else {
-      toast('Статус: ' + NAMES[status]);
+    liveSay(NAMES[from] + ' → ' + NAMES[status] + ' · ' + order.id);
+    if (!opts.quietToast) {
+      if (status === 'done') {
+        log('Статус ушёл в <b>Маркетплейс</b> — клиент видит «доставлен»', 'ok');
+        toast('Заказ доставлен');
+      } else {
+        toast('Статус: ' + NAMES[status]);
+      }
     }
+  }
+
+  /* ────────────────────────── LIVE SIMULATION ────────────────────────── */
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function simNewOrder() {
+    // keep board manageable
+    if (state.orders.length > 18) {
+      var done = state.orders.filter(function (o) { return o.status === 'done'; });
+      if (done.length) {
+        var drop = pick(done);
+        state.orders = state.orders.filter(function (o) { return o.id !== drop.id; });
+      }
+    }
+    var channel = pick(SIM_CH);
+    var prefix = { wa: 'WA', tg: 'TG', max: 'MX', fw: 'FW' }[channel];
+    var id = prefix + '-' + state.nextOrder++;
+    var name = pick(SIM_BOUQUETS);
+    var price = 1200 + Math.round(Math.random() * 55) * 100;
+    var shop = pick(SIM_SHOPS);
+    state.orders.unshift({ id: id, name: name, price: price, channel: channel, status: 'new', shop: shop });
+    flashCard(id, 'is-new', 900);
+    flashCol('new');
+    renderAllKanban();
+    log('Новый заказ: <b>' + esc(name) + '</b> · ' + CH_NAMES[channel] + ' · ' + esc(shop), 'ok');
+    liveSay('⬇ Новый · ' + id + ' · ' + CH_NAMES[channel]);
+    if (state.view === 'orders' || state.view === 'overview') {
+      toast('Новый заказ · ' + CH_NAMES[channel]);
+    }
+  }
+
+  function simAdvance() {
+    // prefer advancing non-done orders
+    var pool = state.orders.filter(function (o) { return o.status !== 'done'; });
+    if (!pool.length) {
+      simNewOrder();
+      return;
+    }
+    var order = pick(pool);
+    var idx = STATUS.indexOf(order.status);
+    if (idx < 0 || idx >= STATUS.length - 1) {
+      simNewOrder();
+      return;
+    }
+    // sometimes skip accept for marketplace feel: rare jump
+    var next = STATUS[idx + 1];
+    moveOrder(order.id, next, { quietToast: Math.random() > 0.45 });
+  }
+
+  function simTick() {
+    if (state.simPaused) return;
+    // only animate busily on orders/overview; slower elsewhere
+    if (state.view === 'chats' || state.view === 'analytics') {
+      if (Math.random() > 0.25) return;
+    }
+    var r = Math.random();
+    if (r < 0.38) simNewOrder();
+    else simAdvance();
+  }
+
+  function startSim() {
+    stopSim();
+    state.simTimer = setInterval(simTick, 2200 + Math.floor(Math.random() * 900));
+    // first kicks soon
+    setTimeout(function () { if (!state.simPaused) simTick(); }, 900);
+    setTimeout(function () { if (!state.simPaused) simTick(); }, 1800);
+  }
+
+  function stopSim() {
+    if (state.simTimer) clearInterval(state.simTimer);
+    state.simTimer = null;
   }
 
   /* ────────────────────────── NEW ORDER MODAL ────────────────────────── */
   function openModal() {
+    state.simPaused = true;
     $('#scrim').classList.add('show');
     $('#orderModal').classList.add('show');
     setTimeout(function () { $('#mClient').focus(); }, 200);
@@ -1215,6 +1403,7 @@
   function closeModal() {
     $('#scrim').classList.remove('show');
     $('#orderModal').classList.remove('show');
+    state.simPaused = false;
   }
 
   function saveOrder() {
@@ -1237,6 +1426,7 @@
   /* ────────────────────────── NAVIGATION ────────────────────────── */
   var VIEW_NAMES = { overview: 'Сегодня', orders: 'Заказы', chats: 'Чаты', analytics: 'Отчёты' };
   function switchView(view) {
+    state.view = view;
     $$('[data-section]').forEach(function (s) { s.style.display = 'none'; });
     var sec = $('[data-section="' + view + '"]');
     if (sec) sec.style.display = 'block';
@@ -1247,6 +1437,12 @@
       content.classList.toggle('reports-mode', view === 'analytics');
     }
     if (view === 'analytics') renderReports();
+    if (view === 'orders') {
+      liveSay('Имитация запущена');
+      // burst when opening board
+      setTimeout(function () { if (!state.simPaused && state.view === 'orders') simTick(); }, 400);
+      setTimeout(function () { if (!state.simPaused && state.view === 'orders') simTick(); }, 1100);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -1489,6 +1685,8 @@
   /* ────────────────────────── RESET ────────────────────────── */
   function reset() {
     state.orders = JSON.parse(JSON.stringify(seed));
+    state.nextOrder = 1043;
+    state.animIds = {};
     chats.forEach(function (c) { c.unread = 0; });
     state.chatIdx = 0;
     renderAllKanban();
@@ -1503,6 +1701,8 @@
         '<div class="feed-item"><div class="ic">💬</div><div class="txt"><b>Чаты собраны</b> — WhatsApp, Telegram и MAX в одном окне<span class="when">сегодня</span></div></div>';
     }
     toast('Начали сначала');
+    liveSay('Симуляция перезапущена');
+    startSim();
   }
 
   /* ────────────────────────── HELPERS ────────────────────────── */
@@ -1551,6 +1751,13 @@
 
     if (kanban1) bindDrag(kanban1);
     if (kanban2) bindDrag(kanban2);
+
+    // pause sim while dragging
+    document.addEventListener('dragstart', function () { state.simPaused = true; });
+    document.addEventListener('dragend', function () { state.simPaused = false; });
+    document.addEventListener('visibilitychange', function () {
+      state.simPaused = document.hidden;
+    });
   }
 
   /* ────────────────────────── INIT ────────────────────────── */
@@ -1560,6 +1767,7 @@
   renderChart();
   renderReports();
   bind();
+  startSim();
 })();
 </script>
 </body>
