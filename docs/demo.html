@@ -1134,6 +1134,9 @@
   .so-status .pay {
  font-size: 0.76rem; color: var(--ink-mute); margin-top: 2px;
   }
+  .so-list th:not(.sortable) {
+ cursor: default;
+  }
   .axis {
  font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 999px;
  background: var(--bg-3); color: var(--ink-mute);
@@ -1845,10 +1848,10 @@
  <table class="so-list">
  <thead>
  <tr>
- <th class="sortable" data-orders-sort="id"><span class="th-label">№ <button type="button" class="sort-btn" data-sort-btn="id" title="Сортировать">↕</button></span></th>
- <th class="sortable" data-orders-sort="name"><span class="th-label">Товар / заказ <button type="button" class="sort-btn" data-sort-btn="name" title="Сортировать">↕</button></span></th>
+ <th>№</th>
+ <th>Товар</th>
  <th class="sortable" data-orders-sort="shop"><span class="th-label">Точка <button type="button" class="sort-btn" data-sort-btn="shop" title="Сортировать">↕</button></span></th>
- <th class="sortable" data-orders-sort="status"><span class="th-label">Статус / оплата <button type="button" class="sort-btn" data-sort-btn="status" title="Сортировать">↕</button></span></th>
+ <th class="sortable" data-orders-sort="status"><span class="th-label">Статус · оплата · источник <button type="button" class="sort-btn" data-sort-btn="status" title="Сортировать">↕</button></span></th>
  <th class="sortable" data-orders-sort="price"><span class="th-label">Сумма <button type="button" class="sort-btn" data-sort-btn="price" title="Сортировать">↕</button></span></th>
  </tr>
  </thead>
@@ -3130,10 +3133,10 @@
  var anim = state.animIds[o.id] || '';
  return '<tr class="' + anim + '" data-id="' + o.id + '">' +
  '<td class="id">' + esc(o.id) + '</td>' +
- '<td><div class="item">' + esc(o.name) + '</div><div class="meta">' + esc(CH_NAMES[o.channel] || o.channel) + '</div></td>' +
+ '<td><div class="item">' + esc(o.name) + '</div></td>' +
  '<td>' + esc(o.shop) + '</td>' +
  '<td><div class="so-status">' + esc(fulfillmentAxis(o.status)) +
- '<div class="pay">' + esc(PAY_NAMES[pay] || pay) + '</div></div></td>' +
+ '<div class="pay">' + esc(PAY_NAMES[pay] || pay) + ' · ' + esc(CH_NAMES[o.channel] || o.channel) + '</div></div></td>' +
  '<td class="price">' + fmtPrice(o.price) + '</td></tr>';
  }).join('') || '<tr><td colspan="5" style="padding:16px;color:var(--ink-faint)">Нет заказов</td></tr>';
   }
