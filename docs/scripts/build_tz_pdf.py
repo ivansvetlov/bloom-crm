@@ -68,7 +68,7 @@ def main() -> None:
     story.append(Paragraph("Bloom CRM", s_title))
     story.append(
         Paragraph(
-            "Операционный кабинет для цветочного бизнеса · crmbloom.ru · 2026-08-01",
+            "crmbloom.ru · исходные формулировки · 2026-08-01",
             s_sub,
         )
     )
