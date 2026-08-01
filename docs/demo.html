@@ -1270,6 +1270,15 @@
 
 
   /* chats inbox */
+  .chat-filters {
+    display: flex; gap: 6px; margin: 0 0 8px; padding: 0 2px;
+  }
+  .chat-filter-sel {
+    flex: 1; min-width: 0; border: 1px solid var(--border-2); border-radius: 10px;
+    padding: 7px 8px; font-family: var(--font); font-size: 0.78rem; font-weight: 650;
+    background: var(--bg-2); color: var(--ink); outline: none;
+  }
+  .chat-filter-sel:focus { border-color: var(--terra); }
   .cw-tabs {
  display: flex; gap: 4px; padding: 0 0 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px;
   }
@@ -1878,21 +1887,22 @@
  <div class="tg-list">
  <div class="tg-list-head">
  <div class="tg-list-title">Диалоги <span id="tgCount">0</span></div>
- <div class="cw-tabs" id="cwTabs">
- <button type="button" class="cw-tab on" data-inbox="mine">Мои <span class="n" id="cntMine">0</span></button>
- <button type="button" class="cw-tab" data-inbox="unassigned">Без назн. <span class="n" id="cntUnassigned">0</span></button>
- <button type="button" class="cw-tab" data-inbox="all">Все <span class="n" id="cntAll">0</span></button>
- <button type="button" class="cw-tab" data-inbox="snoozed">Отлож. <span class="n" id="cntSnoozed">0</span></button>
- </div>
- <div class="cw-channels" id="cwChannels">
- <button type="button" class="cw-ch on" data-ch="*">Все</button>
- <button type="button" class="cw-ch wa" data-ch="wa">WhatsApp</button>
- <button type="button" class="cw-ch tg" data-ch="tg">Telegram</button>
- <button type="button" class="cw-ch max" data-ch="max">MAX</button>
+ <div class="chat-filters">
+ <select id="chatInboxFilter" class="chat-filter-sel" title="Фильтр">
+ <option value="all" selected>Все</option>
+ <option value="mine">Мои</option>
+ <option value="unassigned">Без назначения</option>
+ </select>
+ <select id="chatChannelFilter" class="chat-filter-sel" title="Канал">
+ <option value="*" selected>Все каналы</option>
+ <option value="wa">WhatsApp</option>
+ <option value="tg">Telegram</option>
+ <option value="max">MAX</option>
+ </select>
  </div>
  <div class="tg-search">
  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
- <input id="tgSearch" type="search" placeholder="Поиск диалогов" autocomplete="off">
+ <input id="tgSearch" type="search" placeholder="Поиск…" autocomplete="off">
  </div>
  </div>
  <div class="tg-dialogs" id="chatSide"></div>
@@ -1901,18 +1911,12 @@
  <div class="chat-head">
  <div class="who" id="chHead"></div>
  <div class="cw-head-actions">
- <select class="cw-status-select" id="chatStatusSelect" title="Статус диалога">
+ <select class="cw-status-select" id="chatStatusSelect" title="Статус">
  <option value="open">Открыт</option>
  <option value="pending">Ожидает</option>
- <option value="snoozed">Отложен</option>
  <option value="resolved">Решён</option>
  </select>
- <button type="button" class="btn" id="btnNoteMode" title="Private note">📝 Заметка</button>
- <button type="button" class="btn" id="btnAssignMe" title="Назначить себе">Мне</button>
- <button type="button" class="btn" id="btnUnassign" title="Снять менеджера">Снять</button>
- <button type="button" class="btn" id="btnSnooze" title="Snooze">Отложить</button>
- <button type="button" class="btn" id="btnPrio" title="Priority">!</button>
- <button type="button" class="btn" id="btnCanned" title="Canned replies">Шаблоны</button>
+ <button type="button" class="btn" id="btnCanned" title="Шаблоны">Шаблоны</button>
  </div>
  </div>
  <div class="chat-body" id="chBody"></div>
@@ -1925,7 +1929,7 @@
  <button type="button" data-canned="Приняла! Уже у флориста, вернусь через пару минут.">Принято в работу</button>
  </div>
  <div class="chat-input">
- <button type="button" class="ico-btn" title="Вложение" aria-label="Вложение">📎</button>
+ <button type="button" class="ico-btn" id="btnNoteMode" title="Приватная заметка" aria-label="Заметка">📝</button>
  <input id="chInput" type="text" placeholder="Сообщение клиенту…" autocomplete="off">
  <button type="button" class="send" id="chSend" title="Отправить" aria-label="Отправить">
  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
@@ -1933,12 +1937,11 @@
  </div>
  </div>
  <aside class="tg-contact" id="tgContact">
- <div class="cc-head">Карточка диалога</div>
+ <div class="cc-head">Клиент</div>
  <div class="cc-body" id="tgContactBody"></div>
  <div class="cc-actions">
- <button type="button" class="btn terra" id="btnOrderFromChat">+ Заказ из чата</button>
- <button type="button" class="btn" id="btnResolveChat">Решить / открыть</button>
- <button type="button" class="btn" id="btnAddLabel">+ Метка «VIP»</button>
+ <button type="button" class="btn terra" id="btnOrderFromChat">+ Заказ</button>
+ <button type="button" class="btn" id="btnResolveChat">Решён</button>
  </div>
  </aside>
  </div>
@@ -2736,7 +2739,7 @@
  ]
  }
   ];
-  var inboxFilter = 'mine';
+  var inboxFilter = 'all';
   var channelFilter = '*';
 
 
@@ -3642,11 +3645,6 @@
  if (!c.assignee && st !== 'resolved') un++;
  if (c.assignee === state.assignee && st !== 'resolved') mine++;
  });
- var set = function (id, n) { var el = $(id); if (el) el.textContent = String(n); };
- set('#cntMine', mine);
- set('#cntUnassigned', un);
- set('#cntAll', all);
- set('#cntSnoozed', sn);
  set('#tgCount', filteredInbox().length);
  setText('#navUnread', base.reduce(function (s, c) { return s + (c.unread || 0); }, 0) || '0');
   }
@@ -3656,19 +3654,11 @@
  var unread = c.unread > 0 ? '<span class="unread">' + c.unread + '</span>' : '';
  var now = new Date();
  var tm = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
- var st = c.status || 'open';
- var labels = '<div class="labels">' +
- '<span class="cw-label ' + st + '">' + chatStatusLabel(st) + '</span>' +
- (c.priority ? '<span class="cw-label prio">срочно</span>' : '') +
- (c.labels || []).slice(0, 2).map(function (t) { return '<span class="cw-label tag">' + esc(t) + '</span>'; }).join('') +
- '</div>';
  return '<button class="chat-tab' + (c.id === chats[state.chatIdx].id ? ' on' : '') + '" data-chat="' + c.id + '">' +
- (c.priority ? '<span class="prio-dot" title="priority"></span>' : '') +
  '<span class="av ' + av + '">' + c.name.charAt(0) + '</span>' +
  '<span class="meta-col">' +
  '<div class="row1"><div class="nm">' + esc(c.name) + '</div><div class="tm">' + tm + '</div></div>' +
  '<div class="row2"><span class="cn-pill">' + CH_NAMES[c.channel] + '</span><div class="prev">' + esc(lastMsg(c)) + '</div>' + unread + '</div>' +
- labels +
  '</span></button>';
   }
 
@@ -3689,8 +3679,7 @@
  $('#chHead').innerHTML =
  '<span class="av ' + av + '">' + c.name.charAt(0) + '</span>' +
  '<div><div class="nm">' + esc(c.name) + '</div><div class="ch">' + CH_NAMES[c.channel] + ' · ' + esc(c.shop) +
- (c.assignee ? ' · ' + esc(c.assignee) : ' · без назначения') +
- (c.priority ? ' · ⚡' : '') + '</div></div>';
+ (c.assignee ? ' · ' + esc(c.assignee) : '') + '</div></div>';
  var sel = $('#chatStatusSelect');
  if (sel) sel.value = c.status || 'open';
  var body = $('#chBody');
@@ -4626,33 +4615,8 @@
  if (bn) bn.addEventListener('click', function () {
  state.noteMode = !state.noteMode;
  bn.classList.toggle('note-on', state.noteMode);
- $('#chInput').placeholder = state.noteMode ? 'Приватная заметка (не видит клиент)…' : 'Сообщение клиенту…';
+ $('#chInput').placeholder = state.noteMode ? 'Приватная заметка…' : 'Сообщение клиенту…';
  toast(state.noteMode ? 'Приватная заметка' : 'Ответ клиенту');
- });
- var ba = $('#btnAssignMe');
- if (ba) ba.addEventListener('click', function () {
-   assignChatManager(state.assignee || 'Анна К.');
- });
- var bu = $('#btnUnassign');
- if (bu) bu.addEventListener('click', function () {
-   assignChatManager(null);
- });
- var bs = $('#btnSnooze');
- if (bs) bs.addEventListener('click', function () {
- var c = chats[state.chatIdx];
- if (!c) return;
- c.status = c.status === 'snoozed' ? 'open' : 'snoozed';
- c.msgs.push({ me: false, note: true, text: c.status === 'snoozed' ? 'Отложено' : 'Снято с отложения' });
- renderChats(); renderChat();
- toast(chatStatusLabel(c.status));
- });
- var bp = $('#btnPrio');
- if (bp) bp.addEventListener('click', function () {
- var c = chats[state.chatIdx];
- if (!c) return;
- c.priority = !c.priority;
- renderChats(); renderChat();
- toast(c.priority ? 'Приоритет включён' : 'Приоритет снят');
  });
  var bcan = $('#btnCanned');
  var cbox = $('#cannedBox');
@@ -4687,53 +4651,32 @@
  renderChats(); renderChat();
  toast(chatStatusLabel(c.status));
  });
- var bl = $('#btnAddLabel');
- if (bl) bl.addEventListener('click', function () {
- var c = chats[state.chatIdx];
- if (!c) return;
- c.labels = c.labels || [];
- if (c.labels.indexOf('VIP') < 0) c.labels.push('VIP');
- renderChats(); renderChat();
- toast('Метка VIP');
- });
- // inbox tabs + channels
- var tabs = $('#cwTabs');
- if (tabs) tabs.addEventListener('click', function (e) {
- var t = e.target.closest('[data-inbox]');
- if (!t) return;
- inboxFilter = t.getAttribute('data-inbox');
- $$('#cwTabs .cw-tab').forEach(function (x) { x.classList.toggle('on', x === t); });
- renderChats();
- });
- var chs = $('#cwChannels');
- if (chs) chs.addEventListener('click', function (e) {
- var t = e.target.closest('[data-ch]');
- if (!t) return;
- channelFilter = t.getAttribute('data-ch');
- $$('#cwChannels .cw-ch').forEach(function (x) { x.classList.toggle('on', x === t); });
- renderChats();
- });
+ var ifl = $('#chatInboxFilter');
+ if (ifl) {
+   ifl.value = inboxFilter;
+   ifl.addEventListener('change', function () {
+     inboxFilter = this.value || 'all';
+     renderChats();
+   });
+ }
+ var cfl = $('#chatChannelFilter');
+ if (cfl) {
+   cfl.value = channelFilter;
+   cfl.addEventListener('change', function () {
+     channelFilter = this.value || '*';
+     renderChats();
+   });
+ }
  var bo = $('#btnOrderFromChat');
  if (bo) bo.addEventListener('click', function () {
  var c = chats[state.chatIdx];
  if (!c) return;
- var channel = c.channel === 'wa' ? 'wa' : c.channel === 'tg' ? 'tg' : 'max';
- var prefix = { wa: 'WA', tg: 'TG', max: 'MX' }[channel];
- var id = prefix + '-' + state.nextOrder++;
- var order = {
- id: id, name: 'Букет из чата · ' + c.name, price: 3200, channel: channel,
- status: 'new', shop: c.shop, pay: 'pending',
- history: [{ t: Date.now(), text: 'Создан из чата' }]
- };
- state.orders.unshift(order);
- c.orderIds = c.orderIds || [];
- c.orderIds.push(id);
- c.msgs.push({ me: false, note: true, text: 'Создан заказ ' + id });
- flashCard(id, 'is-new', 900);
- renderAllKanban();
- renderChat();
- toast('Заказ ' + id + ' из чата');
- log('Заказ из чата: <b>' + id + '</b> · ' + esc(c.name), 'ok');
+ openModal({
+   client: c.name,
+   shop: c.shop,
+   channel: c.channel === 'fw' ? 'fw' : (c.channel || 'wa'),
+   item: 'Букет из чата'
+ });
  });
 
  ['vitFilterAll', 'vitFilterLow', 'vitFilterHidden'].forEach(function (id) {
