@@ -949,6 +949,15 @@
  text-transform: uppercase; letter-spacing: 0.04em;
  padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--bg);
   }
+  .so-list th.sortable {
+ cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  .so-list th.sortable:hover { color: var(--terra); }
+  .so-list th.sortable .sort-ind {
+ font-size: 0.62rem; margin-left: 4px; color: var(--ink-faint); font-weight: 800;
+  }
+  .so-list th.sortable.on { color: var(--terra); }
+  .so-list th.sortable.on .sort-ind { color: var(--terra); }
   .so-list td {
  padding: 11px 12px; border-bottom: 1px solid var(--border);
  font-size: 0.86rem; color: var(--ink-dim); vertical-align: middle;
@@ -1688,6 +1697,15 @@
  <option value="delivering">В доставке</option>
  <option value="done">Доставлен</option>
  </select>
+ <select id="ordersSort" title="Сортировка списка">
+ <option value="default">Сортировка · как есть</option>
+ <option value="shop_asc">Точка · А→Я</option>
+ <option value="shop_desc">Точка · Я→А</option>
+ <option value="status">Статус · воронка</option>
+ <option value="pay">Оплата</option>
+ <option value="status_pay">Статус, затем оплата</option>
+ <option value="shop_status">Точка, затем статус</option>
+ </select>
  </div>
  <div id="ordersListWrap" class="on">
  <table class="so-list">
@@ -1695,8 +1713,8 @@
  <tr>
  <th>№</th>
  <th>Товар / клиентский заказ</th>
- <th>Точка</th>
- <th>Статус и оплата</th>
+ <th class="sortable" data-orders-sort="shop" title="Сортировать по точке">Точка <span class="sort-ind" id="sortIndShop"></span></th>
+ <th class="sortable" data-orders-sort="status_pay" title="Сортировать по статусу и оплате">Статус и оплата <span class="sort-ind" id="sortIndStatus"></span></th>
  <th>Сумма</th>
  </tr>
  </thead>
@@ -2341,6 +2359,7 @@
   var nomView = 'table';
   var ordersSearch = '';
   var ordersStatusFilter = '*';
+  var ordersSort = 'default';
   var nomSearch = '';
   var nomGroup = '*';
 
@@ -2698,6 +2717,80 @@
  return NAMES[st] || st;
   }
 
+  var STATUS_ORDER = { new: 0, accepted: 1, assembled: 2, delivering: 3, done: 4 };
+  var PAY_ORDER = { pending: 0, cod: 1, unpaid: 2, paid: 3 };
+
+  function orderPayKey(o) {
+    return o.pay || (o.channel === 'fw' ? 'paid' : 'pending');
+  }
+
+  function sortOrdersList(list) {
+    var mode = ordersSort || 'default';
+    if (mode === 'default') return list;
+    var arr = list.slice();
+    arr.sort(function (a, b) {
+      if (mode === 'shop_asc' || mode === 'shop_desc') {
+        var cmp = String(a.shop || '').localeCompare(String(b.shop || ''), 'ru');
+        if (cmp !== 0) return mode === 'shop_desc' ? -cmp : cmp;
+        return String(a.id).localeCompare(String(b.id));
+      }
+      if (mode === 'status') {
+        var sa = STATUS_ORDER[a.status] != null ? STATUS_ORDER[a.status] : 99;
+        var sb = STATUS_ORDER[b.status] != null ? STATUS_ORDER[b.status] : 99;
+        if (sa !== sb) return sa - sb;
+        return String(a.id).localeCompare(String(b.id));
+      }
+      if (mode === 'pay') {
+        var pa = PAY_ORDER[orderPayKey(a)] != null ? PAY_ORDER[orderPayKey(a)] : 99;
+        var pb = PAY_ORDER[orderPayKey(b)] != null ? PAY_ORDER[orderPayKey(b)] : 99;
+        if (pa !== pb) return pa - pb;
+        return String(a.id).localeCompare(String(b.id));
+      }
+      if (mode === 'status_pay') {
+        var s1 = STATUS_ORDER[a.status] != null ? STATUS_ORDER[a.status] : 99;
+        var s2 = STATUS_ORDER[b.status] != null ? STATUS_ORDER[b.status] : 99;
+        if (s1 !== s2) return s1 - s2;
+        var p1 = PAY_ORDER[orderPayKey(a)] != null ? PAY_ORDER[orderPayKey(a)] : 99;
+        var p2 = PAY_ORDER[orderPayKey(b)] != null ? PAY_ORDER[orderPayKey(b)] : 99;
+        if (p1 !== p2) return p1 - p2;
+        return String(a.id).localeCompare(String(b.id));
+      }
+      if (mode === 'shop_status') {
+        var sc = String(a.shop || '').localeCompare(String(b.shop || ''), 'ru');
+        if (sc !== 0) return sc;
+        var ss1 = STATUS_ORDER[a.status] != null ? STATUS_ORDER[a.status] : 99;
+        var ss2 = STATUS_ORDER[b.status] != null ? STATUS_ORDER[b.status] : 99;
+        if (ss1 !== ss2) return ss1 - ss2;
+        return String(a.id).localeCompare(String(b.id));
+      }
+      return 0;
+    });
+    return arr;
+  }
+
+  function updateOrdersSortUI() {
+    var sel = $('#ordersSort');
+    if (sel && sel.value !== ordersSort) sel.value = ordersSort;
+    var shopTh = document.querySelector('th[data-orders-sort="shop"]');
+    var stTh = document.querySelector('th[data-orders-sort="status_pay"]');
+    var indShop = $('#sortIndShop');
+    var indSt = $('#sortIndStatus');
+    if (shopTh) shopTh.classList.toggle('on', ordersSort === 'shop_asc' || ordersSort === 'shop_desc' || ordersSort === 'shop_status');
+    if (stTh) stTh.classList.toggle('on', ordersSort === 'status' || ordersSort === 'pay' || ordersSort === 'status_pay');
+    if (indShop) {
+      if (ordersSort === 'shop_asc') indShop.textContent = '↑';
+      else if (ordersSort === 'shop_desc') indShop.textContent = '↓';
+      else if (ordersSort === 'shop_status') indShop.textContent = '↕';
+      else indShop.textContent = '';
+    }
+    if (indSt) {
+      if (ordersSort === 'status') indSt.textContent = '⚙';
+      else if (ordersSort === 'pay') indSt.textContent = '₽';
+      else if (ordersSort === 'status_pay') indSt.textContent = '↕';
+      else indSt.textContent = '';
+    }
+  }
+
   function renderOrdersList() {
  var body = $('#ordersListBody');
  if (!body) return;
@@ -2707,16 +2800,18 @@
  if (!q) return true;
  return (o.id + ' ' + o.name + ' ' + o.shop + ' ' + (CH_NAMES[o.channel] || '')).toLowerCase().indexOf(q) >= 0;
  });
+ list = sortOrdersList(list);
+ updateOrdersSortUI();
  body.innerHTML = list.map(function (o) {
- var pay = o.pay || (o.channel === 'fw' ? 'paid' : 'pending');
+ var pay = orderPayKey(o);
  var anim = state.animIds[o.id] || '';
  return '<tr class="' + anim + '" data-id="' + o.id + '">' +
  '<td class="id">' + esc(o.id) + '</td>' +
  '<td><div class="item">' + esc(o.name) + '</div><div class="meta">' + esc(CH_NAMES[o.channel] || o.channel) + '</div></td>' +
  '<td>' + esc(o.shop) + '</td>' +
  '<td><div class="so-axes">' +
- '<span class="axis ff-' + o.status + '" title="Fulfillment">⚙ ' + fulfillmentAxis(o.status) + '</span>' +
- '<span class="axis pay-' + pay + '" title="Payment">₽ ' + (PAY_NAMES[pay] || pay) + '</span>' +
+ '<span class="axis ff-' + o.status + '" title="Статус">⚙ ' + fulfillmentAxis(o.status) + '</span>' +
+ '<span class="axis pay-' + pay + '" title="Оплата">₽ ' + (PAY_NAMES[pay] || pay) + '</span>' +
  '<span class="axis ch-' + o.channel + '">' + (CH_NAMES[o.channel] || o.channel) + '</span>' +
  '</div></td>' +
  '<td class="price">' + fmtPrice(o.price) + '</td></tr>';
@@ -3662,6 +3757,26 @@
  if (os) os.addEventListener('input', function () { ordersSearch = this.value; renderOrdersList(); });
  var of = $('#ordersStatusFilter');
  if (of) of.addEventListener('change', function () { ordersStatusFilter = this.value; renderOrdersList(); });
+ var osort = $('#ordersSort');
+ if (osort) osort.addEventListener('change', function () { ordersSort = this.value; renderOrdersList(); });
+ var olh = document.querySelector('#ordersListWrap thead');
+ if (olh) olh.addEventListener('click', function (e) {
+   var th = e.target.closest('th[data-orders-sort]');
+   if (!th) return;
+   var key = th.getAttribute('data-orders-sort');
+   if (key === 'shop') {
+     if (ordersSort === 'shop_asc') ordersSort = 'shop_desc';
+     else if (ordersSort === 'shop_desc') ordersSort = 'shop_status';
+     else if (ordersSort === 'shop_status') ordersSort = 'default';
+     else ordersSort = 'shop_asc';
+   } else if (key === 'status_pay') {
+     if (ordersSort === 'status') ordersSort = 'pay';
+     else if (ordersSort === 'pay') ordersSort = 'status_pay';
+     else if (ordersSort === 'status_pay') ordersSort = 'default';
+     else ordersSort = 'status';
+   }
+   renderOrdersList();
+ });
  var olb = $('#ordersListBody');
  if (olb) olb.addEventListener('click', function (e) {
  var tr = e.target.closest('tr[data-id]');
