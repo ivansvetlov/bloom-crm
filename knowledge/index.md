@@ -16,6 +16,7 @@
 - [[delivery]] — курьеры и tracking
 - [[catalog-vitrina]] — витрина и остатки
 - [[roles-rbac]] — роли и доступы
+- [[florist-cabinet]] — кабинет флориста (демо)
 - [[architecture-stack]] — стек и domains
 - [[sitemap-ui]] — экраны full cabinet
 - [[monthly-cost]] — opex диапазоны
@@ -23,6 +24,7 @@
 - [[open-questions]] — блокеры
 - [[reliability-position]] — SLA / поддержка
 - [[security-152]] — 152-ФЗ
+- [[order-client-contact]] — связь с клиентом по заказу (отложено)
 
 ## Comparisons
 - [[messengers-official-vs-grey]] — официально vs серое

@@ -28,8 +28,16 @@ confidence: high
 ## UI mock
 Неделя 04 в `docs/test-dynamic.html` — команда, матрица прав, журнал действий.
 
+## Демо-вход (auth gate)
+`docs/auth.js` — гейт входа с выбором роли карточками:
+- **Кабинет менеджера** — `admin/admin` (Анна К., владелец сети, все магазины)
+- **Кабинет флориста** — `florist/florist` (Светлана П., свой магазин «Ленина 92»)
+- + сворачиваемая форма ручного входа по логину.
+Роль определяется через `BloomAuth.profile().role` / `.shop` (см. [[florist-cabinet]]).
+
 ## Связанное
 - [[bloom-crm]]
 - [[mvp-scope]]
 - [[customer-questions]]
 - [[reliability-position]]
+- [[florist-cabinet]]

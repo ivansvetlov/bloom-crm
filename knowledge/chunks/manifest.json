@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "built": "2026-08-01",
+  "built": "2026-08-02",
   "project": "flowwow-crm",
   "product": "Bloom CRM",
-  "chunk_count": 68,
+  "chunk_count": 84,
   "sources": [
     {
       "source_id": "tz",
@@ -11,15 +11,15 @@
       "kind": "spec",
       "path": "docs/tz.md",
       "chunks": 6,
-      "chars": 4496
+      "chars": 4514
     },
     {
       "source_id": "questions",
       "title": "Вопросы заказчику",
       "kind": "spec",
       "path": "docs/questions.md",
-      "chunks": 3,
-      "chars": 2262
+      "chunks": 7,
+      "chars": 4262
     },
     {
       "source_id": "arch",
@@ -58,8 +58,8 @@
       "title": "Wiki index",
       "kind": "wiki",
       "path": "knowledge/index.md",
-      "chunks": 2,
-      "chars": 1371
+      "chunks": 3,
+      "chars": 1486
     },
     {
       "source_id": "wiki-bloom-crm",
@@ -67,7 +67,7 @@
       "kind": "wiki",
       "path": "knowledge/entities/bloom-crm.md",
       "chunks": 2,
-      "chars": 1183
+      "chars": 1234
     },
     {
       "source_id": "wiki-flowwow",
@@ -118,6 +118,14 @@
       "chars": 379
     },
     {
+      "source_id": "wiki-florist-cabinet",
+      "title": "florist-cabinet",
+      "kind": "wiki",
+      "path": "knowledge/concepts/florist-cabinet.md",
+      "chunks": 5,
+      "chars": 3479
+    },
+    {
       "source_id": "wiki-modules-map",
       "title": "modules-map",
       "kind": "wiki",
@@ -150,6 +158,14 @@
       "chars": 686
     },
     {
+      "source_id": "wiki-order-client-contact",
+      "title": "order-client-contact",
+      "kind": "wiki",
+      "path": "knowledge/concepts/order-client-contact.md",
+      "chunks": 5,
+      "chars": 2778
+    },
+    {
       "source_id": "wiki-order-lifecycle",
       "title": "order-lifecycle",
       "kind": "wiki",
@@ -178,8 +194,8 @@
       "title": "roles-rbac",
       "kind": "wiki",
       "path": "knowledge/concepts/roles-rbac.md",
-      "chunks": 1,
-      "chars": 605
+      "chunks": 2,
+      "chars": 1007
     },
     {
       "source_id": "wiki-security-152",

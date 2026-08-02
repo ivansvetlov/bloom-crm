@@ -191,9 +191,9 @@ def build() -> None:
     conn.commit()
     conn.close()
 
-    print(f"\nOK: {len(all_chunks)} chunks → {jsonl_path}")
-    print(f"OK: FTS5 → {DB_PATH}")
-    print(f"OK: manifest → {CHUNKS_DIR / 'manifest.json'}")
+    print(f"\nOK: {len(all_chunks)} chunks -> {jsonl_path}")
+    print(f"OK: FTS5 -> {DB_PATH}")
+    print(f"OK: manifest -> {CHUNKS_DIR / 'manifest.json'}")
 
 
 if __name__ == "__main__":

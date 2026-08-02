@@ -617,6 +617,7 @@
     { id: 'orders.cancel', name: 'Отмена заказа' },
     { id: 'orders.edit_price', name: 'Правка цены' },
     { id: 'orders.mark_paid', name: 'Отметка «оплачено»' },
+    { id: 'orders.photo_before', name: 'Фото «до» обязательное' },
     { id: 'stock.edit', name: 'Правка остатков' },
     { id: 'stock.sync_marketplace', name: 'Синк маркетплейс' },
     { id: 'cases.close', name: 'Закрыть обращение' },
@@ -632,7 +633,7 @@
     var m = {};
     MODULES.forEach(function (mod) { m[mod.id] = 'none'; });
     if (kind === 'florist') {
-      m.orders = 'shop'; m.tasks = 'own'; m.notes = 'own'; m.catalog = 'shop'; m.warehouses = 'shop';
+      m.orders = 'shop'; m.chats = 'shop'; m.tasks = 'own'; m.notes = 'own'; m.catalog = 'shop'; m.warehouses = 'shop';
     } else if (kind === 'manager') {
       m.orders = 'shop'; m.clients = 'shop'; m.chats = 'shop'; m.mail = 'shop'; m.cases = 'shop';
       m.tasks = 'shop'; m.notes = 'shop'; m.catalog = 'shop'; m.warehouses = 'shop'; m.invoices = 'shop';
@@ -663,7 +664,7 @@
     var a = {};
     ACTIONS.forEach(function (x) { a[x.id] = false; });
     if (kind === 'florist') {
-      /* none */
+      a['orders.photo_before'] = true;
     } else if (kind === 'manager') {
       a['orders.create_manual'] = true; a['orders.cancel'] = true; a['orders.mark_paid'] = true; a['cases.close'] = true;
     } else if (kind === 'senior') {
@@ -682,7 +683,7 @@
   }
 
   var ROLES = [
-    { id: 'florist', name: 'Флорист', desc: 'Сборка на точке, свои задачи. Без отмен и цен.', scope: 'shop', users: 4 },
+    { id: 'florist', name: 'Флорист', desc: 'Свой магазин: заказы от «Принят» до «В доставке», фото «до» обязательное, чаты — только чтение. Не отменяет — «Вернуть менеджеру»; без счетов, отчётов, настроек, почты, обращений.', scope: 'shop', users: 4 },
     { id: 'manager', name: 'Менеджер', desc: 'Заказы, чаты, клиенты точки. Отмена, ручной заказ.', scope: 'shop', users: 3 },
     { id: 'senior', name: 'Старший', desc: '+ цены, остатки, обращения, счета точки.', scope: 'shop', users: 2 },
     { id: 'director', name: 'Директор сети', desc: 'Network read/write, без tech-ключей по умолчанию.', scope: 'network', users: 1 },
