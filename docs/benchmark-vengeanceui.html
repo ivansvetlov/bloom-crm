@@ -1,0 +1,915 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM · Бенчмарк UI-блоков · VengeanceUI + Animmaster</title>
+<style>
+  :root{
+    --terra:#b4632f; --terra-soft:#f6e9de; --plum:#6d4b62; --plum-soft:#f3e9ef;
+    --sage:#5c7a63; --sage-soft:#eaf1ea; --amber:#c7932a; --amber-soft:#fdf3e0;
+    --ink:#2b2420; --ink-mute:#8b8178; --line:#e9e2da; --paper:#fbf8f4; --card:#fffdf9;
+    --red:#b3563f; --red-soft:#f7e7e1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--paper);color:var(--ink);line-height:1.55;padding:48px 24px}
+  .wrap{max-width:1000px;margin:0 auto}
+  header{margin-bottom:34px}
+  .kicker{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--terra);font-weight:700}
+  h1{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px}
+  .sub{color:var(--ink-mute);font-size:.95rem}
+  .sub a{color:var(--terra);text-decoration:none;border-bottom:1px solid var(--terra-soft)}
+  .rule{height:2px;background:linear-gradient(90deg,var(--terra),var(--plum));margin:22px 0 28px}
+  h2{font-family:'Segoe UI',Arial,sans-serif;font-size:1.05rem;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  h2 .tag{font-size:.7rem;background:var(--terra);color:#fff;border-radius:999px;padding:2px 10px;font-weight:700;letter-spacing:.03em}
+  h2 .tag.plum{background:var(--plum)}
+  h2 .tag.sage{background:var(--sage)}
+  h2 .tag.grey{background:#9aa0a6}
+  section{margin-bottom:40px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:12px}
+  .card p{font-size:.95rem}
+  ul{margin:8px 0 0 20px;font-size:.92rem}
+  li{margin:4px 0}
+  table{width:100%;border-collapse:collapse;font-family:'Segoe UI',Arial,sans-serif;font-size:.86rem;margin-top:8px;background:var(--card)}
+  th{background:var(--plum-soft);text-align:left;font-weight:700;padding:8px 10px;border:1px solid var(--line)}
+  td{padding:8px 10px;border:1px solid var(--line);vertical-align:top}
+  td b{color:var(--terra)}
+  .note{background:var(--amber-soft);border:1px solid #ecd9b0;border-radius:12px;padding:14px 18px;font-size:.9rem;margin-top:14px}
+  .note b{color:#9A7A2A}
+
+  .block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:20px}
+  .b-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+  .b-num{font-family:'Segoe UI',Arial,sans-serif;font-size:.8rem;font-weight:800;color:var(--terra);min-width:2.2em}
+  .b-head h3{font-size:1.1rem;font-weight:700}
+  .src{font-family:'Segoe UI',Arial,sans-serif;font-size:.7rem;color:var(--ink-mute);background:var(--plum-soft);border-radius:6px;padding:1px 8px;font-weight:600}
+  .b-desc{font-size:.93rem;color:#4a423b}
+  .b-meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 10px;letter-spacing:.02em}
+  .pill.take{background:var(--sage-soft);color:var(--sage)}
+  .pill.rework{background:var(--amber-soft);color:#9A7A2A}
+  .pill.skip{background:#f0efe9;color:#6f6a63}
+  .pill.lvl{background:var(--terra-soft);color:var(--terra)}
+  .demo{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+
+  .glow{position:relative;overflow:hidden;border-radius:14px}
+  .glow::before{content:'';position:absolute;inset:-60%;background:conic-gradient(from 0deg,#b4632f,#6d4b62,#5c7a63,#c7932a,#b4632f);animation:spin 4s linear infinite}
+  @keyframes spin{to{transform:rotate(1turn)}}
+  .glow-inner{position:relative;margin:2px;border-radius:12px;background:var(--card);padding:16px 18px}
+  .g-title{font-family:'Segoe UI',Arial,sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.02em;color:var(--plum)}
+  .g-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .g-val{font-size:1.3rem;font-weight:800}
+  .g-chip{font-family:'Segoe UI',Arial,sans-serif;font-size:.7rem;font-weight:700;background:var(--terra-soft);color:var(--terra);border-radius:999px;padding:3px 10px}
+
+  .beam{position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+  .beam::after{content:'';position:absolute;top:0;left:0;width:26px;height:26px;offset-path:rect(0 auto auto 0 round 12px);offset-rotate:0deg;background:linear-gradient(90deg,transparent,var(--terra),transparent);animation:beam 3.2s linear infinite}
+  @keyframes beam{to{offset-distance:100%}}
+  .beam-body{padding:14px 16px}
+
+  .btn-shine{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border:none;border-radius:10px;background:var(--terra);color:#fff;font-family:'Segoe UI',Arial,sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s}
+  .btn-shine:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(180,99,47,.28)}
+  .btn-shine:active{transform:translateY(0) scale(.97)}
+  .btn-shine .shine-txt{position:relative;z-index:1;background:linear-gradient(110deg,#fff 40%,#ffe9d8 50%,#fff 60%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shinesweep 2.6s linear infinite}
+  @keyframes shinesweep{0%{background-position:160% 0}100%{background-position:-80% 0}}
+  .btn-shine::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.9) 50%,transparent 65%);background-size:240% 100%;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:shinesweep 2.6s linear infinite}
+  .btn-ghost{background:#fff;color:var(--plum);border:1.5px solid var(--line)}
+
+  .marq{overflow:hidden;position:relative;border-radius:10px;border:1px solid var(--line);background:var(--paper);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .marq-track{display:flex;gap:12px;width:max-content;animation:mq 22s linear infinite;padding:12px}
+  .marq:hover .marq-track{animation-play-state:paused}
+  @keyframes mq{to{transform:translateX(-50%)}}
+  .mq-item{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-family:'Segoe UI',Arial,sans-serif;font-size:.82rem;font-weight:600;color:var(--ink);white-space:nowrap}
+  .mq-item .dot{width:8px;height:8px;border-radius:50%}
+  .mq-item b{font-weight:700}
+
+  .ilist{list-style:none}
+  .ilist li{position:relative}
+  .ilist a{display:flex;align-items:center;padding:9px 12px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:600;transition:background .2s,transform .2s}
+  .ilist a:hover{background:var(--terra-soft);transform:translateX(4px)}
+  .ilist .in{font-family:'Segoe UI',Arial,sans-serif;font-size:.75rem;color:var(--ink-mute);margin-right:10px;min-width:22px}
+  .ilist .it{flex:1}
+  .ilist .sub{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;color:var(--ink-mute);font-weight:400}
+  .ilist img{position:absolute;left:-128px;top:50%;transform:translateY(-50%) scale(.9);width:92px;height:96px;border-radius:10px;object-fit:cover;box-shadow:0 12px 28px rgba(43,36,32,.25);opacity:0;pointer-events:none;transition:opacity .28s cubic-bezier(.34,1.56,.64,1),left .28s cubic-bezier(.34,1.56,.64,1),transform .28s cubic-bezier(.34,1.56,.64,1);z-index:20}
+  .ilist li:hover img{opacity:1;left:-112px;transform:translateY(-50%) scale(1)}
+
+  .toast-area{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:50;width:min(280px,calc(100% - 24px))}
+  .toast{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:11px;background:var(--card);border:1px solid var(--line);box-shadow:0 10px 26px rgba(43,36,32,.14);animation:tIn .3s cubic-bezier(.22,1,.36,1);font-family:'Segoe UI',Arial,sans-serif}
+  .toast.out{animation:tOut .25s ease forwards}
+  @keyframes tIn{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
+  @keyframes tOut{to{opacity:0;transform:translateY(-6px) scale(.96)}}
+  .t-ico{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.8rem;margin-top:1px}
+  .t-ico.ok{background:var(--sage)}.t-ico.err{background:var(--red)}.t-ico.warn{background:var(--amber)}.t-ico.info{background:var(--plum)}
+  .t-body{flex:1}
+  .t-title{font-weight:700;font-size:.83rem}
+  .t-msg{font-size:.76rem;color:var(--ink-mute);margin-top:1px}
+  .t-x{background:none;border:none;color:var(--ink-mute);cursor:pointer;font-size:.9rem;line-height:1;padding:0 2px}
+  .t-x:hover{color:var(--ink)}
+
+  .sk{display:flex;flex-direction:column;gap:12px}
+  .sk-row{display:flex;gap:12px;align-items:center}
+  .sk-box{width:44px;height:44px;border-radius:10px;flex:none}
+  .sk-lines{flex:1;display:flex;flex-direction:column;gap:7px}
+  .sk-line{height:11px;border-radius:6px}
+  .sk-l1{width:70%}.sk-l2{width:45%}
+  .shimmer{background:linear-gradient(100deg,var(--line) 40%,#f5f0e8 50%,var(--line) 60%);background-size:200% 100%;animation:sh 1.3s infinite}
+  @keyframes sh{to{background-position:-200% 0}}
+  .sk-real{display:none}
+  .sk-loading .sk-real{display:block}
+  .sk-loading .sk-list{display:none}
+
+  .bento{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .bento .bt{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
+  .bento .bt:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(43,36,32,.12);border-color:var(--terra)}
+  .bt-label{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;font-weight:700;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.06em}
+  .bt-num{font-size:1.45rem;font-weight:800;margin-top:4px}
+  .bt-note{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;color:var(--ink-mute);margin-top:2px}
+  .bento-overlay{position:absolute;inset:0;background:rgba(43,36,32,.32);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+  .bento-overlay.open{display:flex;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .bento-modal{background:var(--card);border-radius:14px;width:100%;max-width:400px;padding:18px;box-shadow:0 24px 60px rgba(43,36,32,.28);animation:pop .25s cubic-bezier(.22,1,.36,1)}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+  .bm-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .bm-title{font-size:1.05rem;font-weight:800}
+  .bm-x{background:var(--paper);border:1px solid var(--line);border-radius:8px;width:26px;height:26px;cursor:pointer;font-size:.85rem;color:var(--ink-mute)}
+  .bm-x:hover{color:var(--ink)}
+  .bm-meta{font-size:.85rem;color:#4a423b}
+  .bm-bars{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+  .bar-row{display:flex;align-items:center;gap:8px;font-family:'Segoe UI',Arial,sans-serif;font-size:.76rem;color:var(--ink-mute)}
+  .bar-track{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+  .bar-fill{height:100%;border-radius:99px}
+
+  .sb{display:flex;height:300px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+  .sb-nav{width:210px;background:var(--card);border-right:1px solid var(--line);padding:12px 10px;display:flex;flex-direction:column;gap:2px;transition:width .25s ease}
+  .sb.collapsed .sb-nav{width:56px}
+  .sb-logo{display:flex;align-items:center;gap:8px;padding:4px 8px 14px;font-family:'Segoe UI',Arial,sans-serif;font-weight:800;font-size:.95rem;letter-spacing:.02em}
+  .sb-logo .mark{width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,var(--terra),var(--plum));flex:none}
+  .sb-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;font-family:'Segoe UI',Arial,sans-serif;font-size:.84rem;font-weight:600;color:#5a524a;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s}
+  .sb-item:hover{background:var(--paper)}
+  .sb-item.active{background:var(--terra-soft);color:var(--terra)}
+  .sb-item .ic{width:18px;height:18px;flex:none;display:grid;place-items:center}
+  .sb-item .cnt{margin-left:auto;background:var(--plum-soft);color:var(--plum);border-radius:999px;font-size:.68rem;font-weight:800;padding:1px 7px}
+  .sb-item .cnt.alert{background:var(--red-soft);color:var(--red)}
+  .sb-main{flex:1;background:var(--paper);padding:16px;display:flex;flex-direction:column;gap:10px}
+  .sb-head{display:flex;align-items:center;gap:10px}
+  .sb-toggle{background:var(--card);border:1px solid var(--line);border-radius:8px;width:32px;height:32px;cursor:pointer;display:grid;place-items:center;font-size:.8rem;color:var(--ink-mute)}
+  .sb-toggle:hover{color:var(--ink)}
+  .sb-title{font-size:.98rem;font-weight:800}
+  .sb-tags{display:flex;gap:6px;flex-wrap:wrap}
+  .sb-mini{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:'Segoe UI',Arial,sans-serif;font-size:.78rem}
+  .sb-mini .m-label{font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-mute);font-weight:700}
+  .sb-mini .m-num{font-weight:800;font-size:1.05rem;margin-top:2px}
+  .sb.collapsed .sb-logo span,.sb.collapsed .sb-item .lbl,.sb.collapsed .sb-item .cnt{display:none}
+  .sb.collapsed .sb-item{justify-content:center;padding:8px 0}
+
+  .tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:4px;width:max-content;margin-bottom:12px}
+  .tab-btn{border:none;background:none;font-family:'Segoe UI',Arial,sans-serif;font-size:.8rem;font-weight:600;padding:7px 14px;border-radius:8px;color:var(--ink-mute);cursor:pointer;transition:background .18s,color .18s}
+  .tab-btn.active{background:var(--card);color:var(--terra);box-shadow:0 1px 4px rgba(43,36,32,.1)}
+  .tab-panel{display:none;font-size:.9rem}
+  .tab-panel.active{display:block;animation:fade .25s ease}
+
+  .cc-link{color:var(--terra);font-weight:700;text-decoration:none;border-bottom:1px dashed var(--terra);cursor:pointer}
+  .cc-fly{position:absolute;width:200px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 44px rgba(43,36,32,.2);padding:10px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:60}
+  .cc-fly img{width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:8px}
+  .cc-fly .cc-t{font-family:'Segoe UI',Arial,sans-serif;font-weight:700;font-size:.8rem}
+  .cc-fly .cc-s{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;color:var(--ink-mute);margin-top:2px}
+
+  .fliptext{font-size:1.5rem;font-weight:800;letter-spacing:-.01em}
+  .fliptext .w{display:inline-block;overflow:hidden;vertical-align:bottom}
+  .fliptext .ch{display:inline-block;transform:translateY(115%);transition:transform .55s cubic-bezier(.22,1,.36,1)}
+  .fliptext.run .ch{transform:translateY(0)}
+  .replay-btn{margin-top:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:.78rem;font-weight:700;color:var(--terra);background:var(--terra-soft);border:none;border-radius:8px;padding:7px 14px;cursor:pointer}
+  .replay-btn:hover{background:#f0ddcd}
+
+  .loader-wrap{position:relative;height:190px;overflow:hidden;border-radius:10px;background:linear-gradient(135deg,#3a2f28,#2b2420)}
+  .loader-pane{position:absolute;inset:0;background:var(--terra);z-index:2}
+  .loader-pane.p2{background:var(--plum)}
+  .loader-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1}
+  .loader-txt span{font-family:'Segoe UI',Arial,sans-serif;font-weight:800;font-size:2rem;letter-spacing:.12em;color:#fff;opacity:0;transform:translateY(40px)}
+  .loader-wrap.go .loader-txt span{opacity:1;transform:none;transition:opacity .4s .15s,transform .5s cubic-bezier(.22,1,.36,1) .15s}
+  .loader-wrap.go .loader-pane.p1{transform:translateY(-100%);transition:transform .6s cubic-bezier(.22,1,.36,1) .8s}
+  .loader-wrap.go .loader-pane.p2{transform:translateY(100%);transition:transform .6s cubic-bezier(.22,1,.36,1) 1s}
+
+  .dock{display:flex;gap:6px;width:max-content;padding:10px 14px;border-radius:18px;background:rgba(255,253,249,.72);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 14px 36px rgba(43,36,32,.14)}
+  .dock-item{position:relative;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;cursor:pointer;color:var(--ink-mute);transition:transform .22s cubic-bezier(.34,1.56,.64,1),color .18s,background .18s}
+  .dock-item:hover{transform:translateY(-5px) scale(1.12);color:var(--terra);background:var(--terra-soft)}
+  .dock-item.active{color:var(--terra);background:var(--terra-soft)}
+  .dock-item svg{width:20px;height:20px}
+  .dock-tip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) scale(.9);background:var(--ink);color:#fff;font-family:'Segoe UI',Arial,sans-serif;font-size:.68rem;font-weight:600;padding:4px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:30}
+  .dock-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--ink)}
+  .dock-item:hover .dock-tip{opacity:1;transform:translateX(-50%) scale(1)}
+
+  .num-roll{display:inline-flex;align-items:center;overflow:hidden}
+  .num-roll .d{width:1ch;text-align:center}
+  .num-roll .strip{display:inline-block;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+  .num-roll .strip span{display:block;height:1em;line-height:1em}
+
+  /* ── Animmaster Lib demos ── */
+  .float-wrap{position:relative;height:150px;overflow:hidden;border-radius:12px;background:linear-gradient(150deg,#fff 0%,var(--paper) 70%);border:1px solid var(--line)}
+  .float-wrap .fl{position:absolute;bottom:-40px;animation:floatUp 6s linear infinite;opacity:0}
+  .float-wrap .fl:nth-child(1){left:12%;animation-delay:0s}
+  .float-wrap .fl:nth-child(2){left:34%;animation-delay:1.4s;animation-duration:7s}
+  .float-wrap .fl:nth-child(3){left:56%;animation-delay:2.6s;animation-duration:5.5s}
+  .float-wrap .fl:nth-child(4){left:76%;animation-delay:1s;animation-duration:6.5s}
+  .float-wrap .cap{position:absolute;inset:0;display:grid;place-items:center;font-family:'Segoe UI',Arial,sans-serif;font-weight:700;font-size:.85rem;color:var(--ink-mute)}
+  @keyframes floatUp{0%{transform:translateY(0) rotate(-6deg);opacity:0}12%{opacity:.95}88%{opacity:.95}100%{transform:translateY(-190px) rotate(8deg);opacity:0}}
+  .wave-txt{font-size:1.35rem;font-weight:800;line-height:1.25}
+  .wave-txt .wv{display:inline-block;transform:translateY(30px) rotate(6deg);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s}
+  .wave-txt.run .wv{transform:none;opacity:1}
+  .reveal-bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;position:relative}
+  .reveal-bar::after{content:'';position:absolute;inset:0;border-radius:99px;background:linear-gradient(90deg,var(--terra),var(--plum),var(--sage));transform:scaleX(0);transform-origin:left;transition:transform .9s cubic-bezier(.22,1,.36,1)}
+  .reveal-bar.run::after{transform:scaleX(1)}
+  .distort{display:inline-block;font-weight:800;font-size:1.15rem;transition:letter-spacing .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1);cursor:default}
+  .distort:hover{letter-spacing:.12em;transform:translateY(-2px)}
+  .hover-chip{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-family:'Segoe UI',Arial,sans-serif;font-size:.85rem;font-weight:700;color:var(--ink);cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,background .2s;margin:4px}
+  .hover-chip:hover{transform:translateY(-6px);background:var(--terra-soft);color:var(--terra);box-shadow:0 10px 22px rgba(180,99,47,.22)}
+  .morph-swap{display:inline-block;overflow:hidden;vertical-align:bottom;font-weight:800;font-size:1.3rem}
+  .morph-swap .ms{display:inline-block;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s}
+  .morph-swap .ms.out{transform:translateY(-22px) scale(.9);opacity:0}
+  .morph-swap .ms.in{transform:translateY(0);opacity:1}
+  .scrub-fill{position:relative;height:96px;overflow:hidden;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+  .scrub-fill .sf-track{position:absolute;inset:0;background:linear-gradient(100deg,var(--terra-soft),var(--plum-soft),var(--sage-soft));transform:translateX(-60%);transition:transform .12s linear}
+  .scrub-fill .sf-cap{position:absolute;inset:0;display:grid;place-items:center;font-family:'Segoe UI',Arial,sans-serif;font-weight:700;font-size:.8rem;color:var(--plum)}
+  .parallax-zone{position:relative;height:120px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(220px 90px at 20% 10%,rgba(180,99,47,.16),transparent 60%),radial-gradient(240px 110px at 85% 90%,rgba(109,75,98,.16),transparent 60%),var(--paper)}
+  .px-layer{position:absolute;font-family:'Segoe UI',Arial,sans-serif;font-weight:800;font-size:.9rem;color:var(--ink-mute);transition:transform .18s cubic-bezier(.22,1,.36,1);white-space:nowrap}
+  .px-l1{left:14%;top:38%}.px-l2{left:48%;top:20%}.px-l3{left:70%;top:58%}
+  .noise{position:absolute;inset:0;opacity:.05;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2"/%3E%3C/filter%3E%3Crect width="80" height="80" filter="url(%23n)"/%3E%3C/svg%3E')}
+  .shade{position:absolute;inset:0;background:radial-gradient(400px 200px at 50% 0%,rgba(255,255,255,.6),transparent 60%)}
+
+  footer{margin-top:44px;color:var(--ink-mute);font-size:.8rem;font-family:'Segoe UI',Arial,sans-serif;text-align:center}
+  .demo-cap{font-family:'Segoe UI',Arial,sans-serif;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:12px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Bloom CRM · бенчмарк UI-блоков</div>
+    <h1>Что взять из VengeanceUI и Animmaster</h1>
+    <div class="sub">Два источника анимаций и логик: <a href="https://github.com/Ashutoshx7/VengeanceUI" target="_blank">VengeanceUI</a> (MIT, 135 компонентов) и <a href="https://animmasterlib.dev" target="_blank">Animmaster Lib</a> (300 PRO-компонентов) — отрисовано в цветах Bloom · 2026-08-02</div>
+    <div class="rule"></div>
+  </header>
+
+  <section>
+    <h2><span>Обзор репо</span><span class="tag">что за зверь</span></h2>
+    <div class="card">
+      <p><b>VengeanceUI</b> — открытая библиотека анимированных UI-компонентов «copy-paste» для лендингов и веб-интерфейсов. Next.js + React + TypeScript + Tailwind, анимации на Framer Motion и GSAP. ~1000 звёзд, лицензия MIT, репозиторий активно живёт (последний push — 1 августа 2026).</p>
+      <ul>
+        <li><b>Масштаб:</b> 135 компонентов в <span class="src">src/components/ui</span> + 35 лендинг-блоков в <span class="src">src/components/landing</span>, плюс сборки: bento-сетки, прелоадеры, reveal-эффекты и 3 готовых шаблона (portfolio×2, blog).</li>
+        <li><b>Устройство:</b> каждый блок — отдельный файл-компонент с Tailwind-стилями; демо каждой фичи — отдельная страница в <span class="src">src/app/components/*</span>.</li>
+        <li><b>Характер:</b> упор на динамику — бегущие строки, стеклянные доки, светящиеся рамки, живые счётчики, тосты, прелоадеры. Для CRM-кабинета это в первую очередь «полировка»: уведомления, цифры аналитики, подсветка срочного.</li>
+        <li><b>Качество кода:</b> смешанное — часть блоков требует лишних зависимостей (GSAP, шейдеры), но большинство переносится одним файлом с нашими Tailwind/цветами.</li>
+      </ul>
+    </div>
+    <div class="note"><b>Как читать отчёт:</b> каждый блок — карточка с продуктовым названием, исходником в VengeanceUI, оценкой «брать / переработать / не брать» и уровнем сложности внедрения. Превью отрисованы в палитре Bloom (terra, plum, sage, amber) и большинство — живые: hover, клики, анимации работают.</div>
+  </section>
+
+  <section>
+    <h2><span>Галерея блоков</span><span class="tag plum">15 шт</span></h2>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">01</span><h3>Живые цифры</h3><span class="src">animated-number.tsx</span></div>
+      <div class="b-desc">Счётчик-«одометр»: цифры прокручиваются до нового значения с пружинкой. В аналитике Bloom это выручка, заказы, средний чек, новые клиенты — цифры «оживают» при обновлении, а не мигают. Идеально для экрана «Отчёты» и для лендинга КП.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="demo-cap">Отчёты · выручка за неделю</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px">
+          <div><div style="font-family:'Segoe UI',Arial,sans-serif;font-size:.74rem;color:var(--ink-mute);font-weight:700">Выручка</div><div class="num-roll" style="font-size:1.7rem;font-weight:800" data-num="6">0</div></div>
+          <div><div style="font-family:'Segoe UI',Arial,sans-serif;font-size:.74rem;color:var(--ink-mute);font-weight:700">Заказы</div><div class="num-roll" style="font-size:1.7rem;font-weight:800" data-num="2">0</div></div>
+          <div><div style="font-family:'Segoe UI',Arial,sans-serif;font-size:.74rem;color:var(--ink-mute);font-weight:700">Средний чек</div><div class="num-roll" style="font-size:1.7rem;font-weight:800" data-num="4">0</div></div>
+          <div><div style="font-family:'Segoe UI',Arial,sans-serif;font-size:.74rem;color:var(--ink-mute);font-weight:700">Новые клиенты</div><div class="num-roll" style="font-size:1.7rem;font-weight:800" data-num="2">0</div></div>
+        </div>
+        <div style="margin-top:14px"><button class="btn-shine" onclick="rollAll()"><span class="shine-txt">Обновить данные</span></button></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">02</span><h3>Стеклянный док</h3><span class="src">glass-dock.tsx</span></div>
+      <div class="b-desc">Плавающая панель с blur-стеклом и иконками, которые подпрыгивают при наведении, с всплывающей подсказкой. В Bloom — быстрый переход между разделами на планшете/телефоне флориста, где сайдбар занимает пол-экрана.</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">средне</span></div>
+      <div class="demo" style="display:grid;place-items:center;min-height:170px">
+        <div class="dock" id="dock1">
+          <div class="dock-item active" onclick="dockSet(this)"><span class="dock-tip">Заказы</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M3 14v5h5"/><path d="M16 21h5v-5"/><path d="M12 3v8"/><path d="M12 13v8"/></svg></div>
+          <div class="dock-item" onclick="dockSet(this)"><span class="dock-tip">Чаты</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="dock-item" onclick="dockSet(this)"><span class="dock-tip">Аналитика</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+          <div class="dock-item" onclick="dockSet(this)"><span class="dock-tip">Каталог</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a3 3 0 0 1 3 3 3 3 0 0 1 3 3 3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1-3-3 3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3-3 3 3 0 0 1 3-3z"/></svg></div>
+          <div class="dock-item" onclick="dockSet(this)"><span class="dock-tip">Настройки</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">03</span><h3>Светящаяся рамка</h3><span class="src">glow-border-card.tsx</span></div>
+      <div class="b-desc">Карточка с бегущим по контуру градиентным свечением. В Bloom — выделить «срочный» заказ, промо-блок подписки, карточку клиента VIP. Наводится красиво и намекает «смотри сюда».</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="glow" style="max-width:330px;margin:0 auto">
+          <div class="glow-inner">
+            <div class="g-title">Заказ №2841 · СРОЧНО</div>
+            <div style="margin-top:6px;font-size:.9rem">«Нежность» — 101 роза, тёмно-бордовые</div>
+            <div style="font-size:.82rem;color:var(--ink-mute);margin-top:3px">К 14:30 · адрес: ул. Цветочная, 12</div>
+            <div class="g-row"><span class="g-val">4 900 ₽</span><span class="g-chip">собрать за 25 мин</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">04</span><h3>Бегущий луч по рамке</h3><span class="src">border-beam.tsx</span></div>
+      <div class="b-desc">Тонкий луч, непрерывно обегающий границу карточки. В Bloom — индикатор живой «сверки с маркетплейсом»: пока идёт синхронизация Flowwow/VK/Telegram, рамка карточки «светится». Дешёвый способ показать «система работает».</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="beam" style="max-width:360px;margin:0 auto">
+          <div class="beam-body">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <b style="font-family:'Segoe UI',Arial,sans-serif;font-size:.85rem">Сверка с маркетплейсом</b>
+              <span class="g-chip">идёт…</span>
+            </div>
+            <div style="font-size:.82rem;color:var(--ink-mute);margin-top:6px">Flowwow · 214 заказов · 2 расхождения — проверяем ключи</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">05</span><h3>Кнопка с бликом</h3><span class="src">animated-button.tsx</span></div>
+      <div class="b-desc">Главная кнопка с пробегающим бликом по тексту и рамке. В Bloom — «Создать заказ», «Скачать отчёт», «Оформить подписку» на лендинге. Постоянно анимированный блик не даёт кнопке «умереть», но не раздражает.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn-shine"><span class="shine-txt">Создать заказ</span></button>
+          <button class="btn-shine btn-ghost" style="color:var(--plum)"><span class="shine-txt">Скачать отчёт</span></button>
+        </div>
+        <div style="font-size:.78rem;color:var(--ink-mute);margin-top:10px;font-family:'Segoe UI',Arial,sans-serif">Наведите и нажмите — пружина и блик работают.</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">06</span><h3>Бегущая строка партнёров</h3><span class="src">logo-slider.tsx</span></div>
+      <div class="b-desc">Бесконечная бегущая строка логотипов с маской-затуханием по краям, пауза при наведении. В Bloom — на лендинге КП: «Продаём через Flowwow, VK, Telegram и свой сайт» + каналы в шапке. Делает лендинг «живым» без видео.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="marq">
+          <div class="marq-track" id="marqTrack"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">07</span><h3>Список с выезжающим фото</h3><span class="src">image-reveal-list.tsx</span></div>
+      <div class="b-desc">Список, где при наведении слева «выезжает» фото позиции. В Bloom — заказы в очереди сборки (видно букет ещё до открытия карточки) или номенклатура: флорист пробегает глазами фото, а не названия.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">средне</span></div>
+      <div class="demo">
+        <ul class="ilist">
+          <li><a href="#"><span class="in">2841</span><span class="it">Букет «Нежность»<div class="sub">101 роза · до 14:30</div></span><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='96' viewBox='0 0 92 96'%3E%3Crect width='92' height='96' rx='10' fill='%23f6e9de'/%3E%3Cg transform='translate(46 40)'%3E%3Cg fill='%23b4632f'%3E%3Cellipse cx='0' cy='-14' rx='9' ry='13'/%3E%3Cellipse cx='14' cy='0' rx='9' ry='13' transform='rotate(72)'/%3E%3Cellipse cx='-14' cy='0' rx='9' ry='13' transform='rotate(144)'/%3E%3Cellipse cx='14' cy='0' rx='9' ry='13' transform='rotate(216)'/%3E%3Cellipse cx='-14' cy='0' rx='9' ry='13' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle r='5' fill='%23c7932a'/%3E%3Cpath d='M0 14 v18' stroke='%235c7a63' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M0 24 c-8 4 -14 6 -18 10' stroke='%235c7a63' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E" alt=""></a></li>
+          <li><a href="#"><span class="in">2842</span><span class="it">Пионы розовые<div class="sub">7 шт · до 16:00</div></span><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='96' viewBox='0 0 92 96'%3E%3Crect width='92' height='96' rx='10' fill='%23f3e9ef'/%3E%3Cg transform='translate(46 40)'%3E%3Cg fill='%236d4b62'%3E%3Cellipse cx='0' cy='-14' rx='9' ry='13'/%3E%3Cellipse cx='14' cy='0' rx='9' ry='13' transform='rotate(72)'/%3E%3Cellipse cx='-14' cy='0' rx='9' ry='13' transform='rotate(144)'/%3E%3Cellipse cx='14' cy='0' rx='9' ry='13' transform='rotate(216)'/%3E%3Cellipse cx='-14' cy='0' rx='9' ry='13' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle r='5' fill='%23f3e9ef'/%3E%3Cpath d='M0 14 v18' stroke='%235c7a63' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M0 24 c8 4 14 6 18 10' stroke='%235c7a63' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E" alt=""></a></li>
+          <li><a href="#"><span class="in">2843</span><span class="it">Ромашки и хризантемы<div class="sub">смешанный · до 17:15</div></span><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='96' viewBox='0 0 92 96'%3E%3Crect width='92' height='96' rx='10' fill='%23fdf3e0'/%3E%3Cg transform='translate(46 40)'%3E%3Cg fill='%23c7932a'%3E%3Cellipse cx='0' cy='-14' rx='9' ry='13'/%3E%3Cellipse cx='14' cy='0' rx='9' ry='13' transform='rotate(72)'/%3E%3Cellipse cx='-14' cy='0' rx='9' ry='13' transform='rotate(144)'/%3E%3Cellipse cx='14' cy='0' rx='9' ry='13' transform='rotate(216)'/%3E%3Cellipse cx='-14' cy='0' rx='9' ry='13' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle r='5' fill='%23b4632f'/%3E%3Cpath d='M0 14 v18' stroke='%235c7a63' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M0 24 c-6 6 -10 10 -14 14' stroke='%235c7a63' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E" alt=""></a></li>
+          <li><a href="#"><span class="in">2844</span><span class="it">Хризантема кустовая<div class="sub">10 веток · до 12:00</div></span><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='96' viewBox='0 0 92 96'%3E%3Crect width='92' height='96' rx='10' fill='%23eaf1ea'/%3E%3Cg transform='translate(46 40)'%3E%3Cg fill='%235c7a63'%3E%3Cellipse cx='0' cy='-14' rx='9' ry='13'/%3E%3Cellipse cx='14' cy='0' rx='9' ry='13' transform='rotate(72)'/%3E%3Cellipse cx='-14' cy='0' rx='9' ry='13' transform='rotate(144)'/%3E%3Cellipse cx='14' cy='0' rx='9' ry='13' transform='rotate(216)'/%3E%3Cellipse cx='-14' cy='0' rx='9' ry='13' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle r='5' fill='%23f6e9de'/%3E%3Cpath d='M0 14 v18' stroke='%235c7a63' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E" alt=""></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">08</span><h3>Тосты-уведомления</h3><span class="src">sonner.tsx</span></div>
+      <div class="b-desc">Всплывающие уведомления-тосты с иконкой статуса и автоскрытием. В Bloom — сюда лягут все события: «Заказ принят», «Ключ Flowwow отвалился», «Фото готово», «Отмена клиентом». Это тот самый слой, которого сейчас не хватает кабинету.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-shine btn-ghost" style="color:var(--sage);border-color:#d6e4d6" onclick="toast('ok','Заказ принят','№2845 · Flowwow · до 16:00')">Заказ принят</button>
+          <button class="btn-shine btn-ghost" style="color:var(--red);border-color:#eedad2" onclick="toast('err','Ключ отвалился','Flowwow: авторизация истекла')">Ключ отвалился</button>
+          <button class="btn-shine btn-ghost" style="color:#9A7A2A;border-color:#f0e2c4" onclick="toast('warn','Фото не загружено','Сфотографируйте букет до 14:30')">Фото не загружено</button>
+          <button class="btn-shine btn-ghost" style="color:var(--plum);border-color:#e6d8e2" onclick="toast('info','Отмена клиентом','Причина: передумал')">Отмена клиентом</button>
+        </div>
+        <div class="toast-area" id="toastArea"></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">09</span><h3>Скелетоны загрузки</h3><span class="src">skeleton.tsx</span></div>
+      <div class="b-desc">Пульсирующие «скелетоны» на время загрузки списка заказов. В Bloom — мгновенный отклик интерфейса: пока тянется API, флорист видит форму, а не пустоту. Кнопка ниже перезапускает сценарий «загрузка → данные».</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo" id="skDemo">
+        <div class="sk" id="skList">
+          <div class="sk-row"><div class="sk-box shimmer"></div><div class="sk-lines"><div class="sk-line shimmer sk-l1"></div><div class="sk-line shimmer sk-l2"></div></div></div>
+          <div class="sk-row"><div class="sk-box shimmer"></div><div class="sk-lines"><div class="sk-line shimmer sk-l1"></div><div class="sk-line shimmer sk-l2"></div></div></div>
+          <div class="sk-row"><div class="sk-box shimmer"></div><div class="sk-lines"><div class="sk-line shimmer sk-l1"></div><div class="sk-line shimmer sk-l2"></div></div></div>
+        </div>
+        <div class="sk-real">
+          <div class="sk-row"><div style="width:44px;height:44px;border-radius:10px;background:var(--terra-soft);display:grid;place-items:center;font-weight:800;color:var(--terra)">№1</div><div><b style="font-size:.9rem">Букет «Нежность»</b><div style="font-size:.78rem;color:var(--ink-mute)">Flowwow · до 14:30 · готов</div></div></div>
+          <div class="sk-row"><div style="width:44px;height:44px;border-radius:10px;background:var(--sage-soft);display:grid;place-items:center;font-weight:800;color:var(--sage)">№2</div><div><b style="font-size:.9rem">Пионы розовые</b><div style="font-size:.78rem;color:var(--ink-mute)">VK · до 16:00 · собираем</div></div></div>
+          <div class="sk-row"><div style="width:44px;height:44px;border-radius:10px;background:var(--plum-soft);display:grid;place-items:center;font-weight:800;color:var(--plum)">№3</div><div><b style="font-size:.9rem">Ромашки</b><div style="font-size:.78rem;color:var(--ink-mute)">Telegram · до 17:15 · ожидает</div></div></div>
+        </div>
+        <div style="margin-top:14px"><button class="btn-shine" onclick="reloadSkeleton()"><span class="shine-txt">Перезагрузить</span></button></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">10</span><h3>Раскрывающийся дашборд</h3><span class="src">expandable-bento-grid.tsx</span></div>
+      <div class="b-desc">Сетка метрик, клик по плитке раскрывает детали поверх экрана. В Bloom — стартовый экран менеджера: выручка, заказы, срочные, чаты. Клик по плитке ведёт к деталям без перезагрузки страницы — «всё в одном окне».</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">средне</span></div>
+      <div class="demo">
+        <div class="bento" id="bentoGrid">
+          <div class="bt" data-t="Заказы сегодня" data-d="47 заказов, 5 срочных. Пик сборки 14:00–16:00." data-b='[["Flowwow",76],["VK",12],["Telegram",8],["Прямой",4]]'><div class="bt-label">Заказы</div><div class="bt-num" style="color:var(--terra)">47</div><div class="bt-note">сегодня · 5 срочных</div></div>
+          <div class="bt" data-t="Выручка" data-d="Сегодня 182 400 ₽, средний чек 3 880 ₽. Рост к прошлой неделе +12%." data-b='[["Пн",120],["Вт",142],["Ср",165],["Чт",154],["Пт",182]]'><div class="bt-label">Выручка</div><div class="bt-num" style="color:var(--sage)">182 400 ₽</div><div class="bt-note">+12% к прошлой неделе</div></div>
+          <div class="bt" data-t="Срочные" data-d="5 заказов до 16:00. Двое уже в сборке, три ожидают флориста." data-b='[["Готово",2],["В сборке",1],["Ожидают",2]]'><div class="bt-label">Срочные</div><div class="bt-num" style="color:var(--red)">5</div><div class="bt-note">до 16:00</div></div>
+          <div class="bt" data-t="Чаты" data-d="3 чата ждут ответа менеджера, 1 — переписка по замене роз." data-b='[["Ждут ответа",3],["Решены",12],["Новые",1]]'><div class="bt-label">Чаты</div><div class="bt-num" style="color:var(--plum)">3</div><div class="bt-note">ждут ответа</div></div>
+        </div>
+        <div class="bento-overlay" id="bentoOverlay" onclick="if(event.target===this)closeBento()">
+          <div class="bento-modal">
+            <div class="bm-head"><div class="bm-title" id="bmTitle"></div><button class="bm-x" onclick="closeBento()">✕</button></div>
+            <div class="bm-meta" id="bmDesc"></div>
+            <div class="bm-bars" id="bmBars"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">11</span><h3>Сворачиваемый сайдбар</h3><span class="src">sidebar.tsx</span></div>
+      <div class="b-desc">Боковое меню, которое умеет сворачиваться до иконок, со счётчиками непрочитанного и активным разделом. В Bloom — навигация кабинета менеджера/флориста: счётчики «чаты», «срочные» прямо в меню. Тот самый «каркас», в который лягут все блоки из этого отчёта.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">средне</span></div>
+      <div class="demo">
+        <div class="sb" id="sbDemo">
+          <div class="sb-nav">
+            <div class="sb-logo"><span class="mark"></span><span>Bloom CRM</span></div>
+            <div class="sb-item active" onclick="sbSet(this)"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="lbl">Заказы</span><span class="cnt alert">5</span></div>
+            <div class="sb-item" onclick="sbSet(this)"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span class="lbl">Чаты</span><span class="cnt">3</span></div>
+            <div class="sb-item" onclick="sbSet(this)"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></span><span class="lbl">Аналитика</span></div>
+            <div class="sb-item" onclick="sbSet(this)"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a3 3 0 0 1 3 3 3 3 0 0 1 3 3 3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1-3-3 3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3-3 3 3 0 0 1 3-3z"/></svg></span><span class="lbl">Каталог</span></div>
+            <div class="sb-item" onclick="sbSet(this)"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="lbl">Настройки</span></div>
+          </div>
+          <div class="sb-main">
+            <div class="sb-head"><button class="sb-toggle" onclick="toggleSb()" title="Свернуть">☰</button><span class="sb-title">Заказы</span></div>
+            <div class="sb-tags"><span class="g-chip" style="background:var(--red-soft);color:var(--red)">5 срочных</span><span class="g-chip">Flowwow подключён</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+              <div class="sb-mini"><div class="m-label">Сегодня</div><div class="m-num" style="color:var(--terra)">47</div></div>
+              <div class="sb-mini"><div class="m-label">В сборке</div><div class="m-num" style="color:var(--sage)">9</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">12</span><h3>Табы в карточке заказа</h3><span class="src">tabs.tsx</span></div>
+      <div class="b-desc">Вкладки с плавным переключением контента. В Bloom — карточка заказа: «Состав», «Доставка», «История», «Фото» вместо одного длинного скролла. Стандарт, но в этой реализации переключение мягкое и без «дёрганий».</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div style="max-width:420px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="font-size:.95rem">Заказ №2841</b><span class="g-chip">в сборке</span></div>
+          <div class="tabs" id="tabsDemo">
+            <button class="tab-btn active" onclick="tabSet(this,'Состав')">Состав</button>
+            <button class="tab-btn" onclick="tabSet(this,'Доставка')">Доставка</button>
+            <button class="tab-btn" onclick="tabSet(this,'История')">История</button>
+            <button class="tab-btn" onclick="tabSet(this,'Фото')">Фото</button>
+          </div>
+          <div class="tab-panel active">101 роза «Гран-при» · зелень · упаковка крафт · лента атласная · открытка «С днём рождения!»</div>
+          <div class="tab-panel">Курьер · окно 14:00–16:00 · ул. Цветочная, 12, кв. 5 · комментарий: позвонить за 10 минут</div>
+          <div class="tab-panel">12:02 — принят (Flowwow) · 12:15 — согласовано фото · 13:40 — началась сборка</div>
+          <div class="tab-panel">Фото «до» загружено флористом в 13:42 · ждёт фото «после» от курьера</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">13</span><h3>Карточка за курсором</h3><span class="src">cursor-card.tsx</span></div>
+      <div class="b-desc">При наведении на ссылку рядом с курсором появляется карточка-превью (фото + описание). В Bloom — в списке заказов или в меню «витрины»: навёл на название букета — увидел фото, не открывая карточку. Хорош для каталога на лендинге.</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">средне</span></div>
+      <div class="demo" style="min-height:210px">
+        <div style="font-size:.92rem;line-height:1.8">
+          Популярные букеты этой недели: <a class="cc-link" onmouseenter="ccShow(event)" onmousemove="ccMove(event)" onmouseleave="ccHide()">«Нежность»</a>,
+          <a class="cc-link" onmouseenter="ccShow(event)" onmousemove="ccMove(event)" onmouseleave="ccHide()" data-s="Пионы · розовый · от 2 900 ₽">«Пионовидные»</a>,
+          <a class="cc-link" onmouseenter="ccShow(event)" onmousemove="ccMove(event)" onmouseleave="ccHide()" data-s="Смешанный · ромашки + хризантемы">«Полевой»</a>.
+          Наведите курсор на любое название.
+        </div>
+        <div class="cc-fly" id="ccFly">
+          <img id="ccImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='90' viewBox='0 0 200 90'%3E%3Crect width='200' height='90' rx='8' fill='%23f6e9de'/%3E%3Cg transform='translate(100 44)'%3E%3Cg fill='%23b4632f'%3E%3Cellipse cx='0' cy='-16' rx='10' ry='15'/%3E%3Cellipse cx='16' cy='0' rx='10' ry='15' transform='rotate(72)'/%3E%3Cellipse cx='-16' cy='0' rx='10' ry='15' transform='rotate(144)'/%3E%3Cellipse cx='16' cy='0' rx='10' ry='15' transform='rotate(216)'/%3E%3Cellipse cx='-16' cy='0' rx='10' ry='15' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle r='6' fill='%23c7932a'/%3E%3Cpath d='M0 16 v14' stroke='%235c7a63' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E" alt="">
+          <div class="cc-t" id="ccT">Букет «Нежность»</div>
+          <div class="cc-s" id="ccS">101 роза · от 4 900 ₽</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">14</span><h3>Текст с волной-появлением</h3><span class="src">staggerText.tsx</span></div>
+      <div class="b-desc">Слова/буквы выезжают снизу по очереди — «волной». В Bloom — заголовок лендинга КП, оффер, приветствие в кабинете. Дёшево и заметно «дорого» выглядит на первом экране. Кнопка ниже перезапускает анимацию.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="fliptext" id="flipTxt"><span class="w"><span class="ch">Цветы</span></span> <span class="w"><span class="ch">—</span></span> <span class="w"><span class="ch">это</span></span> <span class="w"><span class="ch">про</span></span> <span class="w"><span class="ch">момент</span></span></div>
+        <div style="font-size:.8rem;color:var(--ink-mute);margin-top:6px;font-family:'Segoe UI',Arial,sans-serif">Заголовок первого экрана лендинга Bloom.</div>
+        <button class="replay-btn" onclick="flipRun()">Повторить анимацию</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">15</span><h3>Прелоадер при входе</h3><span class="src">reveal-loader.tsx</span></div>
+      <div class="b-desc">Полноэкранный прелоадер: слово появляется, потом шторки разъезжаются. В Bloom — 0,8-секундный вход в кабинет: «Bloom CRM» на весь экран, и рабочий стол раскрывается. Создаёт ощущение «солидного продукта» на презентации. Кнопка ниже воспроизводит.</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">средне</span></div>
+      <div class="demo">
+        <div class="loader-wrap" id="loaderW">
+          <div class="loader-pane p1"></div>
+          <div class="loader-pane p2"></div>
+          <div class="loader-txt"><span>BLOOM CRM</span></div>
+        </div>
+        <button class="replay-btn" onclick="runLoader()">Показать вход</button>
+      </div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2><span>Галерея Animmaster Lib</span><span class="tag plum">анимации и логики</span></h2>
+
+    <div class="card">
+      <p><b>Animmaster Lib</b> — платная библиотека 300 анимированных PRO-компонентов («руками написанный код», 60% HTML/CSS/JS, 30% React, 10% Next.js). Одноразовая покупка с пожизненным доступом; Premium-пакет включает обновления и приватный Telegram-канал. Для Bloom это источник «дорогой» динамики на лендинг КП и кабинет.</p>
+      <ul>
+        <li><b>Состав:</b> 66 скролл-анимаций · 26 hero · 23 слайдера · 22 3D · 21 меню · 20 hover · 20 mouse-эффектов · 18 WebGL · 14 переходов страниц · 14 текстовых · 11 SVG · 10 фоновых · 10 грид · 10 физика.</li>
+        <li><b>Ценность для Bloom:</b> в первую очередь лендинг-КП (hero, текст, слайдеры, фоны) и «полировка» кабинета (скролл-reveal, переходы, hover-состояния карточек).</li>
+        <li><b>Осторожно:</b> WebGL/3D/физика — тяжёлые и нишевые; для CRM-кабинета большинство из них избыточно, но на лендинге 2–3 hero/текстовые дают «вау» за копейки.</li>
+        <li><b>Доступ:</b> покупка → Google Drive + Telegram-канал; интеграция через «скажи ИИ вставить в проект» или copy-paste (по словам автора).</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A01</span><h3>Плавающие цветы (фоновый слой)</h3><span class="src">Background Animation</span></div>
+      <div class="b-desc">Лепестки/цветы неторопливо поднимаются по экрану и растворяются. В Bloom — деликатный «живой» фон за лендингом КП или за карточкой заказа: цветочная сеть, дорого и ненавязчиво. Лёгкий, почти чистый CSS.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="float-wrap">
+          <div class="cap">Воздушный фон для КП · лепестки поднимаются</div>
+          <div class="fl">🌷</div><div class="fl">🌺</div><div class="fl">🌻</div><div class="fl">🌿</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A02</span><h3>Текст-волна (появление по словам)</h3><span class="src">Text Animation</span></div>
+      <div class="b-desc">Слова выезжают снизу по одному с лёгким наклоном — «волной». В Bloom — заголовок первого экрана КП: «Один кабинет для всей вашей флористики» раскрывается строка за строкой. Кнопка ниже перезапускает.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="wave-txt" id="waveTxt"><span class="wv">Один</span> <span class="wv">кабинет</span> <span class="wv">для</span> <span class="wv">всей</span> <span class="wv">флористики</span></div>
+        <button class="replay-btn" onclick="waveRun()">Повторить</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A03</span><h3>Прогресс-бар reveal (скролл-индикатор)</h3><span class="src">Scroll Animation</span></div>
+      <div class="b-desc">Полоса заполняется по мере прокрутки страницы — классика «дорогих» лендингов. В Bloom — индикатор чтения на КП или «сверка с маркетплейсом» как живая полоса. Кнопка ниже запускает анимацию.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="reveal-bar" id="revealBar" style="max-width:360px"></div>
+        <div style="margin-top:12px;font-size:.82rem;color:var(--ink-mute);font-family:'Segoe UI',Arial,sans-serif">Пример: «Сверка с маркетплейсом · 84% заказов синхронизировано»</div>
+        <button class="replay-btn" onclick="revealRun()">Запустить</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A04</span><h3>Размытие при наведении (distort)</h3><span class="src">Hover / Mouse Effect</span></div>
+      <div class="b-desc">Слово «расплывается» (letter-spacing + translate) при наведении. В Bloom — пункты меню кабинета, ссылки «в чат», кнопки «к заказу»: дорогой micro-interaction, который считывается как «продуманный продукт».</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">легко</span></div>
+      <div class="demo" style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center">
+        <span class="distort">Заказы</span><span class="distort">Чаты</span><span class="distort">Витрина</span><span class="distort">Отчёты</span>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A05</span><h3>Карточки-чипы с отлётом (hover lift)</h3><span class="src">Hover Effect</span></div>
+      <div class="b-desc">Чипы/категории приподнимаются с пружинкой при наведении. В Bloom — круглые плитки-категории на лендинге (цветы/торты/подарки) и фильтры в кабинете: «потрогать» хочется руками.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo" style="text-align:center">
+        <span class="hover-chip">🌷 Цветы</span><span class="hover-chip">🎂 Торты</span><span class="hover-chip">🎁 Подарки</span><span class="hover-chip">💐 Композиции</span>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A06</span><h3>Смена слова с морфингом</h3><span class="src">Text Animation</span></div>
+      <div class="b-desc">Ключевое слово плавно «переливается» в другое (вращение рулетки слов). В Bloom — hero лендинга: «Заказы Flowwow · прямые продажи · чаты · аналитика» — одно место, четыре смысла. Автоматический цикл.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">средне</span></div>
+      <div class="demo">
+        <div style="text-align:center;font-family:'Segoe UI',Arial,sans-serif;font-size:.82rem;color:var(--ink-mute)">Один кабинет для</div>
+        <div style="text-align:center;margin-top:6px"><span class="morph-swap" id="morphWord"><span class="ms">заказов Flowwow</span></span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A07</span><h3>Заполнение за скроллом (scrub fill)</h3><span class="src">Scroll Animation</span></div>
+      <div class="b-desc">Градиентная «заливка» полосы/картинки привязана к прокрутке (scrub). В Bloom — карточка заказа «в сборке» заполняется по мере времени, «осталось 12 минут» ощущается телом. Наведите курсор — полоса следует за позицией.</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">средне</span></div>
+      <div class="demo">
+        <div class="scrub-fill" id="scrubFill"><div class="sf-track"></div><div class="sf-cap">Сборка заказа · движение курсора слева → время</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A08</span><h3>Параллакс слоёв за курсором</h3><span class="src">Mouse Effect</span></div>
+      <div class="b-desc">Слои смещаются с разной скоростью за курсором — глубина. В Bloom — hero-секция КП (букет на переднем плане, текст глубже) или витрина: «листаешь» взглядом, а картинки чуть дышат. Чистый CSS+JS, без библиотек.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">средне</span></div>
+      <div class="demo">
+        <div class="parallax-zone" id="pxZone">
+          <div class="noise"></div><div class="shade"></div>
+          <div class="px-layer px-l1">Заказы</div><div class="px-layer px-l2">Витрина</div><div class="px-layer px-l3">Аналитика</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A09</span><h3>Тосты с позицией и жестом</h3><span class="src">Page / Notifications logic</span></div>
+      <div class="b-desc">Уведомления-тосты: позиция на экране, стек, автоскрытие, dismiss. В Bloom — тот же слой, что в VengeanceUI (тосты), но с акцентом на «логику»: приоритеты, очередь, повторяемость. Демо ниже — стек из трёх событий.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-shine btn-ghost" style="color:var(--sage)" onclick="toast2('ok','Собрано','Букет №2845 готов к передаче')">Собрано</button>
+          <button class="btn-shine btn-ghost" style="color:#9A7A2A" onclick="toast2('warn','Замена','Роз нет — предложить пионы?')">Замена</button>
+          <button class="btn-shine btn-ghost" style="color:var(--plum)" onclick="toast2('info','Сверка','Flowwow · синхронизировано')">Сверка</button>
+        </div>
+        <div class="toast-area" id="toastArea2"></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">A10</span><h3>Тексты с фоновым «шумом»</h3><span class="src">Background / Text logic</span></div>
+      <div class="b-desc">Лёгкий film-grain + градиентная подсветка поверх контента — тот самый «дорогой» оверхей, что у топ-лендингов. В Bloom — поверх hero-секции КП или как общий слой кабинета: добавляет «фактуру», не мешает чтению. Показан выше на A08 (слой noise).</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div style="position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(120deg,var(--terra-soft),var(--plum-soft),var(--sage-soft));padding:20px">
+          <div class="noise" style="opacity:.14"></div>
+          <div style="position:relative;font-size:1.05rem;font-weight:800">Цветы — это про момент.</div>
+          <div style="position:relative;font-size:.85rem;color:var(--ink-mute);margin-top:4px">Тот самый «фактурный» оверхей поверх градиента.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span>Что стоит внедрить первым</span><span class="tag sage">приоритет</span></h2>
+    <div class="card">
+      <p style="margin-bottom:8px"><b>Топ-7 с приоритетом — что сильнее всего закроет пробелы кабинета и поднимет КП (из обеих библиотек):</b></p>
+      <table>
+        <tr><th>#</th><th>Блок</th><th>Источник</th><th>Куда в Bloom</th><th>Почему первым</th></tr>
+        <tr><td><b>1</b></td><td>Тосты-уведомления</td><td>VengeanceUI + Animmaster</td><td>Весь кабинет: заказы, ключи, фото, отмены</td><td>Закрывает главный пробел из аудита: сейчас нет ни одного живого уведомления (ни «заказ принят», ни «ключ отвалился»). Один общий слой тостов — и система «ожила».</td></tr>
+        <tr><td><b>2</b></td><td>Живые цифры</td><td>VengeanceUI</td><td>Экран «Отчёты», карточка клиента</td><td>Выручка/средний чек/периодичность перестают быть статикой. На презентации цифры «тикают» — сильное впечатление.</td></tr>
+        <tr><td><b>3</b></td><td>Текст-волна + морфинг слова</td><td>Animmaster</td><td>Hero лендинга КП</td><td>Заголовок «Один кабинет для…» раскрывается строкой за строкой и переливается между «заказы/чаты/аналитика» — первый экран продаёт сам себя.</td></tr>
+        <tr><td><b>4</b></td><td>Плавающие цветы + параллакс слоёв</td><td>Animmaster</td><td>Фон КП, hero-секция</td><td>Цветочная сеть получает «дышащий» фирменный фон без видео. Два дешёвых эффекта — весь лендинг оживает.</td></tr>
+        <tr><td><b>5</b></td><td>Сворачиваемый сайдбар</td><td>VengeanceUI</td><td>Каркас кабинета менеджера и флориста</td><td>Навигация со счётчиками срочных/чатов прямо в меню — правильная основа, в которую лягут все остальные блоки.</td></tr>
+        <tr><td><b>6</b></td><td>Прогресс-бар + заполнение за скроллом</td><td>Animmaster</td><td>Лендинг КП, карточка «сверка»</td><td>«Сверка с маркетплейсом» и время сборки заказа считываются телом — надёжность видна, а не декларируется.</td></tr>
+        <tr><td><b>7</b></td><td>Бегущий луч + светящаяся рамка</td><td>VengeanceUI</td><td>Карточка заказа, срочный заказ</td><td>«Срочный» и «сверка идёт» — мгновенно считываются, ноль бизнес-логики, чистый UI.</td></tr>
+      </table>
+    </div>
+    <div class="note"><b>Итог:</b> ни один из отобранных блоков не требует новых фреймворков — всё переносится одним файлом в цвета Bloom. VengeanceUI — бесплатная база «полировки» (тосты, цифры, сайдбар, рамки), Animmaster — платный источник «дорогой» динамики для лендинга (текст-волна, фоны, параллакс). Реалистичный объём на первую итерацию: 3–5 дней на топ-7, включая адаптив.</div>
+  </section>
+
+  <footer>Bloom CRM · бенчмарк UI-блоков · источники: github.com/Ashutoshx7/VengeanceUI (MIT) · animmasterlib.dev</footer>
+</div>
+
+<script>
+(function(){
+  function buildNumRoll(sel){
+    document.querySelectorAll(sel).forEach(function(el){
+      var n=parseInt(el.getAttribute('data-num'),10);
+      el.innerHTML='';
+      el.dataset.v='0';
+      for(var k=0;k<n;k++){
+        var cell=document.createElement('span');
+        cell.className='d';
+        var strip=document.createElement('span');
+        strip.className='strip';
+        for(var i=0;i<=9;i++){
+          var s=document.createElement('span');
+          s.textContent=i;
+          strip.appendChild(s);
+        }
+        cell.appendChild(strip);
+        el.appendChild(cell);
+      }
+    });
+  }
+  buildNumRoll('.num-roll');
+
+  var firstDone=false;
+  function setRoll(el,val){
+    var str=String(val);
+    var cells=el.querySelectorAll('.d');
+    var maxLen=cells.length;
+    var padded=('0'.repeat(maxLen)+str).slice(-maxLen);
+    cells.forEach(function(c,idx){
+      var d=parseInt(padded[idx],10);
+      c.querySelector('.strip').style.transform='translateY(-'+d+'em)';
+    });
+  }
+  function rollAll(){
+    var vals=[182400,47,3880,12];
+    document.querySelectorAll('.num-roll').forEach(function(el,i){
+      var from=parseInt(el.dataset.v||'0',10);
+      var to=vals[i];
+      if(!firstDone){
+        setRoll(el,to);
+        el.dataset.v=to;
+        return;
+      }
+      var steps=10;
+      var cur=from;
+      var timer=setInterval(function(){
+        if(steps--<=0){clearInterval(timer);el.dataset.v=to;return;}
+        cur=Math.round(from+(to-from)*(1-steps/10));
+        setRoll(el,cur);
+      },46);
+    });
+    firstDone=true;
+  }
+  window.rollAll=rollAll;
+
+  function dockSet(el){
+    el.parentNode.querySelectorAll('.dock-item').forEach(function(i){i.classList.remove('active');});
+    el.classList.add('active');
+  }
+  window.dockSet=dockSet;
+
+  var mqItems=['Flowwow','VK Мессенджер','Telegram','Свой сайт','Avito','Яндекс','2ГИС','Ozon'];
+  var track=document.getElementById('marqTrack');
+  var html='';
+  var colors=[['#b4632f','#f6e9de'],['#6d4b62','#f3e9ef'],['#5c7a63','#eaf1ea'],['#c7932a','#fdf3e0']];
+  for(var r=0;r<2;r++){
+    mqItems.forEach(function(name,i){
+      var c=colors[i%colors.length];
+      html+='<div class="mq-item"><span class="dot" style="background:'+c[0]+'"></span><span>Продаём через</span><b>'+name+'</b></div>';
+    });
+  }
+  track.innerHTML=html;
+
+  function toast(type,title,msg,area){
+    if(!area)area=document.getElementById('toastArea');
+    var t=document.createElement('div');
+    t.className='toast';
+    var ico=type==='ok'?'✓':(type==='err'?'✕':(type==='warn'?'!':'i'));
+    t.innerHTML='<span class="t-ico '+type+'">'+ico+'</span><div class="t-body"><div class="t-title">'+title+'</div><div class="t-msg">'+msg+'</div></div><button class="t-x" onclick="this.parentNode.remove()">✕</button>';
+    area.appendChild(t);
+    setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove();},260);},3400);
+  }
+  window.toast=toast;
+
+  function reloadSkeleton(){
+    var demo=document.getElementById('skDemo');
+    demo.classList.remove('sk-loading');
+    setTimeout(function(){demo.classList.add('sk-loading');},600);
+  }
+  window.reloadSkeleton=reloadSkeleton;
+
+  function openBento(cell){
+    var t=cell.getAttribute('data-t');
+    var d=cell.getAttribute('data-d');
+    var b=JSON.parse(cell.getAttribute('data-b'));
+    document.getElementById('bmTitle').textContent=t;
+    document.getElementById('bmDesc').textContent=d;
+    var bars=document.getElementById('bmBars');
+    bars.innerHTML='';
+    var colors=['#b4632f','#6d4b62','#5c7a63','#c7932a'];
+    b.forEach(function(pair,i){
+      var row=document.createElement('div');
+      row.className='bar-row';
+      row.innerHTML='<span style="width:90px">'+pair[0]+'</span><div class="bar-track"><div class="bar-fill" style="width:'+pair[1]+'%;background:'+colors[i%colors.length]+'"></div></div><b>'+pair[1]+'</b>';
+      bars.appendChild(row);
+    });
+    document.getElementById('bentoOverlay').classList.add('open');
+  }
+  window.openBento=openBento;
+  function closeBento(){document.getElementById('bentoOverlay').classList.remove('open');}
+  window.closeBento=closeBento;
+  document.getElementById('bentoGrid').addEventListener('click',function(e){
+    var cell=e.target.closest('.bt');
+    if(cell)openBento(cell);
+  });
+
+  var sbCollapsed=false;
+  function toggleSb(){
+    sbCollapsed=!sbCollapsed;
+    document.getElementById('sbDemo').classList.toggle('collapsed',sbCollapsed);
+  }
+  window.toggleSb=toggleSb;
+  function sbSet(el){
+    el.parentNode.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
+    el.classList.add('active');
+  }
+  window.sbSet=sbSet;
+
+  function tabSet(btn,label){
+    var wrap=btn.closest('.tabs');
+    var demo=wrap.parentNode;
+    wrap.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    var labels=['Состав','Доставка','История','Фото'];
+    var panels=demo.querySelectorAll('.tab-panel');
+    panels.forEach(function(p,i){p.classList.toggle('active',labels[i]===label);});
+  }
+  window.tabSet=tabSet;
+
+  function ccShow(e){
+    var fly=document.getElementById('ccFly');
+    var link=e.currentTarget;
+    var s=link.getAttribute('data-s');
+    document.getElementById('ccS').textContent=s||'101 роза · от 4 900 ₽';
+    fly.style.opacity='1';
+    ccMove(e);
+  }
+  function ccMove(e){
+    var fly=document.getElementById('ccFly');
+    var demo=e.currentTarget.closest('.demo');
+    var rect=demo.getBoundingClientRect();
+    var x=e.clientX-rect.left+18;
+    var y=e.clientY-rect.top-28;
+    if(x+210>rect.width)x=e.clientX-rect.left-210;
+    if(y+150>rect.height)y=e.clientY-rect.top-150;
+    fly.style.left=x+'px';
+    fly.style.top=y+'px';
+  }
+  function ccHide(){document.getElementById('ccFly').style.opacity='0';}
+  window.ccShow=ccShow;window.ccMove=ccMove;window.ccHide=ccHide;
+
+  function flipRun(){
+    var el=document.getElementById('flipTxt');
+    el.classList.remove('run');
+    void el.offsetWidth;
+    el.classList.add('run');
+  }
+  window.flipRun=flipRun;
+  document.getElementById('flipTxt').querySelectorAll('.ch').forEach(function(c,i){
+    c.style.transitionDelay=((i*60)+50)+'ms';
+  });
+  setTimeout(flipRun,200);
+
+  function runLoader(){
+    var el=document.getElementById('loaderW');
+    el.classList.remove('go');
+    void el.offsetWidth;
+    el.classList.add('go');
+  }
+  window.runLoader=runLoader;
+  setTimeout(runLoader,300);
+
+  /* ── Animmaster demos ── */
+  function waveRun(){
+    var el=document.getElementById('waveTxt');
+    el.classList.remove('run');
+    void el.offsetWidth;
+    el.querySelectorAll('.wv').forEach(function(w,i){w.style.transitionDelay=(i*70)+'ms';});
+    el.classList.add('run');
+  }
+  window.waveRun=waveRun;
+  setTimeout(waveRun,300);
+
+  function revealRun(){
+    var el=document.getElementById('revealBar');
+    el.classList.remove('run');
+    void el.offsetWidth;
+    el.classList.add('run');
+  }
+  window.revealRun=revealRun;
+  setTimeout(revealRun,400);
+
+  var morphWords=['заказов Flowwow','прямых продаж','чатов WA и TG','аналитики'];
+  var morphIdx=0;
+  var morphEl=document.getElementById('morphWord');
+  function morphNext(){
+    var cur=morphEl.querySelector('.ms');
+    var next=document.createElement('span');
+    next.className='ms in';
+    next.textContent=morphWords[(morphIdx+1)%morphWords.length];
+    cur.classList.add('out');
+    morphEl.appendChild(next);
+    setTimeout(function(){cur.remove();},560);
+    morphIdx=(morphIdx+1)%morphWords.length;
+  }
+  setInterval(morphNext,2600);
+
+  var scrubFill=document.getElementById('scrubFill');
+  if(scrubFill){
+    scrubFill.addEventListener('mousemove',function(e){
+      var r=scrubFill.getBoundingClientRect();
+      var p=(e.clientX-r.left)/r.width;
+      scrubFill.querySelector('.sf-track').style.transform='translateX('+(-60+120*p)+'%)';
+    });
+    scrubFill.addEventListener('mouseleave',function(){
+      scrubFill.querySelector('.sf-track').style.transform='translateX(-60%)';
+    });
+  }
+
+  var pxZone=document.getElementById('pxZone');
+  if(pxZone){
+    pxZone.addEventListener('mousemove',function(e){
+      var r=pxZone.getBoundingClientRect();
+      var cx=(e.clientX-r.left)/r.width-.5;
+      var cy=(e.clientY-r.top)/r.height-.5;
+      pxZone.querySelectorAll('.px-layer').forEach(function(l,i){
+        var d=(i+1)*10;
+        l.style.transform='translate('+(cx*d)+'px,'+(cy*d)+'px)';
+      });
+    });
+    pxZone.addEventListener('mouseleave',function(){
+      pxZone.querySelectorAll('.px-layer').forEach(function(l){l.style.transform='';});
+    });
+  }
+
+  var ta2=document.getElementById('toastArea2');
+  if(ta2){
+    window.toast2=function(type,title,msg){toast(type,title,msg,ta2);};
+  }
+})();
+</script>
+</body>
+</html>

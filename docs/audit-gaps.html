@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM · Аудит демо vs ТЗ</title>
+<style>
+  :root{
+    --terra:#b4632f; --terra-soft:#f6e9de; --plum:#6d4b62; --plum-soft:#f3e9ef;
+    --sage:#5c7a63; --sage-soft:#eaf1ea; --amber-soft:#fdf3e0; --ink:#2b2420;
+    --ink-mute:#8b8178; --line:#e9e2da; --paper:#fbf8f4; --card:#fffdf9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--paper);color:var(--ink);line-height:1.55;padding:48px 24px}
+  .wrap{max-width:860px;margin:0 auto}
+  header{margin-bottom:36px}
+  .kicker{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--terra);font-weight:700}
+  h1{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px}
+  .sub{color:var(--ink-mute);font-size:.95rem}
+  .rule{height:2px;background:linear-gradient(90deg,var(--terra),var(--plum));margin:22px 0 30px}
+  h2{font-family:'Segoe UI',Arial,sans-serif;font-size:1.05rem;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .tag{font-size:.7rem;background:var(--terra);color:#fff;border-radius:999px;padding:2px 10px;font-weight:700;letter-spacing:.03em}
+  h2 .tag.plum{background:var(--plum)}
+  h2 .tag.grey{background:#9aa0a6}
+  section{margin-bottom:38px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:14px}
+  .card.crit{border-left:4px solid var(--terra)}
+  .card.semi{border-left:4px solid var(--plum)}
+  .card.minor{border-left:4px solid #9aa0a6}
+  .item-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .num{font-family:'Segoe UI',Arial,sans-serif;font-size:.78rem;font-weight:800;color:var(--terra);min-width:1.4em}
+  .crit .num{color:var(--terra)}
+  .semi .num{color:var(--plum)}
+  h3{font-size:1.02rem;font-weight:700}
+  .src{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;color:var(--ink-mute);background:var(--plum-soft);border-radius:6px;padding:1px 8px;font-weight:600}
+  p{margin-top:8px;font-size:.95rem}
+  ul{margin:8px 0 0 20px;font-size:.92rem}
+  li{margin:4px 0}
+  .note{background:var(--amber-soft);border:1px solid #ecd9b0;border-radius:12px;padding:14px 18px;font-size:.9rem;margin-top:14px}
+  .note b{color:#9A7A2A}
+  .prio{font-family:'Segoe UI',Arial,sans-serif;font-size:.74rem;font-weight:700;border-radius:999px;padding:2px 10px;margin-left:auto;white-space:nowrap}
+  .prio.high{background:var(--terra-soft);color:var(--terra)}
+  .prio.mid{background:var(--plum-soft);color:var(--plum)}
+  .prio.low{background:#f0efe9;color:#6f6a63}
+  footer{margin-top:44px;color:var(--ink-mute);font-size:.8rem;font-family:'Segoe UI',Arial,sans-serif;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Bloom CRM · аудит</div>
+    <h1>Чего не хватает демке</h1>
+    <div class="sub">Сверка демо-кабинета с ТЗ (docs/tz.md) · 2026-08-02</div>
+    <div class="rule"></div>
+  </header>
+
+  <section>
+    <h2><span>Критичные пробелы</span><span class="tag">клиент прямо об этом просил</span></h2>
+
+    <div class="card crit">
+      <div class="item-head">
+        <span class="num">1</span>
+        <h3>Фото букета до/после</h3>
+        <span class="src">ТЗ п.3, п.4</span>
+        <span class="prio high">высокий</span>
+      </div>
+      <p>ТЗ: «загрузить фото букета», «фото букета до/после», плашка «Фото до “В доставке”» есть в настройках, но в самом заказе загрузить/посмотреть фото нельзя. Есть только задача «Согласовать фото» и кнопка в почте. В карточке заказа нет ни загрузки, ни просмотра.</p>
+    </div>
+
+    <div class="card crit">
+      <div class="item-head">
+        <span class="num">2</span>
+        <h3>Отмена заказа с причиной + уведомление</h3>
+        <span class="src">ТЗ п.4</span>
+        <span class="prio high">высокий</span>
+      </div>
+      <p>В ТЗ: «Можно отказаться от заказа с указанием причины», «Отмену клиентом система покажет». В демо <i>cancelled</i> есть как статус в фильтре и матрице, но <b>нет кнопки «Отменить/Отказаться» в карточке заказа</b> — нельзя показать сам сценарий на презентации.</p>
+    </div>
+
+    <div class="card crit">
+      <div class="item-head">
+        <span class="num">3</span>
+        <h3>Сверка с маркетплейсом / мониторинг ключей</h3>
+        <span class="src">ТЗ п.2, п.9</span>
+        <span class="prio high">высокий</span>
+      </div>
+      <p>ТЗ делает акцент: «постоянно сверяется», «следит за всеми подключениями», «если отвалился ключ — сообщение в Telegram». В демо этого нет совсем — ни индикатора «сверки», ни алерта о сбое ключа/мессенджера. Это пункт про <b>надёжность</b>, которым клиент прямо переживает (п.9).</p>
+    </div>
+
+    <div class="card crit">
+      <div class="item-head">
+        <span class="num">4</span>
+        <h3>Уведомления о заказах «в Telegram или вк»</h3>
+        <span class="src">ТЗ п.5</span>
+        <span class="prio mid">средний</span>
+      </div>
+      <p>В настройках есть тумблер <i>alertTg</i>, но в демо нет ни одного момента, где уведомление реально «уходит» и показывается. На презентации можно показать, но «безопаснее» смоделировать.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span>Существенные</span><span class="tag plum">полуприкрыты</span></h2>
+
+    <div class="card semi">
+      <div class="item-head">
+        <span class="num">5</span>
+        <h3>Информация по клиенту — сумма, средний чек, периодичность</h3>
+        <span class="src">ТЗ п.8</span>
+        <span class="prio mid">средний</span>
+      </div>
+      <p><i>clientStats()</i> есть, средний LTV в отчётах есть — проверь, что в карточке клиента это видно и выглядит живым (периодичность покупок, «берёт раз в N дней»).</p>
+    </div>
+
+    <div class="card semi">
+      <div class="item-head">
+        <span class="num">6</span>
+        <h3>«Срочные сверху» в общем списке заказов</h3>
+        <span class="src">ТЗ п.3</span>
+        <span class="prio mid">средний</span>
+      </div>
+      <p>В ТЗ список заказов: срочные сверху. В демо сортировка есть в чатах (непрочитанные сверху), но в списке/канбане заказов сортировка по срочности не очевидна.</p>
+    </div>
+
+    <div class="card semi">
+      <div class="item-head">
+        <span class="num">7</span>
+        <h3>Лояльность</h3>
+        <span class="src">ТЗ п.13</span>
+        <span class="prio low">проговорить</span>
+      </div>
+      <p>Честно: «Отдельное ТЗ — пока выкл». Это правильно, что не нарисовано. Но на презентации стоит <b>проговорить словами</b>, что это будет отдельным ТЗ, а не показывать выключенный тумблер.</p>
+    </div>
+
+    <div class="card semi">
+      <div class="item-head">
+        <span class="num">8</span>
+        <h3>Прямые продажи «наравне с маркетплейсом»</h3>
+        <span class="src">ТЗ п.6</span>
+        <span class="prio low">ок</span>
+      </div>
+      <p>Есть (<i>Прямой</i> banner, канал). Ок.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span>Мелочи</span><span class="tag grey">бросаются в глаза</span></h2>
+
+    <div class="card minor">
+      <div class="item-head">
+        <span class="num">·</span>
+        <h3>Телефон / планшет</h3>
+        <span class="src">ТЗ п.1</span>
+      </div>
+      <p>«Открывается на любом устройстве» — демка свёрстана под десктоп; на планшете канбан наверняка ломается. Стоит хотя бы упомянуть адаптивность.</p>
+    </div>
+
+    <div class="card minor">
+      <div class="item-head">
+        <span class="num">·</span>
+        <h3>Множественные пользователи</h3>
+        <span class="src">ТЗ п.1</span>
+      </div>
+      <p>Не показано, но и не нужно в демо.</p>
+    </div>
+  </section>
+
+  <div class="note">
+    <b>Что докрутить перед показом (по приоритету):</b><br>
+    1. Кнопка «Отменить» с причиной + запись в ленту и toast — 15 минут.<br>
+    2. Фото букета в карточке (мини-превью до/после + загрузка) — 20 минут.<br>
+    3. Алерт «ключ точки отвалился → Telegram» в шторке Надёжность + индикатор «сверка с МП… ок» — 15 минут.
+  </div>
+
+  <footer>Bloom CRM · демо-кабинет · сверка с docs/tz.md</footer>
+</div>
+</body>
+</html>

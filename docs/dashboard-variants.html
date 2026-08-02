@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM — 10 направлений дашборда</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--terra:#B4632F;--terra2:#C76B47;
+--plum:#6D4B62;--plum2:#6B4865;
+--sage:#5C7A63;--sage2:#7C8B6F;
+--amber:#C7932A;--amber2:#D9A441;
+--cream:#FBF8F4;--ink:#2B2420;
+--ease:cubic-bezier(.16,1,.3,1)
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;background:var(--cream);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;font-size:15px}
+.mono{font-family:'JetBrains Mono','Cascadia Mono','SF Mono',ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+::selection{background:var(--terra);color:#fff}
+header{position:sticky;top:0;z-index:60;background:rgba(251,248,244,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #E8E0D6}
+.h-top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 22px 10px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;font-size:15px}
+.brand-dot{width:14px;height:14px;border-radius:5px;background:linear-gradient(135deg,var(--terra),var(--terra2));box-shadow:0 3px 8px rgba(180,99,47,.35)}
+.brand-sub{font-size:11px;font-weight:600;color:#8A7B6C;letter-spacing:.02em;margin-left:2px}
+.h-nav{display:flex;align-items:center;gap:8px}
+.h-count{font-size:11px;color:#8A7B6C;min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
+.nav-btn{border:1px solid #E0D5C9;background:#fff;color:#6E5F52;font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:999px;cursor:pointer;transition:.2s}
+.nav-btn:hover{border-color:var(--terra);color:var(--terra)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 22px 12px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;border:1px solid #E4DBD0;background:#fff;color:#6E5F52;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer;transition:.18s}
+.tab:hover{border-color:var(--terra);color:var(--terra)}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#FBF8F4;box-shadow:0 4px 14px rgba(43,36,32,.2)}
+main{max-width:1120px;margin:0 auto;padding:30px 22px 80px}
+.vari{display:none}
+.vari.on{display:block}
+.v-head{display:grid;grid-template-columns:auto 1fr;gap:0 18px;margin-bottom:20px}
+.v-num{font-size:13px;font-weight:700;color:#fff;background:var(--terra);border-radius:10px;width:40px;height:40px;display:grid;place-items:center;box-shadow:0 6px 16px rgba(180,99,47,.28);grid-row:1/3}
+.v-title h2{font-size:clamp(1.5rem,2.6vw,1.9rem);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.v-src{font-size:12px;font-weight:600;color:var(--terra);margin-top:3px}
+.v-desc{grid-column:2;font-size:13px;color:#6E5F52;max-width:640px;margin-top:2px}
+.v-meta{display:inline-flex;gap:6px;margin-left:10px}
+.v-meta span{font-size:10px;font-weight:800;letter-spacing:.05em;color:#8A7B6C;background:#F0E9E0;border:1px solid #E7DED3;border-radius:6px;padding:3px 7px;text-transform:uppercase}
+.stage{position:relative;border-radius:22px;overflow:hidden;border:1px solid #E9E1D7;box-shadow:0 26px 60px rgba(43,36,32,.13);min-height:400px;background:#FBF8F4}
+.stage-in{position:relative}
+.up{opacity:0}
+.vari.on .up{opacity:1;animation:up .65s var(--ease) backwards;animation-delay:var(--d,0s)}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes glowAmber{0%,100%{box-shadow:0 0 0 0 rgba(217,164,65,.45),0 12px 34px rgba(217,164,65,.18)}50%{box-shadow:0 0 0 12px rgba(217,164,65,0),0 16px 44px rgba(217,164,65,.3)}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(217,164,65,.55)}70%{box-shadow:0 0 0 18px rgba(217,164,65,0)}100%{box-shadow:0 0 0 0 rgba(217,164,65,0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes growW{from{width:0}}
+.d-up{color:#5C7A63}.d-warn{color:#C7932A}
+.delt{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+.delt.up{background:#EDF3EA;color:#4F6B55}
+.delt.warn{background:#F7EFDC;color:#A07A20}
+.period{display:flex;gap:6px;background:#F2ECE4;padding:4px;border-radius:12px}
+.p-btn{border:0;background:transparent;font-family:inherit;font-size:12px;font-weight:700;color:#8A7B6C;padding:8px 14px;border-radius:9px;cursor:pointer;transition:.2s}
+.p-btn.on{background:#fff;color:#2B2420;box-shadow:0 2px 8px rgba(43,36,32,.1)}
+footer{max-width:1120px;margin:0 auto;padding:0 22px 40px;font-size:12px;color:#9C8F80}
+@media(max-width:900px){
+.v7 .stage-in{grid-template-columns:1fr 1fr}
+.v1-kpis{grid-template-columns:repeat(2,1fr)}
+.v1-grid,.v2-bottom,.v4-bot,.v9-bot{grid-template-columns:1fr}
+.v2-kpis{grid-template-columns:repeat(2,1fr)}
+.v3-kpis{grid-template-columns:repeat(2,1fr);border:0}
+.v3-kpi{border:0;border-top:1px solid #EAE2D8}
+.v5 .stage-in{grid-template-columns:1fr}
+.v8-grid{grid-template-columns:1fr}
+.v9-grid{grid-template-columns:repeat(2,1fr)}
+.v10-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+.v2-kpis,.v7 .stage-in,.v9-grid{grid-template-columns:1fr}
+.v4-kpis{grid-template-columns:repeat(2,1fr)}
+.v-desc{grid-column:1/3}
+}
+@media (prefers-reduced-motion: reduce){
+*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.v1{background:#14100D;color:#F3EAE1;background-image:radial-gradient(900px 400px at 85% -10%,rgba(199,147,42,.14),transparent 60%),radial-gradient(700px 420px at 0% 110%,rgba(196,107,71,.12),transparent 55%)}
+.v1 .stage-in{padding:22px 24px}
+.v1-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.v1-crumb{font-size:11px;letter-spacing:.12em;color:#8A7B6C;font-weight:600}
+.v1-chip{font-size:11px;font-weight:700;color:#D9A441;border:1px solid rgba(217,164,65,.35);padding:5px 11px;border-radius:999px;display:inline-flex;gap:6px;align-items:center}
+.v1-chip i{width:6px;height:6px;border-radius:50%;background:#D9A441;animation:pulse 1.4s infinite}
+.v1-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.v1-kpi{position:relative;background:#1B1611;border:1px solid #2A211A;border-radius:14px;padding:14px 14px 12px;border-top:2px solid var(--kpi-c,#C76B47)}
+.v1-kpi .l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8A7B6C;font-weight:600}
+.v1-kpi .n{font-size:22px;font-weight:700;color:#F6EDE3;margin-top:6px;letter-spacing:-.02em}
+.v1-kpi .d{font-size:11px;margin-top:4px;font-weight:600;color:#8A7B6C}
+.v1-kpi.urgent{--kpi-c:#D9A441;animation:glowAmber 2.4s ease-in-out infinite}
+.v1-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}
+.v1-panel{background:#1B1611;border:1px solid #2A211A;border-radius:14px;padding:16px}
+.v1-ph{font-size:11px;font-weight:700;color:#8A7B6C;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.v1-ch{display:grid;grid-template-columns:1fr auto;gap:6px;font-size:12px;margin-bottom:12px}
+.v1-ch .nm{font-weight:600;color:#E8DCCE}
+.v1-ch .vl{color:#D9A441;font-weight:600}
+.v1-bar{height:5px;border-radius:99px;background:#2A211A;overflow:hidden;margin-bottom:2px}
+.v1-bar i{display:block;height:100%;border-radius:99px;animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+.v1-panel .spark{margin:0 auto;display:block}
+.v1-sparklabs{display:flex;justify-content:space-between;font-size:10px;color:#6E6154;font-weight:600;margin-top:8px}
+.v2{background:linear-gradient(135deg,#F8F2EA,#FBF8F4 45%,#F4EDE3);overflow:hidden}
+.v2-blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;transition:transform .4s ease-out;pointer-events:none}
+.v2-blob.b1{width:340px;height:340px;background:#E8B48F;top:-90px;right:-60px}
+.v2-blob.b2{width:300px;height:300px;background:#C9B8C4;bottom:-80px;left:-70px}
+.v2-blob.b3{width:260px;height:260px;background:#B9C9B6;top:40%;left:32%}
+.v2 .stage-in{padding:26px;display:grid;gap:14px}
+.v2-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.v2-search{flex:1;max-width:360px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:999px;padding:11px 15px;color:#8A7B6C;font-size:13px;box-shadow:0 8px 24px rgba(92,80,68,.06)}
+.v2-date{font-size:12px;font-weight:600;color:#6E5F52;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:10px 15px;border-radius:999px}
+.v2-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.v2-kpi{background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:22px;padding:18px;box-shadow:0 12px 32px rgba(92,80,68,.08);animation:floaty 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+.v2-kpi .l{font-size:11px;font-weight:700;color:#8A7B6C;text-transform:uppercase;letter-spacing:.08em}
+.v2-kpi .n{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:8px}
+.v2-kpi .d{font-size:12px;font-weight:600;margin-top:6px}
+.v2-kpi:hover{box-shadow:0 22px 48px rgba(92,80,68,.14)}
+.v2-bottom{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+.v2-card{background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:22px;padding:18px;box-shadow:0 12px 32px rgba(92,80,68,.08)}
+.v2-card .t{font-size:13px;font-weight:800;margin-bottom:10px}
+.v2-leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:11px;color:#6E5F52;font-weight:600}
+.v2-leg i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:5px}
+.v3{background:#FBF8F4}
+.v3 .stage-in{padding:40px 44px}
+.v3-crumb{font-size:11px;letter-spacing:.14em;color:#A89A8A;font-weight:700;margin-bottom:8px}
+.v3-h{font-size:30px;font-weight:300;letter-spacing:-.02em}
+.v3-kpis{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #EAE2D8;margin-top:30px}
+.v3-kpi{padding:24px 20px;border-right:1px solid #EAE2D8}
+.v3-kpi:last-child{border-right:0}
+.v3-kpi .l{font-size:11px;font-weight:600;color:#A89A8A;text-transform:uppercase;letter-spacing:.1em}
+.v3-kpi .n{font-size:32px;font-weight:200;margin-top:10px;letter-spacing:-.03em}
+.v3-kpi .d{font-size:12px;color:#9C8F80;margin-top:6px}
+.v3-chart{padding:14px 8px 0}
+.v3-chart .spark{display:block;width:100%;height:70px}
+.v3-foot{display:flex;gap:22px;align-items:center;margin-top:16px;font-size:12px;color:#9C8F80}
+.v3-note{display:flex;align-items:center;gap:8px;font-weight:600;color:#8A7B6C}
+.v3-dot{width:7px;height:7px;border-radius:50%;background:#C7932A}
+.v4{background:#FCFAF7}
+.v4 .stage-in{padding:24px}
+.v4-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.v4-title{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.v4-sub{font-size:12px;color:#8A7B6C;font-weight:600}
+.v4-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.v4-kpi{background:#fff;border:1px solid #EFE7DD;border-radius:16px;overflow:hidden}
+.v4-stripe{height:5px}
+.v4-body{padding:16px}
+.v4-kpi .l{font-size:11px;font-weight:700;color:#8A7B6C;text-transform:uppercase;letter-spacing:.06em}
+.v4-kpi .n{font-size:26px;font-weight:800;letter-spacing:-.03em;margin-top:8px;color:#1F1B17}
+.v4-kpi .d{font-size:11px;font-weight:700;margin-top:8px}
+.v4-kpi .spark{display:block;margin:10px auto 0}
+.v4-bot{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.v4-card{background:#fff;border:1px solid #EFE7DD;border-radius:16px;padding:16px}
+.v4-card .t{font-size:13px;font-weight:800;margin-bottom:12px}
+.v4-donut{width:110px;height:110px;border-radius:50%;position:relative;margin:0 auto 12px}
+.v4-donut::after{content:'';position:absolute;inset:24px;border-radius:50%;background:#fff}
+.v4-leg{display:flex;flex-direction:column;gap:8px;font-size:12px}
+.v4-leg .r{display:flex;justify-content:space-between;font-weight:600;color:#5C5145}
+.v4-leg i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+.v4-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.v4-tbl th{text-align:left;color:#9C8F80;font-weight:700;padding:0 0 8px;border-bottom:1px solid #EFE7DD;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.v4-tbl td{padding:9px 0;border-bottom:1px solid #F4EEE6}
+.v4-tbl tr:last-child td{border-bottom:0}
+.v4-tbl .num{text-align:right;font-weight:800;color:#1F1B17}
+.v4-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px}
+.v4-tag.wa{background:#EDF3EA;color:#5C7A63}.v4-tag.tg{background:#F1E9F0;color:#6D4B62}.v4-tag.max{background:#F7EFDC;color:#A07A20}.v4-tag.mp{background:#FBE8E0;color:#B4632F}.v4-tag.dir{background:#EEF1EA;color:#7C8B6F}
+.v5{background:#F7F3EE}
+.v5 .stage-in{padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.v5-col{background:#FFFCF9;border:1px solid #EEE5DB;border-radius:18px;padding:14px}
+.v5-col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.v5-col-head .t{font-size:13px;font-weight:800}
+.v5-col-head .c{font-size:11px;font-weight:700;color:#8A7B6C;background:#F2ECE4;border-radius:999px;padding:2px 8px}
+.v5-card{background:#fff;border:1px solid #F0E7DD;border-radius:12px;padding:11px 12px;margin-bottom:8px;transition:.15s}
+.v5-card:hover{border-color:#D9C9B8;box-shadow:0 8px 20px rgba(43,36,32,.07);transform:translateY(-1px)}
+.v5-card .row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.v5-card .nm{font-size:12px;font-weight:700}
+.v5-card .pr{font-size:12px;font-weight:800;color:var(--terra)}
+.v5-card .meta{font-size:11px;color:#9C8F80;margin-top:2px}
+.v5-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:8px}
+.v5-tag.wa{background:#EDF3EA;color:#5C7A63}.v5-tag.tg{background:#F1E9F0;color:#6D4B62}.v5-tag.max{background:#F7EFDC;color:#A07A20}.v5-tag.mp{background:#FBE8E0;color:#B4632F}.v5-tag.dir{background:#EEF1EA;color:#7C8B6F}
+.v5-bar{height:6px;border-radius:99px;background:#F2ECE4;margin-top:8px;overflow:hidden}
+.v5-bar i{display:block;height:100%;border-radius:99px;animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+.v5-rank{font-size:11px;font-weight:700;color:#9C8F80}
+.v5-st{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:8px}
+.v5-st.ready{background:#EDF3EA;color:#5C7A63}.v5-st.cook{background:#F7EFDC;color:#A07A20}.v5-st.done{background:#F1E9F0;color:#6D4B62}
+.v6{background:linear-gradient(160deg,#FAF5EF,#F3ECE3);overflow:hidden}
+.v6 .stage-in{position:relative;padding:30px 26px 76px;display:flex;flex-direction:column;align-items:center}
+.v6-cmd{display:flex;align-items:center;gap:10px;width:min(520px,100%);background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:13px 16px;box-shadow:0 16px 40px rgba(92,80,68,.1)}
+.v6-cmd .slash{color:var(--terra);font-weight:700}
+.v6-cmd .ph{color:#9C8F80;font-size:13px;flex:1}
+.v6-cmd .k{font-size:11px;color:#6E5F52;background:#F2ECE4;border:1px solid #E9E0D6;border-radius:6px;padding:2px 7px}
+.v6-kpis{display:flex;gap:12px;margin-top:26px;width:100%;justify-content:center;flex-wrap:wrap}
+.v6-kpi{background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:18px;padding:14px 20px;min-width:150px;text-align:center;box-shadow:0 10px 26px rgba(92,80,68,.07)}
+.v6-kpi .l{font-size:10px;letter-spacing:.1em;color:#8A7B6C;font-weight:700;text-transform:uppercase}
+.v6-kpi .n{font-size:22px;font-weight:800;margin-top:6px}
+.v6-kpi .d{font-size:11px;color:#7C8B6F;font-weight:600;margin-top:4px}
+.v6-chart{width:100%;max-width:720px;margin-top:18px}
+.v6-chart .spark{display:block;width:100%;height:84px}
+.v6-cardlbl{font-size:11px;font-weight:700;color:#8A7B6C;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.v6-dock{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.9);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-radius:22px;padding:8px;box-shadow:0 18px 44px rgba(92,80,68,.16)}
+.v6-ic{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;color:#6E5F52;background:transparent;border:0;cursor:pointer;transition:.18s}
+.v6-ic:hover{background:rgba(255,255,255,.85);transform:translateY(-2px);color:#2B2420}
+.v6-ic.on{background:#2B2420;color:#FBF8F4;box-shadow:0 8px 18px rgba(43,36,32,.25)}
+.v6-hint{position:absolute;top:28px;right:26px;display:flex;flex-direction:column;gap:6px;font-size:11px;color:#8A7B6C;font-weight:600}
+.v6-hint b{font-size:11px;color:#6E5F52;font-weight:800}
+.v7{background:#FBF6EF}
+.v7 .stage-in{padding:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.v7-tile{position:relative;border-radius:22px;padding:20px;color:#fff;overflow:hidden;background-size:180% 180%;animation:gradShift 9s ease-in-out infinite;box-shadow:0 18px 40px rgba(43,36,32,.16)}
+.v7-tile::after{content:'';position:absolute;inset:auto -30% -60% auto;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.16)}
+.v7-tile .l{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.88}
+.v7-tile .n{font-size:30px;font-weight:800;letter-spacing:-.03em;margin-top:12px;position:relative}
+.v7-tile .d{position:relative;display:inline-block;font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:3px 9px;border-radius:999px;margin-top:12px}
+.v7-main{grid-column:1/-1;border-radius:22px;padding:18px 20px 8px;background:linear-gradient(135deg,#fff,#FBF5EC);border:1px solid #EFE5D9;box-shadow:0 18px 40px rgba(43,36,32,.08)}
+.v7-main .t{font-size:13px;font-weight:800;margin-bottom:8px}
+.v7-main .spark{display:block;width:100%;height:120px}
+.v7-leg{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px;font-size:11px;color:#8A7B6C;font-weight:600}
+.v7-leg i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:5px}
+.v8{background:#17130F;color:#F3EAE1;background-image:radial-gradient(560px 420px at 78% 0%,rgba(217,164,65,.16),transparent 60%),radial-gradient(700px 500px at 10% 110%,rgba(196,107,71,.12),transparent 60%)}
+.v8 .stage-in{padding:24px}
+.v8-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:16px;align-items:stretch}
+.v8-urgent{position:relative;border-radius:20px;padding:22px;border:1px solid rgba(217,164,65,.4);background:rgba(217,164,65,.06);animation:glowAmber 2.6s ease-in-out infinite}
+.v8-urgent .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#D9A441;font-weight:700}
+.v8-urgent .n{font-size:56px;font-weight:800;color:#F2C15E;margin-top:10px;text-shadow:0 0 26px rgba(217,164,65,.5)}
+.v8-urgent .s{font-size:12px;color:#C9B89E;margin-top:8px}
+.v8-ring{position:absolute;top:22px;right:22px;width:14px;height:14px;border-radius:50%;background:#D9A441;animation:ring 2s ease-out infinite}
+.v8-list{display:flex;flex-direction:column;gap:8px}
+.v8-item{display:flex;align-items:center;gap:12px;background:#1D1712;border:1px solid #2C241C;border-radius:14px;padding:12px 14px;font-size:12px}
+.v8-item.urg{border-color:rgba(217,164,65,.35);box-shadow:0 0 0 1px rgba(217,164,65,.12),0 6px 24px rgba(217,164,65,.08)}
+.v8-item .nm{font-weight:600;color:#E8DCCE;flex:1}
+.v8-item .pr{color:#D9A441;font-weight:700}
+.v8-item .t{font-size:10px;color:#6E6154}
+.v8-badge{font-size:10px;font-weight:800;color:#F2C15E;background:rgba(217,164,65,.14);border:1px solid rgba(217,164,65,.35);border-radius:999px;padding:3px 9px;display:inline-flex;align-items:center;gap:5px}
+.v8-badge i{width:6px;height:6px;border-radius:50%;background:#D9A441;animation:pulse 1.4s infinite}
+.v8-sparkwrap{grid-column:1/-1}
+.v8-sparkwrap .spark{display:block;width:100%;height:70px}
+.v8-ph{font-size:11px;font-weight:700;color:#8A7B6C;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.v9{background:#FBF9F5}
+.v9 .stage-in{padding:22px}
+.v9-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.v9-title{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.v9-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.v9-card{background:#fff;border:1px solid #EEE6DC;border-radius:14px;padding:12px 14px}
+.v9-card .top{display:flex;justify-content:space-between;align-items:baseline}
+.v9-card .l{font-size:10px;font-weight:700;color:#9C8F80;text-transform:uppercase;letter-spacing:.08em}
+.v9-card .n{font-size:20px;font-weight:800;color:#1F1B17}
+.v9-card .d{font-size:11px;font-weight:700}
+.v9-card .spark{display:block;margin:8px auto 0}
+.v9-bot{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:10px}
+.v9-card2{background:#fff;border:1px solid #EEE6DC;border-radius:14px;padding:14px}
+.v9-card2 .t{font-size:12px;font-weight:800;margin-bottom:10px}
+.v9-donut{width:100px;height:100px;border-radius:50%;position:relative;margin:4px auto 12px}
+.v9-donut::after{content:'';position:absolute;inset:22px;border-radius:50%;background:#fff}
+.v9-leg{display:flex;flex-direction:column;gap:7px;font-size:11px;color:#6E5F52}
+.v9-leg .r{display:flex;justify-content:space-between;font-weight:600}
+.v9-leg i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+.v9-fun{display:flex;flex-direction:column;gap:8px;font-size:11px}
+.v9-fun .st{display:flex;align-items:center;gap:8px}
+.v9-fun .lb{width:86px;color:#6E5F52;font-weight:600}
+.v9-fun .b{flex:1;height:14px;background:#F4EEE6;border-radius:5px;overflow:hidden}
+.v9-fun .b i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#B4632F,#D98A5F);animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+.v9-fun .v{width:34px;text-align:right;font-weight:700;color:#2B2420}
+.v9-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.v9-tbl th{text-align:left;color:#9C8F80;font-weight:700;padding:0 0 8px;border-bottom:1px solid #EFE7DD;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.v9-tbl td{padding:7px 0;border-bottom:1px solid #F4EEE6;color:#5C5145}
+.v9-tbl tr:last-child td{border-bottom:0}
+.v9-tbl .num{text-align:right;font-weight:700;color:#2B2420}
+.v9-cellbar{height:5px;background:#F4EEE6;border-radius:99px;overflow:hidden;width:70px}
+.v9-cellbar i{display:block;height:100%;border-radius:99px;animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+.v10{background:#FBF8F4}
+.v10 .stage-in{padding:18px;font-size:13px}
+.v10-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.v10-title{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.v10-src{font-size:11px;color:#9C8F80;font-weight:600}
+.v10-row{display:grid;grid-template-columns:1.3fr repeat(4,1fr);border:1px solid #E7DED3;border-radius:14px;overflow:hidden;margin-bottom:10px;background:#fff}
+.v10-cell{padding:12px 14px;border-left:1px solid #F0E9DF;border-top:1px solid #F0E9DF}
+.v10-cell:first-child{border-left:0}
+.v10-cell .n{font-size:18px;font-weight:800;color:#1F1B17}
+.v10-cell .l{font-size:10px;font-weight:700;color:#9C8F80;text-transform:uppercase;letter-spacing:.06em}
+.v10-cell .d{font-size:11px;color:#7C8B6F;font-weight:600;margin-top:3px}
+.v10-mini{height:4px;background:#F0E9DF;border-radius:99px;margin-top:6px;overflow:hidden}
+.v10-mini i{display:block;height:100%;background:linear-gradient(90deg,#C76B47,#B4632F);animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+.v10-list{border:1px solid #E7DED3;border-radius:14px;background:#fff;overflow:hidden}
+.v10-li{display:grid;grid-template-columns:1.4fr 1fr .6fr .8fr;gap:10px;padding:10px 14px;border-bottom:1px solid #F0E9DF;font-size:12px;align-items:center}
+.v10-li:last-child{border-bottom:0}
+.v10-li .nm{font-weight:600}
+.v10-li .nm small{color:#9C8F80;font-weight:500;margin-left:6px}
+.v10-li .barw{height:6px;background:#F4EEE6;border-radius:99px;overflow:hidden}
+.v10-li .barw i{display:block;height:100%;animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+.v10-li .num{text-align:right;font-weight:700}
+.v10-urg{color:#A24B2E;font-weight:700}
+.v10-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;justify-self:end}
+.v10-tag.wa{background:#EDF3EA;color:#5C7A63}.v10-tag.tg{background:#F1E9F0;color:#6D4B62}.v10-tag.max{background:#F7EFDC;color:#A07A20}.v10-tag.mp{background:#FBE8E0;color:#B4632F}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-top">
+    <div class="brand"><span class="brand-dot"></span>Bloom <span class="brand-sub">10 направлений дашборда</span></div>
+    <div class="h-nav">
+      <button class="nav-btn" id="prevBtn">← Назад</button>
+      <span class="h-count mono" id="hCount">1 / 10</span>
+      <button class="nav-btn" id="nextBtn">Вперёд →</button>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-sec="v1">1 Тёмный стрип</button>
+    <button class="tab" data-sec="v2">2 Glass-панели</button>
+    <button class="tab" data-sec="v3">3 Минимум и воздух</button>
+    <button class="tab" data-sec="v4">4 Полосатый KPI</button>
+    <button class="tab" data-sec="v5">5 Канбан-метрики</button>
+    <button class="tab" data-sec="v6">6 Dock-навигация</button>
+    <button class="tab" data-sec="v7">7 Градиентные плашки</button>
+    <button class="tab" data-sec="v8">8 Свечение срочного</button>
+    <button class="tab" data-sec="v9">9 Спарклайн-плот</button>
+    <button class="tab" data-sec="v10">10 Плоский плотный</button>
+  </nav>
+</header>
+
+<main>
+
+<section class="vari on" id="v1">
+  <div class="v-head">
+    <span class="v-num">01</span>
+    <div class="v-title">
+      <h2>Тёмный стрип</h2>
+      <p class="v-src">Linear × Vercel</p>
+    </div>
+    <p class="v-desc">Плотная тёмная лента KPI на моно-цифрах, тонкие акцентные верхние полосы и янтарное свечение на срочном. Тёмная тема для вечеров и витрин.</p>
+  </div>
+  <div class="stage v1">
+    <div class="stage-in">
+      <div class="v1-top up" style="--d:.02s">
+        <div class="v1-crumb">СЕТЬ · МИРА 14 · ПН, 03 АВГ</div>
+        <div class="v1-chip"><i></i>5 срочных · ответить 3 чатам</div>
+      </div>
+      <div class="v1-kpis">
+        <div class="v1-kpi up" style="--kpi-c:#C76B47;--d:.08s"><div class="l">Выручка</div><div class="n mono" data-count="182400" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 9% к вчера</div></div>
+        <div class="v1-kpi up" style="--kpi-c:#5C7A63;--d:.14s"><div class="l">Заказы</div><div class="n mono" data-count="47">0</div><div class="d d-up">▲ 12%</div></div>
+        <div class="v1-kpi up" style="--kpi-c:#6D4B62;--d:.2s"><div class="l">Средний чек</div><div class="n mono" data-count="3880" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 4%</div></div>
+        <div class="v1-kpi up" style="--kpi-c:#C7932A;--d:.26s"><div class="l">Новые клиенты</div><div class="n mono" data-count="12">0</div><div class="d d-up">▲ 18%</div></div>
+        <div class="v1-kpi urgent up" style="--d:.32s"><div class="l">Срочные</div><div class="n mono" data-count="5">0</div><div class="d d-warn">требуют внимания</div></div>
+      </div>
+      <div class="v1-grid">
+        <div class="v1-panel up" style="--d:.38s">
+          <div class="v1-ph">Каналы · заказы сегодня</div>
+          <div class="v1-ch"><span class="nm">WhatsApp</span><span class="vl mono">18 · 62 400 ₽</span></div>
+          <div class="v1-bar"><i style="width:78%;background:linear-gradient(90deg,#5C7A63,#7C8B6F);--d:.4s"></i></div>
+          <div class="v1-ch"><span class="nm">Telegram</span><span class="vl mono">12 · 48 200 ₽</span></div>
+          <div class="v1-bar"><i style="width:52%;background:linear-gradient(90deg,#6D4B62,#8A6A82);--d:.5s"></i></div>
+          <div class="v1-ch"><span class="nm">MAX</span><span class="vl mono">9 · 36 900 ₽</span></div>
+          <div class="v1-bar"><i style="width:39%;background:linear-gradient(90deg,#C7932A,#D9A441);--d:.6s"></i></div>
+          <div class="v1-ch"><span class="nm">Маркетплейс</span><span class="vl mono">5 · 24 300 ₽</span></div>
+          <div class="v1-bar"><i style="width:22%;background:linear-gradient(90deg,#C76B47,#E08A66);--d:.7s"></i></div>
+          <div class="v1-ch"><span class="nm">Прямой</span><span class="vl mono">3 · 10 600 ₽</span></div>
+          <div class="v1-bar"><i style="width:13%;background:linear-gradient(90deg,#7C8B6F,#9AA98C);--d:.8s"></i></div>
+        </div>
+        <div class="v1-panel up" style="--d:.44s">
+          <div class="v1-ph">Выручка · неделя</div>
+          <svg class="spark" data-values="162500,154800,171900,166400,175200,168700,182400" data-color="#D9A441" data-area="1" data-dot="1" style="width:100%"></svg>
+          <div class="v1-sparklabs"><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span><span>ПН</span><span>ВТ</span><span>СР</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="v2">
+  <div class="v-head">
+    <span class="v-num">02</span>
+    <div class="v-title">
+      <h2>Glass-панели</h2>
+      <p class="v-src">Raycast × Framer</p>
+    </div>
+    <p class="v-desc">Матовое стекло поверх тёплых цветовых пятен. Карточки «плавают» и парят над фоном, за стеклом — мягкие размытые пятна палитры Bloom.</p>
+  </div>
+  <div class="stage v2">
+    <div class="v2-blob b1"></div>
+    <div class="v2-blob b2"></div>
+    <div class="v2-blob b3"></div>
+    <div class="stage-in">
+      <div class="v2-top up" style="--d:.02s">
+        <div class="v2-search"><span>⌕</span><span>Поиск: заказ, клиент, товар…</span></div>
+        <div class="v2-date">Сегодня · 3 августа</div>
+      </div>
+      <div class="v2-kpis">
+        <div class="v2-kpi up" style="--d:.08s"><div class="l">Выручка</div><div class="n mono" data-count="182400" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 9% к вчера</div></div>
+        <div class="v2-kpi up" style="--d:.16s"><div class="l">Заказы</div><div class="n mono" data-count="47">0</div><div class="d d-up">▲ 12%</div></div>
+        <div class="v2-kpi up" style="--d:.24s"><div class="l">Средний чек</div><div class="n mono" data-count="3880" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 4%</div></div>
+        <div class="v2-kpi up" style="--d:.32s"><div class="l">Новые клиенты</div><div class="n mono" data-count="12">0</div><div class="d d-up">▲ 18%</div></div>
+      </div>
+      <div class="v2-bottom">
+        <div class="v2-card up" style="--d:.4s">
+          <div class="t">Выручка по дням</div>
+          <svg class="spark" data-values="118400,131800,120900,145200,138600,156300,148200,162500,154800,171900,166400,175200,168700,182400" data-color="#B4632F" data-area="1" data-dot="1" style="width:100%"></svg>
+          <div class="v2-leg"><span><i style="background:#B4632F"></i>Выручка</span><span><i style="background:#C7932A"></i>Средняя</span><span><i style="background:#5C7A63"></i>Лучший день</span></div>
+        </div>
+        <div class="v2-card up" style="--d:.46s">
+          <div class="t">Каналы сегодня</div>
+          <div style="display:flex;flex-direction:column;gap:12px;font-size:12px;font-weight:600;color:#5C5145">
+            <div><span>WhatsApp</span><div class="v1-bar" style="background:#F0E9DF"><i style="width:78%;background:#5C7A63;--d:.5s"></i></div></div>
+            <div><span>Telegram</span><div class="v1-bar" style="background:#F0E9DF"><i style="width:52%;background:#6D4B62;--d:.6s"></i></div></div>
+            <div><span>MAX</span><div class="v1-bar" style="background:#F0E9DF"><i style="width:39%;background:#C7932A;--d:.7s"></i></div></div>
+            <div><span>Маркетплейс</span><div class="v1-bar" style="background:#F0E9DF"><i style="width:22%;background:#C76B47;--d:.8s"></i></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="vari" id="v3">
+  <div class="v-head">
+    <span class="v-num">03</span>
+    <div class="v-title">
+      <h2>Минимум и воздух</h2>
+      <p class="v-src">Notion</p>
+    </div>
+    <p class="v-desc">Почти без карточек и теней: только цифры, тонкие линии и много воздуха. Тихая спокойная версия для тех, кто устал от визуального шума.</p>
+  </div>
+  <div class="stage v3">
+    <div class="stage-in">
+      <div class="v3-crumb up" style="--d:.02s">BLOOM / КАБИНЕТ / СЕГОДНЯ</div>
+      <div class="v3-h up" style="--d:.06s">Добрый день. Сегодня хороший день для цветов.</div>
+      <div class="v3-kpis">
+        <div class="v3-kpi up" style="--d:.12s"><div class="l">Выручка</div><div class="n mono" data-count="182400" data-suf=" ₽">0 ₽</div><div class="d">на 9% больше, чем вчера</div></div>
+        <div class="v3-kpi up" style="--d:.2s"><div class="l">Заказы</div><div class="n mono" data-count="47">0</div><div class="d">из них 5 срочных</div></div>
+        <div class="v3-kpi up" style="--d:.28s"><div class="l">Средний чек</div><div class="n mono" data-count="3880" data-suf=" ₽">0 ₽</div><div class="d">стабилен уже месяц</div></div>
+        <div class="v3-kpi up" style="--d:.36s"><div class="l">Новые клиенты</div><div class="n mono" data-count="12">0</div><div class="d">почти половина пришла с WA</div></div>
+      </div>
+      <div class="v3-chart up" style="--d:.44s">
+        <svg class="spark" data-values="118400,131800,120900,145200,138600,156300,148200,162500,154800,171900,166400,175200,168700,182400" data-color="#7C8B6F" data-area="1"></svg>
+      </div>
+      <div class="v3-foot up" style="--d:.5s">
+        <span class="v3-note"><span class="v3-dot"></span>3 чата ждут ответа</span>
+        <span>Сегодня лидируют WhatsApp и Telegram</span>
+        <span>Пионы и «Нежность» — самые частые в корзинах</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="v4">
+  <div class="v-head">
+    <span class="v-num">04</span>
+    <div class="v-title">
+      <h2>Полосатый KPI</h2>
+      <p class="v-src">Stripe</p>
+    </div>
+    <p class="v-desc">Белые карточки с цветной полосой сверху, крупные таб-цифры, дельты-пилюли и мини-спарклайны. Строго и дорого, как платёжный дашборд.</p>
+  </div>
+  <div class="stage v4">
+    <div class="stage-in">
+      <div class="v4-top up" style="--d:.02s">
+        <div>
+          <div class="v4-title">Итоги периода</div>
+          <div class="v4-sub">Сеть · все точки</div>
+        </div>
+        <div class="period">
+          <button class="p-btn on" data-key="today">Сегодня</button>
+          <button class="p-btn" data-key="7d">7 дней</button>
+          <button class="p-btn" data-key="30d">30 дней</button>
+        </div>
+      </div>
+      <div class="v4-kpis">
+        <div class="v4-kpi up" style="--d:.08s"><div class="v4-stripe" style="background:#C76B47"></div><div class="v4-body"><div class="l">Выручка</div><div class="n mono" data-count="182400" data-k="rev" data-suf=" ₽">0 ₽</div><div class="d delt up">▲ 9%</div><svg class="spark" data-spark="rev" data-color="#C76B47" data-area="1" data-dot="1"></svg></div></div>
+        <div class="v4-kpi up" style="--d:.16s"><div class="v4-stripe" style="background:#5C7A63"></div><div class="v4-body"><div class="l">Заказы</div><div class="n mono" data-count="47" data-k="ord">0</div><div class="d delt up">▲ 12%</div><svg class="spark" data-spark="ord" data-color="#5C7A63" data-area="1" data-dot="1"></svg></div></div>
+        <div class="v4-kpi up" style="--d:.24s"><div class="v4-stripe" style="background:#6D4B62"></div><div class="v4-body"><div class="l">Средний чек</div><div class="n mono" data-count="3880" data-k="aov" data-suf=" ₽">0 ₽</div><div class="d delt up">▲ 4%</div><svg class="spark" data-spark="aov" data-color="#6D4B62" data-area="1" data-dot="1"></svg></div></div>
+        <div class="v4-kpi up" style="--d:.32s"><div class="v4-stripe" style="background:#C7932A"></div><div class="v4-body"><div class="l">Новые клиенты</div><div class="n mono" data-count="12" data-k="newc">0</div><div class="d delt up">▲ 18%</div><svg class="spark" data-spark="newc" data-color="#C7932A" data-area="1" data-dot="1"></svg></div></div>
+      </div>
+      <div class="v4-bot">
+        <div class="v4-card up" style="--d:.4s">
+          <div class="t">Каналы · доля выручки</div>
+          <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+            <div class="v4-donut" style="background:conic-gradient(#5C7A63 0 34%,#6D4B62 34% 59%,#C7932A 59% 76%,#C76B47 76% 90%,#7C8B6F 90% 100%)"></div>
+            <div class="v4-leg">
+              <div class="r"><span><i style="background:#5C7A63"></i>WhatsApp</span><span class="mono">34%</span></div>
+              <div class="r"><span><i style="background:#6D4B62"></i>Telegram</span><span class="mono">25%</span></div>
+              <div class="r"><span><i style="background:#C7932A"></i>MAX</span><span class="mono">17%</span></div>
+              <div class="r"><span><i style="background:#C76B47"></i>Маркетплейс</span><span class="mono">14%</span></div>
+              <div class="r"><span><i style="background:#7C8B6F"></i>Прямой</span><span class="mono">10%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="v4-card up" style="--d:.46s">
+          <div class="t">Топ товаров</div>
+          <table class="v4-tbl">
+            <tr><th>Товар</th><th style="text-align:right">Шт.</th><th style="text-align:right">Выручка</th></tr>
+            <tr><td><b>Букет «Нежность»</b> <span class="v4-tag wa">WA</span></td><td class="num mono">9</td><td class="num mono">42 300 ₽</td></tr>
+            <tr><td><b>Пионы</b> <span class="v4-tag tg">TG</span></td><td class="num mono">7</td><td class="num mono">27 900 ₽</td></tr>
+            <tr><td><b>Ромашки</b> <span class="v4-tag max">MAX</span></td><td class="num mono">6</td><td class="num mono">14 400 ₽</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="v5">
+  <div class="v-head">
+    <span class="v-num">05</span>
+    <div class="v-title">
+      <h2>Канбан-метрики</h2>
+      <p class="v-src">Linear × Plane</p>
+    </div>
+    <p class="v-desc">Метрики как колонки канбана: заказы, каналы и товары живут карточками. Знакомый рабочий ритм для команды, которая привыкла к трекерам.</p>
+  </div>
+  <div class="stage v5">
+    <div class="stage-in">
+      <div class="v5-col up" style="--d:.05s">
+        <div class="v5-col-head"><span class="t">Заказы</span><span class="c mono">47 сегодня</span></div>
+        <div class="v5-card"><div class="row"><span class="nm">Букет «Нежность»</span><span class="pr mono">4 700 ₽</span></div><div class="meta">FW-1040 · 3 августа · Мира 14</div><span class="v5-st cook">В сборке</span> <span class="v5-tag wa">WA</span></div>
+        <div class="v5-card"><div class="row"><span class="nm">Пионы · 5 веток</span><span class="pr mono">3 900 ₽</span></div><div class="meta">FW-1041 · к 14:00 · Мира 14</div><span class="v5-st ready">Собран</span> <span class="v5-tag tg">TG</span></div>
+        <div class="v5-card"><div class="row"><span class="nm">Ромашки · букет</span><span class="pr mono">2 400 ₽</span></div><div class="meta">FW-1042 · срочно · Ленина 3</div><span class="v5-st ready">Собран</span> <span class="v5-tag max">MAX</span></div>
+        <div class="v5-card"><div class="row"><span class="nm">Марсель · 5 роз</span><span class="pr mono">2 600 ₽</span></div><div class="meta">FW-1043 · к 18:00 · Мира 14</div><span class="v5-st done">Доставлен</span> <span class="v5-tag mp">MP</span></div>
+      </div>
+      <div class="v5-col up" style="--d:.14s">
+        <div class="v5-col-head"><span class="t">Каналы</span><span class="c mono">47 заказов</span></div>
+        <div class="v5-card"><div class="row"><span class="nm">WhatsApp</span><span class="pr mono">18</span></div><div class="v5-bar"><i style="width:78%;background:#5C7A63;--d:.2s"></i></div><div class="meta">62 400 ₽ · чек 3 467 ₽</div></div>
+        <div class="v5-card"><div class="row"><span class="nm">Telegram</span><span class="pr mono">12</span></div><div class="v5-bar"><i style="width:52%;background:#6D4B62;--d:.3s"></i></div><div class="meta">48 200 ₽ · чек 4 017 ₽</div></div>
+        <div class="v5-card"><div class="row"><span class="nm">MAX</span><span class="pr mono">9</span></div><div class="v5-bar"><i style="width:39%;background:#C7932A;--d:.4s"></i></div><div class="meta">36 900 ₽ · чек 4 100 ₽</div></div>
+        <div class="v5-card"><div class="row"><span class="nm">Маркетплейс</span><span class="pr mono">5</span></div><div class="v5-bar"><i style="width:22%;background:#C76B47;--d:.5s"></i></div><div class="meta">24 300 ₽ · чек 4 860 ₽</div></div>
+        <div class="v5-card"><div class="row"><span class="nm">Прямой</span><span class="pr mono">3</span></div><div class="v5-bar"><i style="width:13%;background:#7C8B6F;--d:.6s"></i></div><div class="meta">10 600 ₽ · чек 3 533 ₽</div></div>
+      </div>
+      <div class="v5-col up" style="--d:.23s">
+        <div class="v5-col-head"><span class="t">Топ товаров</span><span class="c mono">по выручке</span></div>
+        <div class="v5-card"><div class="row"><span class="v5-rank">01</span><span class="nm">Букет «Нежность»</span><span class="pr mono">42 300 ₽</span></div><div class="v5-bar"><i style="width:100%;background:linear-gradient(90deg,#C76B47,#B4632F);--d:.3s"></i></div><div class="meta">9 шт · 9 роз + эвкалипт</div></div>
+        <div class="v5-card"><div class="row"><span class="v5-rank">02</span><span class="nm">Пионы</span><span class="pr mono">27 900 ₽</span></div><div class="v5-bar"><i style="width:66%;background:linear-gradient(90deg,#6D4B62,#8A6A82);--d:.4s"></i></div><div class="meta">7 шт · 5 веток</div></div>
+        <div class="v5-card"><div class="row"><span class="v5-rank">03</span><span class="nm">Ромашки</span><span class="pr mono">14 400 ₽</span></div><div class="v5-bar"><i style="width:34%;background:linear-gradient(90deg,#5C7A63,#7C8B6F);--d:.5s"></i></div><div class="meta">6 шт · букет</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="vari" id="v6">
+  <div class="v-head">
+    <span class="v-num">06</span>
+    <div class="v-title">
+      <h2>Dock-навигация</h2>
+      <p class="v-src">Raycast</p>
+    </div>
+    <p class="v-desc">Всё через команды: строка-«лаунчер» сверху, плавающий док внизу и хоткеи. Максимальная скорость для тех, кто живёт с клавиатуры.</p>
+  </div>
+  <div class="stage v6">
+    <div class="stage-in">
+      <div class="v6-hint"><span><b>⌘1</b> Заказы</span><span><b>⌘2</b> Клиенты</span><span><b>⌘3</b> Чаты</span></div>
+      <div class="v6-cmd up" style="--d:.02s"><span class="slash mono">/</span><span class="ph">Поиск: заказ, клиент, товар…</span><span class="k mono">⌘K</span></div>
+      <div class="v6-kpis">
+        <div class="v6-kpi up" style="--d:.1s"><div class="l">Выручка</div><div class="n mono" data-count="182400" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 9%</div></div>
+        <div class="v6-kpi up" style="--d:.18s"><div class="l">Заказы</div><div class="n mono" data-count="47">0</div><div class="d d-up">▲ 12%</div></div>
+        <div class="v6-kpi up" style="--d:.26s"><div class="l">Чек</div><div class="n mono" data-count="3880" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 4%</div></div>
+        <div class="v6-kpi up" style="--d:.34s"><div class="l">Срочные</div><div class="n mono" data-count="5">0</div><div class="d d-warn">внимание</div></div>
+      </div>
+      <div class="v6-chart up" style="--d:.42s">
+        <div class="v6-cardlbl">Выручка · 14 дней</div>
+        <svg class="spark" data-values="118400,131800,120900,145200,138600,156300,148200,162500,154800,171900,166400,175200,168700,182400" data-color="#B4632F" data-area="1" data-dot="1"></svg>
+      </div>
+      <div class="v6-dock">
+        <button class="v6-ic on" title="Заказы"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg></button>
+        <button class="v6-ic" title="Клиенты"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
+        <button class="v6-ic" title="Чаты"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+        <button class="v6-ic" title="Склад"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.27 6.96 12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg></button>
+        <button class="v6-ic" title="Отчёты"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="v7">
+  <div class="v-head">
+    <span class="v-num">07</span>
+    <div class="v-title">
+      <h2>Градиентные плашки</h2>
+      <p class="v-src">Framer × Stripe</p>
+    </div>
+    <p class="v-desc">Цвет — главный герой: каждая метрика живёт в собственном градиенте, который медленно перетекает. Ярко, сочно, запоминается.</p>
+  </div>
+  <div class="stage v7">
+    <div class="stage-in">
+      <div class="v7-tile up" style="--d:.05s;background:linear-gradient(120deg,#C76B47,#B4632F,#E08A5F)"><div class="l">Выручка</div><div class="n mono" data-count="182400" data-suf=" ₽">0 ₽</div><div class="d">▲ 9% к вчера</div></div>
+      <div class="v7-tile up" style="--d:.12s;background:linear-gradient(120deg,#5C7A63,#3E5A46,#7C8B6F)"><div class="l">Заказы</div><div class="n mono" data-count="47">0</div><div class="d">▲ 12%</div></div>
+      <div class="v7-tile up" style="--d:.19s;background:linear-gradient(120deg,#6D4B62,#4E3549,#8A6A82)"><div class="l">Средний чек</div><div class="n mono" data-count="3880" data-suf=" ₽">0 ₽</div><div class="d">▲ 4%</div></div>
+      <div class="v7-tile up" style="--d:.26s;background:linear-gradient(120deg,#C7932A,#A3771C,#D9A441)"><div class="l">Новые клиенты</div><div class="n mono" data-count="12">0</div><div class="d">▲ 18%</div></div>
+      <div class="v7-main up" style="--d:.34s">
+        <div class="t">Динамика выручки · 14 дней</div>
+        <svg class="spark" data-values="118400,131800,120900,145200,138600,156300,148200,162500,154800,171900,166400,175200,168700,182400" data-color="#B4632F" data-area="1" data-dot="1"></svg>
+        <div class="v7-leg"><span><i style="background:#C76B47"></i>Выручка</span><span><i style="background:#5C7A63"></i>Заказы</span><span><i style="background:#6D4B62"></i>Чек</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="v8">
+  <div class="v-head">
+    <span class="v-num">08</span>
+    <div class="v-title">
+      <h2>Свечение срочного</h2>
+      <p class="v-src">Vercel</p>
+    </div>
+    <p class="v-desc">Внимание управляется светом: срочные заказы горят янтарным, остальное — в тишине тёмного фона. Глаз сам находит, что делать первым.</p>
+  </div>
+  <div class="stage v8">
+    <div class="stage-in">
+      <div class="v8-grid">
+        <div class="v8-urgent up" style="--d:.05s">
+          <div class="v8-ring"></div>
+          <div class="l">Срочных заказов</div>
+          <div class="n mono" data-count="5">0</div>
+          <div class="s">среднее время ответа сейчас 4 мин</div>
+          <div class="s d-warn">3 чата ждут ответа</div>
+        </div>
+        <div class="v8-list up" style="--d:.12s">
+          <div class="v8-item urg"><span class="v8-badge"><i></i>Срочный</span><span class="nm">Ромашки · к 13:00, Ленина 3</span><span class="pr mono">2 400 ₽</span></div>
+          <div class="v8-item urg"><span class="v8-badge"><i></i>Срочный</span><span class="nm">Букет «Нежность» · клиент ждёт</span><span class="pr mono">4 700 ₽</span></div>
+          <div class="v8-item urg"><span class="v8-badge"><i></i>Срочный</span><span class="nm">Пионы · к 14:00, Мира 14</span><span class="pr mono">3 900 ₽</span></div>
+          <div class="v8-item"><span class="t mono">FW-1039</span><span class="nm">Марсель · обычный слот</span><span class="pr mono">2 600 ₽</span></div>
+          <div class="v8-item"><span class="t mono">FW-1038</span><span class="nm">Воздушный · к вечеру</span><span class="pr mono">3 700 ₽</span></div>
+        </div>
+      </div>
+      <div class="v8-sparkwrap up" style="--d:.2s">
+        <div class="v8-ph">Срочные по дням · последняя неделя</div>
+        <svg class="spark" data-values="3,2,4,3,5,4,5" data-color="#D9A441" data-area="1" data-dot="1"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="vari" id="v9">
+  <div class="v-head">
+    <span class="v-num">09</span>
+    <div class="v-title">
+      <h2>Спарклайн-плот</h2>
+      <p class="v-src">Mixpanel × Amplitude</p>
+    </div>
+    <p class="v-desc">Плотная аналитика: у каждой метрики свой спарклайн, воронка каналов и таблица с барами. Максимум данных на одном экране.</p>
+  </div>
+  <div class="stage v9">
+    <div class="stage-in">
+      <div class="v9-top up" style="--d:.02s">
+        <div class="v9-title">Метрики сети</div>
+        <div class="period">
+          <button class="p-btn on" data-key="today">Сегодня</button>
+          <button class="p-btn" data-key="7d">7 дней</button>
+          <button class="p-btn" data-key="30d">30 дней</button>
+        </div>
+      </div>
+      <div class="v9-grid">
+        <div class="v9-card up" style="--d:.06s"><div class="top"><span class="l">Выручка</span><span class="d d-up">▲ 9%</span></div><div class="n mono" data-count="182400" data-k="rev" data-suf=" ₽">0 ₽</div><svg class="spark" data-spark="rev" data-color="#C76B47" data-area="1"></svg></div>
+        <div class="v9-card up" style="--d:.12s"><div class="top"><span class="l">Заказы</span><span class="d d-up">▲ 12%</span></div><div class="n mono" data-count="47" data-k="ord">0</div><svg class="spark" data-spark="ord" data-color="#5C7A63" data-area="1"></svg></div>
+        <div class="v9-card up" style="--d:.18s"><div class="top"><span class="l">Средний чек</span><span class="d d-up">▲ 4%</span></div><div class="n mono" data-count="3880" data-k="aov" data-suf=" ₽">0 ₽</div><svg class="spark" data-spark="aov" data-color="#6D4B62" data-area="1"></svg></div>
+        <div class="v9-card up" style="--d:.24s"><div class="top"><span class="l">Новые клиенты</span><span class="d d-up">▲ 18%</span></div><div class="n mono" data-count="12" data-k="newc">0</div><svg class="spark" data-spark="newc" data-color="#C7932A" data-area="1"></svg></div>
+        <div class="v9-card up" style="--d:.3s"><div class="top"><span class="l">Срочные</span><span class="d d-warn">▲ 25%</span></div><div class="n mono" data-count="5" data-k="urg">0</div><svg class="spark" data-spark="urg" data-color="#D9A441" data-area="1"></svg></div>
+        <div class="v9-card up" style="--d:.36s"><div class="top"><span class="l">Ждут ответа</span><span class="d d-warn">сейчас</span></div><div class="n mono" data-count="3" data-k="chat">0</div><svg class="spark" data-spark="chat" data-color="#B4632F" data-area="1"></svg></div>
+      </div>
+      <div class="v9-bot">
+        <div class="v9-card2 up" style="--d:.42s">
+          <div class="t">Каналы</div>
+          <div class="v9-donut" style="background:conic-gradient(#5C7A63 0 38%,#6D4B62 38% 64%,#C7932A 64% 83%,#C76B47 83% 94%,#7C8B6F 94% 100%)"></div>
+          <div class="v9-leg">
+            <div class="r"><span><i style="background:#5C7A63"></i>WhatsApp</span><span class="mono">18</span></div>
+            <div class="r"><span><i style="background:#6D4B62"></i>Telegram</span><span class="mono">12</span></div>
+            <div class="r"><span><i style="background:#C7932A"></i>MAX</span><span class="mono">9</span></div>
+            <div class="r"><span><i style="background:#C76B47"></i>Маркетплейс</span><span class="mono">5</span></div>
+            <div class="r"><span><i style="background:#7C8B6F"></i>Прямой</span><span class="mono">3</span></div>
+          </div>
+        </div>
+        <div class="v9-card2 up" style="--d:.48s">
+          <div class="t">Воронка канала</div>
+          <div class="v9-fun">
+            <div class="st"><span class="lb">Входящие</span><div class="b"><i style="width:100%;--d:.5s"></i></div><span class="v mono">100%</span></div>
+            <div class="st"><span class="lb">Ответили</span><div class="b"><i style="width:86%;--d:.6s"></i></div><span class="v mono">86%</span></div>
+            <div class="st"><span class="lb">Собрали заказ</span><div class="b"><i style="width:64%;--d:.7s"></i></div><span class="v mono">64%</span></div>
+            <div class="st"><span class="lb">Оплатили</span><div class="b"><i style="width:57%;--d:.8s"></i></div><span class="v mono">57%</span></div>
+          </div>
+        </div>
+        <div class="v9-card2 up" style="--d:.54s">
+          <div class="t">Топ товаров · штуки</div>
+          <table class="v9-tbl">
+            <tr><th>Товар</th><th style="text-align:right">Шт.</th><th>Доля</th></tr>
+            <tr><td><b>Букет «Нежность»</b></td><td class="num mono">9</td><td><div class="v9-cellbar"><i style="width:100%;background:#C76B47;--d:.56s"></i></div></td></tr>
+            <tr><td><b>Пионы</b></td><td class="num mono">7</td><td><div class="v9-cellbar"><i style="width:78%;background:#6D4B62;--d:.64s"></i></div></td></tr>
+            <tr><td><b>Ромашки</b></td><td class="num mono">6</td><td><div class="v9-cellbar"><i style="width:67%;background:#5C7A63;--d:.72s"></i></div></td></tr>
+            <tr><td><b>Марсель</b></td><td class="num mono">5</td><td><div class="v9-cellbar"><i style="width:56%;background:#C7932A;--d:.8s"></i></div></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="v10">
+  <div class="v-head">
+    <span class="v-num">10</span>
+    <div class="v-title">
+      <h2>Плоский плотный</h2>
+      <p class="v-src">Height × Plane</p>
+    </div>
+    <p class="v-desc">Без теней и градиентов: плоские ячейки, тонкие рамки и компактный шрифт. Утилитарно и плотно, всё под рукой в один взгляд.</p>
+  </div>
+  <div class="stage v10">
+    <div class="stage-in">
+      <div class="v10-head up" style="--d:.02s">
+        <div class="v10-title">Сводка · 3 августа</div>
+        <div class="v10-src mono">обновлено 12:40</div>
+      </div>
+      <div class="v10-row up" style="--d:.06s">
+        <div class="v10-cell"><div class="l">Точка</div><div class="n">Мира 14</div></div>
+        <div class="v10-cell"><div class="l">Выручка</div><div class="n mono" data-count="182400" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 9%</div><div class="v10-mini"><i style="width:78%;--d:.3s"></i></div></div>
+        <div class="v10-cell"><div class="l">Заказы</div><div class="n mono" data-count="47">0</div><div class="d d-up">▲ 12%</div><div class="v10-mini"><i style="width:100%;--d:.4s"></i></div></div>
+        <div class="v10-cell"><div class="l">Средний чек</div><div class="n mono" data-count="3880" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 4%</div><div class="v10-mini"><i style="width:52%;--d:.5s"></i></div></div>
+        <div class="v10-cell"><div class="l">Новые</div><div class="n mono" data-count="12">0</div><div class="d d-up">▲ 18%</div><div class="v10-mini"><i style="width:30%;--d:.6s"></i></div></div>
+      </div>
+      <div class="v10-list up" style="--d:.12s">
+        <div class="v10-li" style="background:#F4EFE8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#8A7B6C"><span>Заказ · товар</span><span>Выручка</span><span>Слот</span><span>Канал</span></div>
+        <div class="v10-li"><span class="nm">FW-1040 <small>Букет «Нежность»</small></span><span class="num mono">4 700 ₽</span><span>12:00</span><span class="v10-tag wa">WA</span></div>
+        <div class="v10-li"><span class="nm">FW-1041 <small>Пионы · 5 веток</small></span><span class="num mono">3 900 ₽</span><span>14:00</span><span class="v10-tag tg">TG</span></div>
+        <div class="v10-li"><span class="nm">FW-1042 <small class="v10-urg">СРОЧНО</small> <small>Ромашки</small></span><span class="num mono">2 400 ₽</span><span>13:00</span><span class="v10-tag max">MAX</span></div>
+        <div class="v10-li"><span class="nm">FW-1043 <small>Марсель · 5 роз</small></span><span class="num mono">2 600 ₽</span><span>18:00</span><span class="v10-tag mp">MP</span></div>
+        <div class="v10-li"><span class="nm">FW-1044 <small>Воздушный · 7 роз</small></span><span class="num mono">3 700 ₽</span><span>19:00</span><span class="v10-tag dir" style="background:#EEF1EA;color:#7C8B6F">Прямой</span></div>
+      </div>
+      <div class="v10-list up" style="--d:.18s">
+        <div class="v10-li" style="background:#F4EFE8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#8A7B6C"><span>Канал</span><span>Заказы</span><span>Выручка</span><span>Доля</span></div>
+        <div class="v10-li"><span class="nm">WhatsApp</span><span class="num mono">18</span><span class="num mono">62 400 ₽</span><span><div class="barw"><i style="width:78%;background:#5C7A63;--d:.2s"></i></div></span></div>
+        <div class="v10-li"><span class="nm">Telegram</span><span class="num mono">12</span><span class="num mono">48 200 ₽</span><span><div class="barw"><i style="width:52%;background:#6D4B62;--d:.3s"></i></div></span></div>
+        <div class="v10-li"><span class="nm">MAX</span><span class="num mono">9</span><span class="num mono">36 900 ₽</span><span><div class="barw"><i style="width:39%;background:#C7932A;--d:.4s"></i></div></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>Bloom CRM · демо-набор из 10 визуальных направлений · палитра terra / plum / sage / amber · Inter + JetBrains Mono</footer>
+<script>
+(function(){
+function fmt(n){return Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g,' ');}
+function roll(el,target,prefix,suffix,dur){
+  prefix=prefix||'';suffix=suffix||'';dur=dur||900;
+  var t0=null;
+  function step(ts){
+    if(!t0)t0=ts;
+    var p=Math.min(1,(ts-t0)/dur);
+    var e=1-Math.pow(1-p,3);
+    if(p<1){el.textContent=prefix+fmt(target*e)+suffix;requestAnimationFrame(step);}
+    else el.textContent=prefix+fmt(target)+suffix;
+  }
+  requestAnimationFrame(step);
+}
+function expand(arr,n){
+  var out=[];var m=arr.length;
+  for(var i=0;i<n;i++){var f=i*(m-1)/(n-1);var a=Math.floor(f),b=Math.min(m-1,a+1),t=f-a;out.push(arr[a]+(arr[b]-arr[a])*t);}
+  return out;
+}
+var dailyRev=[118400,131800,120900,145200,138600,156300,148200,162500,154800,171900,166400,175200,168700,182400];
+var dailyOrd=[31,34,30,37,35,40,38,42,39,44,41,46,43,47];
+var dailyNew=[8,9,7,10,9,11,10,12,10,13,11,14,12,12];
+var aovS=[3480,3620,3550,3700,3760,3710,3880];
+var urgS=[3,2,4,3,5,4,5];
+var chatS=[2,4,3,3,5,4,3];
+var SERIES={
+  today:{rev:dailyRev.slice(-7),ord:dailyOrd.slice(-7),aov:aovS,newc:dailyNew.slice(-7),urg:urgS,chat:chatS},
+  '7d':{rev:dailyRev.slice(-7),ord:dailyOrd.slice(-7),aov:aovS,newc:dailyNew.slice(-7),urg:urgS,chat:chatS},
+  '30d':{rev:expand(dailyRev,28),ord:expand(dailyOrd,28),aov:expand(aovS,28),newc:expand(dailyNew,28),urg:expand(urgS,28),chat:expand(chatS,28)}
+};
+var DATA={today:{rev:182400,ord:47,aov:3880,newc:12,urg:5,chat:3},'7d':{rev:1181900,ord:302,aov:3914,newc:64,urg:14,chat:12},'30d':{rev:4710000,ord:1205,aov:3909,newc:251,urg:41,chat:27}};
+var NS='http://www.w3.org/2000/svg';
+function spark(svg,vals,opt){
+  opt=opt||{};
+  var w=opt.w||120,h=opt.h||36,pad=1;
+  var max=Math.max.apply(null,vals),min=Math.min.apply(null,vals);
+  var rng=(max-min)||1;
+  var pts=vals.map(function(v,i){return [pad+i*(w-2*pad)/(vals.length-1),h-pad-(v-min)/rng*(h-2*pad)];});
+  var g=document.createElementNS(NS,'g');
+  if(opt.area){
+    var area=pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ');
+    area=area+' '+w+','+h+' 0,'+h;
+    var ap=document.createElementNS(NS,'polygon');
+    ap.setAttribute('points',area);
+    ap.setAttribute('fill',opt.color||'#C76B47');
+    ap.setAttribute('opacity',opt.areaOpacity!=null?opt.areaOpacity:0.14);
+    g.appendChild(ap);
+  }
+  var pl=document.createElementNS(NS,'polyline');
+  pl.setAttribute('points',pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' '));
+  pl.setAttribute('fill','none');
+  pl.setAttribute('stroke',opt.color||'#C76B47');
+  pl.setAttribute('stroke-width',opt.strokeWidth||2);
+  pl.setAttribute('stroke-linecap','round');
+  pl.setAttribute('stroke-linejoin','round');
+  g.appendChild(pl);
+  if(opt.dot){
+    var c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',pts[pts.length-1][0].toFixed(1));
+    c.setAttribute('cy',pts[pts.length-1][1].toFixed(1));
+    c.setAttribute('r',opt.dotR||2.6);
+    c.setAttribute('fill',opt.dotFill||'#fff');
+    c.setAttribute('stroke',opt.color||'#C76B47');
+    c.setAttribute('stroke-width',2);
+    g.appendChild(c);
+  }
+  svg.setAttribute('viewBox','0 0 '+w+' '+h);
+  svg.setAttribute('width',w);
+  svg.setAttribute('height',h);
+  svg.setAttribute('preserveAspectRatio','none');
+  svg.appendChild(g);
+}
+function sparkVals(svg){
+  if(svg.getAttribute('data-values'))return svg.getAttribute('data-values').split(',').map(Number);
+  var s=svg.getAttribute('data-spark');
+  return (SERIES.today[s]||dailyRev).slice();
+}
+function drawSvg(svg,vals){
+  spark(svg,vals,{color:svg.getAttribute('data-color'),area:svg.getAttribute('data-area')==='1',dot:svg.getAttribute('data-dot')==='1'});
+}
+function slice(x){return [].slice.call(x);}
+slice(document.querySelectorAll('svg.spark')).forEach(function(svg){drawSvg(svg,sparkVals(svg));});
+function runCounters(root){
+  if(!root)return;
+  slice(root.querySelectorAll('[data-count]')).forEach(function(el){
+    roll(el,parseFloat(el.getAttribute('data-count')),el.getAttribute('data-pre')||'',el.getAttribute('data-suf')||'');
+  });
+}
+function renderPeriod(b,root){
+  if(!b||!root)return;
+  var key=b.getAttribute('data-key');
+  var d=DATA[key]||DATA.today;
+  slice(root.querySelectorAll('[data-k]')).forEach(function(el){
+    var k=el.getAttribute('data-k');
+    if(d[k]!=null)roll(el,d[k],el.getAttribute('data-pre')||'',el.getAttribute('data-suf')||'');
+  });
+  slice(root.querySelectorAll('svg.spark[data-spark]')).forEach(function(svg){
+    var s=svg.getAttribute('data-spark');
+    var vals=(SERIES[key]&&SERIES[key][s])?SERIES[key][s].slice():SERIES.today[s].slice();
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    drawSvg(svg,vals);
+  });
+}
+slice(document.querySelectorAll('.period .p-btn')).forEach(function(b){
+  b.addEventListener('click',function(){
+    var grp=b.parentNode;
+    slice(grp.querySelectorAll('.p-btn')).forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    var root=b.closest('.vari');
+    renderPeriod(b,root);
+  });
+});
+var order=['v1','v2','v3','v4','v5','v6','v7','v8','v9','v10'];
+var cur=0;
+var hCount=document.getElementById('hCount');
+function show(id){
+  cur=order.indexOf(id);
+  slice(document.querySelectorAll('.vari')).forEach(function(s){s.classList.toggle('on',s.id===id);});
+  slice(document.querySelectorAll('.tab')).forEach(function(t){t.classList.toggle('on',t.getAttribute('data-sec')===id);});
+  var sec=document.getElementById(id);
+  runCounters(sec);
+  if(sec)renderPeriod(sec.querySelector('.period .p-btn.on'),sec);
+  hCount.textContent=(cur+1)+' / '+order.length;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+slice(document.querySelectorAll('.tab')).forEach(function(t){
+  t.addEventListener('click',function(){show(t.getAttribute('data-sec'));});
+});
+document.getElementById('prevBtn').addEventListener('click',function(){cur=(cur-1+order.length)%order.length;show(order[cur]);});
+document.getElementById('nextBtn').addEventListener('click',function(){cur=(cur+1)%order.length;show(order[cur]);});
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'){cur=(cur+1)%order.length;show(order[cur]);}
+  if(e.key==='ArrowLeft'){cur=(cur-1+order.length)%order.length;show(order[cur]);}
+});
+var v2=document.querySelector('.stage.v2');
+v2.addEventListener('mousemove',function(e){
+  var r=v2.getBoundingClientRect();
+  var x=(e.clientX-r.left)/r.width-0.5;
+  var y=(e.clientY-r.top)/r.height-0.5;
+  slice(v2.querySelectorAll('.v2-blob')).forEach(function(b,i){
+    b.style.transform='translate('+(x*(i+1)*22).toFixed(1)+'px,'+(y*(i+1)*16).toFixed(1)+'px)';
+  });
+});
+show('v1');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM · Кабинет флориста — спека</title>
+<style>
+  :root{
+    --terra:#b4632f; --terra-soft:#f6e9de; --plum:#6d4b62; --plum-soft:#f3e9ef;
+    --sage:#5c7a63; --sage-soft:#eaf1ea; --amber:#c7932a; --amber-soft:#fdf3e0;
+    --ink:#2b2420; --ink-mute:#8b8178; --line:#e9e2da; --paper:#fbf8f4; --card:#fffdf9;
+    --red:#b3563f; --red-soft:#f7e7e1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--paper);color:var(--ink);line-height:1.55;padding:48px 24px}
+  .wrap{max-width:880px;margin:0 auto}
+  header{margin-bottom:34px}
+  .kicker{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--terra);font-weight:700}
+  h1{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px}
+  .sub{color:var(--ink-mute);font-size:.95rem}
+  .rule{height:2px;background:linear-gradient(90deg,var(--terra),var(--plum));margin:22px 0 28px}
+  h2{font-family:'Segoe UI',Arial,sans-serif;font-size:1.05rem;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .tag{font-size:.7rem;background:var(--terra);color:#fff;border-radius:999px;padding:2px 10px;font-weight:700;letter-spacing:.03em}
+  h2 .tag.plum{background:var(--plum)}
+  h2 .tag.sage{background:var(--sage)}
+  h2 .tag.grey{background:#9aa0a6}
+  section{margin-bottom:36px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:12px}
+  .card .head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+  h3{font-size:1.02rem;font-weight:700}
+  .num{font-family:'Segoe UI',Arial,sans-serif;font-size:.78rem;font-weight:800;color:var(--terra);min-width:1.4em}
+  p{margin-top:6px;font-size:.95rem}
+  ul,ol{margin:8px 0 0 22px;font-size:.92rem}
+  li{margin:3px 0}
+  table{width:100%;border-collapse:collapse;font-family:'Segoe UI',Arial,sans-serif;font-size:.88rem;margin-top:6px;background:var(--card)}
+  th{background:var(--plum-soft);text-align:left;font-weight:700;padding:8px 10px;border:1px solid var(--line)}
+  td{padding:8px 10px;border:1px solid var(--line);vertical-align:top}
+  td b{color:var(--terra)}
+  .ok{background:var(--sage-soft);border-left:4px solid var(--sage)}
+  .ok .num{color:var(--sage)}
+  .warn{background:var(--amber-soft);border-left:4px solid var(--amber)}
+  .warn .num{color:#9A7A2A}
+  .skip{background:#f5f3ef;border-left:4px solid #9aa0a6}
+  .skip .num{color:#6f6a63}
+  .note{background:var(--amber-soft);border:1px solid #ecd9b0;border-radius:12px;padding:14px 18px;font-size:.9rem;margin-top:14px}
+  .note b{color:#9A7A2A}
+  .flow{font-family:'JetBrains Mono',Consolas,monospace;font-size:.84rem;background:#2b2420;color:#f3ede4;border-radius:12px;padding:16px 18px;line-height:1.8;margin-top:8px}
+  .flow .a{color:#d99a6c}.flow .b{color:#a8c3a0}.flow .c{color:#c9a7d6}.flow .arrow{color:#8b8178}
+  .crit{background:var(--red-soft);border-left:4px solid var(--red)}
+  .crit .num{color:var(--red)}
+  footer{margin-top:40px;color:var(--ink-mute);font-size:.8rem;font-family:'Segoe UI',Arial,sans-serif;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Bloom CRM · продуктовый брейншторм</div>
+    <h1>Кабинет флориста</h1>
+    <div class="sub">Дизайн-спека · демо-режим · только ПК · 2026-08-02</div>
+    <div class="rule"></div>
+  </header>
+
+  <section>
+    <h2><span>Исходный сигнал</span><span class="tag">зачем</span></h2>
+    <div class="card warn">
+      <div class="head"><span class="num">!</span><h3>Фото-гейт спамит не того пользователя</h3></div>
+      <p>«Нужно фото букета» сейчас приходит тостом <b>менеджеру</b>, но фото делает <b>флорист в магазине</b>. Для менеджера это шум, для флориста — рабочий список. Вывод: фото-гейт принадлежит кабинету флориста, а не менеджерскому.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span>Принципы</span><span class="tag plum">как строим</span></h2>
+    <ul>
+      <li><b>Консистентность</b> — те же экраны/меню/карточки, что в сборном кабинете, отфильтрованные ролью.</li>
+      <li><b>Минимум экранов</b> — «Сегодня» <b>не возвращаем</b> (убрано из сборного). Всё в «Заказы».</li>
+      <li><b>Не оверинженирим</b> — инвентарь, ИИ, курьерское приложение, офлайн — «потом».</li>
+      <li><b>Пока только ПК</b> — адаптив после подтверждения КП и оплаты.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span>Роль «Флорист»</span><span class="tag sage">RBAC</span></h2>
+    <table>
+      <tr><th>Аспект</th><th>Решение</th></tr>
+      <tr><td>Scope</td><td>Только <b>свой магазин</b></td></tr>
+      <tr><td>Цикл заказа</td><td>От «Принят» до <b>«В доставке»</b> — его кнопка финальная перед выездом</td></tr>
+      <tr><td>Чаты</td><td><b>Только чтение</b> (отвечает менеджер)</td></tr>
+      <tr><td>Витрина</td><td>Своего магазина, остатки читаются</td></tr>
+      <tr><td>Отмена</td><td>Не отменяет — <b>«Вернуть менеджеру»</b> с причиной</td></tr>
+      <tr><td>Фото «после»</td><td>Курьер; в демо не обязательное</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span>Экраны</span><span class="tag">меню слева</span></h2>
+    <table>
+      <tr><th>Экран</th><th>Видимое</th><th>Отличия от менеджера</th></tr>
+      <tr><td><b>Заказы</b></td><td>Заказы своего магазина</td><td>Нет счетов/аналитики/оплат; вкладка «Мои в процессе»; сорт по дедлайну, ⚡ сверху, оранжевая подсветка за 45 мин</td></tr>
+      <tr><td><b>Чаты</b></td><td>Только чтение</td><td>Нет ввода/шаблонов/заметок; «ждёт ответа» видно, отвечает менеджер</td></tr>
+      <tr><td><b>Номенклатура</b></td><td>Витрина своего магазина (остатки)</td><td>Нет цен/скидок/синхронизации</td></tr>
+    </table>
+    <div class="note"><b>Скрыты полностью:</b> Счета, Отчёты, Настройки, Команда, Почта, Обращения.</div>
+  </section>
+
+  <section>
+    <h2><span>Карточка заказа</span><span class="tag plum">флористская</span></h2>
+    <ul>
+      <li>Состав + слот, срочность ⚡, <b>оранжевая подсветка за 45 мин до дедлайна</b></li>
+      <li>Получатель/адрес, текст открытки, комментарий</li>
+      <li><b>Индикатор времени сборки</b> (сколько уже собирает)</li>
+      <li>Крупный блок фото: «Сфоткать „до“» → подтверждает сборку; предупреждение о размытом фото (можно пропустить)</li>
+      <li>Кнопки: «Начал сборку» → «Собрано» → «Передать курьеру» / «Готов к самовывозу»</li>
+      <li>«Запросить замену у менеджера» (не покидая карточку) · «Вернуть менеджеру» с причиной</li>
+      <li><b>Нет:</b> оплаты, счетов, полной истории</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span>Поток флориста</span><span class="tag sage">по шагам</span></h2>
+    <div class="flow">
+<span class="a">Принят</span> <span class="arrow">(менеджер / авто)</span><br>
+  <span class="arrow">→</span> видит в «Заказы» <span class="arrow">(сорт: ⚡ → дедлайн)</span><br>
+  <span class="arrow">→</span> <span class="a">«Начал сборку»</span> <span class="arrow">(карточка: «Уже собирает &lt;имя&gt;»)</span><br>
+  <span class="arrow">→</span> чекбокс <span class="b">«Все цветы по составу в наличии»</span> <span class="arrow">(нет → «Запросить замену»)</span><br>
+  <span class="arrow">→</span> собирает → <span class="a">«Собрано»</span> → фото «до» <span class="arrow">(сырые цветы)</span><br>
+  <span class="arrow">→</span> чекбокс <span class="b">«Брак при сборке»</span> <span class="arrow">(опционально → аналитика потерь)</span><br>
+  <span class="arrow">→</span> <span class="a">«Передать курьеру»</span> <span class="c">ИЛИ</span> <span class="a">«Готов к самовывозу»</span><br>
+  <span class="arrow">→</span> заказ уходит из очереди
+    </div>
+    <p style="margin-top:10px;font-size:.9rem">Не может собрать → «Вернуть менеджеру» + причина → заказ выпадает из очереди, менеджеру уведомление. «Испорчено при сборке» → возврат в очередь как «Пересборка» (без авто-уведомления курьеру и +15 мин).</p>
+  </section>
+
+  <section>
+    <h2><span>Уведомления</span><span class="tag">визуально, без звука</span></h2>
+    <ol>
+      <li>«Новый заказ в ваш магазин» (с пометкой срочности)</li>
+      <li><b>«Заказ приближается к слоту, а фото нет»</b> — за 45 мин, оранжевая подсветка (это то, что раньше спамило менеджера)</li>
+      <li>«Менеджер вернул заказ на доработку»</li>
+      <li>Перегруз &gt;15 заказов → «Рекомендуем режим „Только сборка“»</li>
+    </ol>
+    <div class="note"><b>Звуковые триггеры не делаем</b> — в цеху раздражает.</div>
+  </section>
+
+  <section>
+    <h2><span>Краевые случаи</span><span class="tag grey">в демо — 4 из 10</span></h2>
+    <div class="card ok">
+      <div class="head"><span class="num">1</span><h3>Цветок закончился, замены нет</h3></div>
+      <p>«Невозможно собрать» → статус «Требуется звонок клиенту», уходит из очереди, менеджеру уведомление.</p>
+    </div>
+    <div class="card ok">
+      <div class="head"><span class="num">2</span><h3>Клиент отменил, когда флорист начал сборку</h3></div>
+      <p>Карточка серая «ОТМЕНЁН · подтвердите, что не собираете» → «Подтверждаю, что не собираю».</p>
+    </div>
+    <div class="card ok">
+      <div class="head"><span class="num">3</span><h3>Нет заказов (тишина в цехе)</h3></div>
+      <p>Экран «тишина» с кнопкой «Позвать менеджера» — закрывает простаивание.</p>
+    </div>
+    <div class="card ok">
+      <div class="head"><span class="num">4</span><h3>Размытое/тёмное фото</h3></div>
+      <p>Предупреждение «Переснять?» с возможностью пропустить (руки мокрые).</p>
+    </div>
+    <div class="card skip">
+      <div class="head"><span class="num">→</span><h3>«Потом» (не в демо)</h3></div>
+      <p>ИИ-сравнение фото с составом · офлайн-кэш · курьерское приложение · подзадачи на 2 букета · «передать коллеге» при обеде · авто-+15 мин курьеру · списание инвентаря.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span>Решения по противоречиям</span><span class="tag plum">финально</span></h2>
+    <table>
+      <tr><th>Спор</th><th>Решение</th></tr>
+      <tr><td>«Сегодня» как главный экран</td><td><b>НЕ возвращаем</b> — всё в «Заказы»</td></tr>
+      <tr><td>Звуковые триггеры</td><td><b>НЕ делаем</b> — визуал + подсветка</td></tr>
+      <tr><td>Списание инвентаря</td><td>Минимум: чекбокс «все цветы в наличии»; полное — «потом»</td></tr>
+      <tr><td>«Испорчено при сборке»</td><td>Возврат в очередь как «Пересборка», без уведомления курьеру и +15 мин</td></tr>
+      <tr><td>Коллективная сборка / стажёр</td><td>Только блокировка «Уже собирает &lt;имя&gt;»</td></tr>
+      <tr><td>Краевые случаи (10 шт.)</td><td>В демо — 4, остальные 6 — «потом»</td></tr>
+      <tr><td>Индикаторы (время / 45 мин / перегруз)</td><td><b>Берём все три</b> — дешёвые и сильные</td></tr>
+    </table>
+  </section>
+
+  <div class="note">
+    <b>Критерии готовности (демо):</b><br>
+    1. Вход под «Флорист» → только «Заказы»/«Чаты»/«Номенклатура» своего магазина.<br>
+    2. Заказ: Принят → «Начал сборку» (блокировка) → «Собрано»+фото → «Передать курьеру».<br>
+    3. Без фото кнопка «Передать курьеру» заблокирована с подсказкой.<br>
+    4. «Вернуть менеджеру» / «Запросить замену» уводят заказ и уведомляют менеджера.<br>
+    5. Оранжевая подсветка за 45 мин, перегруз &gt;15, экран «тишина».<br>
+    6. Фото «после», звук, списание, ИИ, офлайн, курьерское — сознательно отсутствуют.
+  </div>
+
+  <footer>Bloom CRM · спека «Кабинет флориста» · knowledge/concepts/florist-cabinet.md</footer>
+</div>
+</body>
+</html>

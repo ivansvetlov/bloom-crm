@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM · Бенчмарк лендинга yoolip.ai</title>
+<style>
+  :root{
+    --terra:#b4632f; --terra-soft:#f6e9de; --plum:#6d4b62; --plum-soft:#f3e9ef;
+    --sage:#5c7a63; --sage-soft:#eaf1ea; --amber:#c7932a; --amber-soft:#fdf3e0;
+    --ink:#2b2420; --ink-mute:#8b8178; --line:#e9e2da; --paper:#fbf8f4; --card:#fffdf9;
+    --red:#b3563f; --red-soft:#f7e7e1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--paper);color:var(--ink);line-height:1.55;padding:48px 24px}
+  .wrap{max-width:1000px;margin:0 auto}
+  header{margin-bottom:34px}
+  .kicker{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--terra);font-weight:700}
+  h1{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px}
+  .sub{color:var(--ink-mute);font-size:.95rem}
+  .sub a{color:var(--terra);text-decoration:none;border-bottom:1px solid var(--terra-soft)}
+  .rule{height:2px;background:linear-gradient(90deg,var(--terra),var(--plum));margin:22px 0 28px}
+  h2{font-family:'Segoe UI',Arial,sans-serif;font-size:1.05rem;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  h2 .tag{font-size:.7rem;background:var(--terra);color:#fff;border-radius:999px;padding:2px 10px;font-weight:700;letter-spacing:.03em}
+  h2 .tag.plum{background:var(--plum)}
+  h2 .tag.sage{background:var(--sage)}
+  h2 .tag.grey{background:#9aa0a6}
+  section{margin-bottom:40px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:12px}
+  .card p{font-size:.95rem}
+  .card p+p{margin-top:8px}
+  ul{margin:8px 0 0 20px;font-size:.92rem}
+  li{margin:4px 0}
+  table{width:100%;border-collapse:collapse;font-family:'Segoe UI',Arial,sans-serif;font-size:.84rem;margin-top:8px;background:var(--card)}
+  th{background:var(--plum-soft);text-align:left;font-weight:700;padding:8px 10px;border:1px solid var(--line)}
+  td{padding:8px 10px;border:1px solid var(--line);vertical-align:top}
+  td b{color:var(--terra)}
+  .has{font-weight:700}
+  .has.y{color:var(--sage)}
+  .has.n{color:var(--ink-mute)}
+  .has.p{color:var(--amber)}
+  .note{background:var(--amber-soft);border:1px solid #ecd9b0;border-radius:12px;padding:14px 18px;font-size:.9rem;margin-top:14px}
+  .note b{color:#9A7A2A}
+  .stackline{font-family:'Segoe UI',Arial,sans-serif;font-size:.76rem;color:var(--ink-mute);margin-top:10px}
+
+  .block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:20px}
+  .b-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+  .b-num{font-family:'Segoe UI',Arial,sans-serif;font-size:.8rem;font-weight:800;color:var(--terra);min-width:2.2em}
+  .b-head h3{font-size:1.1rem;font-weight:700}
+  .src{font-family:'Segoe UI',Arial,sans-serif;font-size:.7rem;color:var(--ink-mute);background:var(--plum-soft);border-radius:6px;padding:1px 8px;font-weight:600}
+  .b-desc{font-size:.93rem;color:#4a423b}
+  .b-meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 10px;letter-spacing:.02em}
+  .pill.take{background:var(--sage-soft);color:var(--sage)}
+  .pill.rework{background:var(--amber-soft);color:#9A7A2A}
+  .pill.skip{background:#f0efe9;color:#6f6a63}
+  .pill.lvl{background:var(--terra-soft);color:var(--terra)}
+  .demo{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+  .demo.dark{background:var(--ink);color:#f3ede4}
+  .demo.ov{overflow:visible}
+  .demo .dl{font-family:'Segoe UI',Arial,sans-serif;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);font-weight:700;margin-bottom:10px}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;border:none;cursor:pointer;font-family:'Segoe UI',Arial,sans-serif;font-size:.85rem;font-weight:700;transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s,background .18s}
+  .btn.primary{background:var(--terra);color:#fff;box-shadow:0 6px 18px rgba(180,99,47,.25)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(180,99,47,.35)}
+  .btn.primary:active{transform:translateY(0) scale(.97)}
+  .btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--plum)}
+  .btn.ghost:hover{background:var(--plum-soft);transform:translateY(-2px)}
+  .btn.dg{background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff}
+  .btn.dg:hover{background:rgba(255,255,255,.08);transform:translateY(-2px)}
+  .btn.shine{position:relative;overflow:hidden}
+  .btn.shine::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);animation:shine 2.8s ease-in-out infinite}
+  @keyframes shine{0%,55%{left:-80%}80%,100%{left:130%}}
+  .btn.mini{padding:7px 13px;font-size:.72rem;border-radius:9px}
+
+  .cd-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .cd-avatars{display:flex}
+  .cd-avatars span{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);margin-left:-9px;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;font-size:.62rem;font-weight:800;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+  .cd-avatars span:first-child{margin-left:0}
+  .a1{background:linear-gradient(135deg,#b4632f,#d99a6c)}.a2{background:linear-gradient(135deg,#6d4b62,#a8829a)}.a3{background:linear-gradient(135deg,#5c7a63,#8fa38f)}.a4{background:linear-gradient(135deg,#c7932a,#e3bd6b)}.a5{background:linear-gradient(135deg,#2b2420,#6a5d52)}
+  .cd-num{font-size:1.45rem;font-weight:800;color:#fff}
+  .cd-proof{font-size:.85rem;color:#c9c0b5}
+  .cd-proof b{color:#fff}
+  .cd-title{font-size:1.25rem;font-weight:800;line-height:1.25;margin-top:14px}
+  .cd-accent{color:var(--amber)}
+
+  .fs-stage{position:relative;min-height:220px;padding:20px 8px 26px;background:var(--paper);border:1px dashed var(--line);border-radius:12px}
+  .fs-main{position:relative;z-index:2;margin:0 auto;max-width:320px}
+  .fs-float{position:absolute;z-index:3;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-family:'Segoe UI',Arial,sans-serif;font-size:.74rem;font-weight:600;box-shadow:0 12px 26px rgba(43,36,32,.18);animation:fsFloat 6s ease-in-out infinite;white-space:nowrap}
+  .fs-float b{color:var(--terra)}
+  .fs-1{top:4px;right:14px;animation-delay:0s}
+  .fs-2{top:64px;right:0;animation-delay:.9s;--fs-r:-4deg}
+  .fs-3{bottom:6px;left:12px;animation-delay:1.6s;--fs-r:3deg}
+  .fs-4{bottom:34px;right:26px;animation-delay:2.3s;--fs-r:-2deg}
+  @keyframes fsFloat{0%,100%{transform:translateY(0) rotate(var(--fs-r,0deg))}50%{transform:translateY(-9px) rotate(var(--fs-r,0deg))}}
+
+  .dmock{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;font-family:'Segoe UI',Arial,sans-serif}
+  .dm-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .dm-title{font-size:.8rem;font-weight:700}
+  .dm-tag{font-size:.66rem;font-weight:700;color:var(--sage);background:var(--sage-soft);border-radius:99px;padding:2px 8px}
+  .dm-bars{display:flex;align-items:flex-end;gap:6px;height:60px}
+  .dm-bars i{flex:1;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--terra),var(--terra-soft))}
+  .dm-bars i:nth-child(2n){background:linear-gradient(180deg,var(--plum),var(--plum-soft))}
+  .dm-bars i:nth-child(3n){background:linear-gradient(180deg,var(--sage),var(--sage-soft))}
+  .dm-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .dm-kpi div{background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:6px 9px}
+  .dm-kpi b{display:block;font-size:.9rem}
+  .dm-kpi span{font-size:.6rem;color:var(--ink-mute);font-weight:600}
+
+  .ov-dark{height:86px;background:var(--ink);border-radius:12px 12px 0 0}
+  .ov-shot{position:relative;z-index:2;margin:-52px 16px 0;border:8px solid #f2ecdf;border-radius:14px;box-shadow:0 16px 34px rgba(43,36,32,.22);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+  .ov-shot:hover{transform:translateY(-4px)}
+  .ov-light{height:96px;background:var(--plum-soft);border-radius:0 0 12px 12px}
+  .ov-note{text-align:center;font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;color:var(--ink-mute);margin-top:10px}
+
+  .pn{display:flex;flex-direction:column;gap:8px}
+  .pn-line{display:flex;gap:10px;align-items:flex-start;font-size:.88rem;color:var(--ink-mute);transition:color .25s,opacity .25s}
+  .pn-line:hover{color:var(--ink)}
+  .pn-line .x{font-family:'Segoe UI',Arial,sans-serif;font-weight:800;color:var(--red)}
+  .pn-sol{max-height:0;opacity:0;overflow:hidden;transition:max-height .5s cubic-bezier(.22,1,.36,1),opacity .4s,margin .3s}
+  .pn-sol.show{max-height:200px;opacity:1;margin-top:12px}
+  .sol-card{background:var(--sage-soft);border-left:4px solid var(--sage);border-radius:12px;padding:14px 16px;font-size:.9rem}
+  .sol-card b{color:var(--sage)}
+
+  .cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch}
+  .cmp .c{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .cmp .c h4{font-family:'Segoe UI',Arial,sans-serif;font-size:.76rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
+  .cmp .c.now h4{color:var(--red)}
+  .cmp .c.bloom h4{color:var(--sage)}
+  .cmp ul{list-style:none;margin:0}
+  .cmp li{display:flex;gap:8px;align-items:flex-start;font-size:.84rem;margin:7px 0}
+  .cmp .ic{font-family:'Segoe UI',Arial,sans-serif;font-weight:800;flex:none}
+  .now .ic{color:var(--red)}
+  .bloom .ic{color:var(--sage)}
+  .cmp-arrow{align-self:center;font-family:'Segoe UI',Arial,sans-serif;font-size:1.25rem;font-weight:800;color:var(--terra)}
+  .cmp .ck{opacity:0;transform:translateY(6px);transition:opacity .35s cubic-bezier(.22,1,.36,1),transform .35s cubic-bezier(.22,1,.36,1)}
+  .cmp.run .ck{opacity:1;transform:none}
+
+  .morph-h{font-size:1.25rem;font-weight:800;line-height:1.3}
+  .morph-w{color:var(--terra);display:inline-block}
+  .morph-w.go{animation:mIn .55s cubic-bezier(.22,1,.36,1)}
+  @keyframes mIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  .faq-item{border:1px solid var(--line);border-radius:11px;background:var(--card);margin-bottom:8px;overflow:hidden}
+  .faq-q{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:12px 14px;background:none;border:none;cursor:pointer;font-family:'Segoe UI',Arial,sans-serif;font-weight:600;font-size:.86rem;color:var(--ink);text-align:left}
+  .faq-q:hover{background:var(--terra-soft)}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .32s cubic-bezier(.22,1,.36,1)}
+  .faq-a p{padding:0 14px 12px;font-size:.82rem;color:var(--ink-mute);margin:0}
+  .faq-item.open .faq-a{max-height:140px}
+  .mark{font-family:'Segoe UI',Arial,sans-serif;font-weight:700;color:var(--terra);transition:transform .3s;flex:none}
+  .faq-item.open .mark{transform:rotate(45deg)}
+
+  .steps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:8px;align-items:stretch}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;position:relative}
+  .step:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(43,36,32,.12);border-color:var(--terra-soft)}
+  .step .n{font-family:'Segoe UI',Arial,sans-serif;font-size:.7rem;font-weight:800;color:var(--terra)}
+  .step h5{font-size:.92rem;margin:4px 0 2px}
+  .step p{font-size:.8rem;color:var(--ink-mute);margin:0}
+  .step .more{max-height:0;overflow:hidden;transition:max-height .3s cubic-bezier(.22,1,.36,1);font-size:.78rem;color:var(--plum);font-weight:600}
+  .step.open .more{max-height:90px;margin-top:6px}
+  .step-arrow{align-self:center;color:var(--terra);font-family:'Segoe UI',Arial,sans-serif;font-weight:800;font-size:1.05rem}
+
+  .pers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
+  .pcard:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(43,36,32,.12);border-color:var(--plum-soft)}
+  .pcard .pn{font-family:'Segoe UI',Arial,sans-serif;font-size:.7rem;font-weight:800;color:var(--plum);letter-spacing:.05em}
+  .pcard h5{font-size:.95rem;margin:4px 0 2px}
+  .pcard p{font-size:.8rem;color:var(--ink-mute);margin:0}
+  .pcard .pmore{max-height:0;overflow:hidden;transition:max-height .3s cubic-bezier(.22,1,.36,1);font-size:.78rem;color:var(--sage);font-weight:600}
+  .pcard:hover .pmore{max-height:90px;margin-top:6px}
+
+  .pc .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .pc label{font-family:'Segoe UI',Arial,sans-serif;font-size:.8rem;font-weight:600}
+  .pc output{font-family:'Segoe UI',Arial,sans-serif;font-size:.9rem;font-weight:800;color:var(--terra)}
+  .pc input[type=range]{width:100%;accent-color:var(--terra);cursor:pointer}
+  .pc .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
+  .pc .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--terra),var(--amber));width:0;transition:width .15s}
+  .pc-result{margin-top:12px;background:var(--terra-soft);border-radius:11px;padding:12px 14px;font-size:.9rem}
+  .pc-result b{color:var(--terra)}
+  .pc-tiers{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .pc-tier{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+  .pc-tier b{display:block;font-size:.95rem}
+  .pc-tier span{font-size:.72rem;color:var(--ink-mute)}
+
+  .aw{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:12px}
+  .aw span{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;font-size:.64rem;font-weight:800;color:#fff;transition:transform .18s}
+  .aw span:hover{transform:translateY(-3px)}
+  .quote{background:var(--paper);border-left:4px solid var(--amber);border-radius:12px;padding:14px 16px;font-size:.95rem;font-style:italic;transition:background .25s}
+  .quote:hover{background:var(--amber-soft)}
+  .quote .who{display:block;font-style:normal;font-family:'Segoe UI',Arial,sans-serif;font-size:.78rem;font-weight:700;color:var(--ink-mute);margin-top:8px}
+
+  .cta-box{background:linear-gradient(140deg,#40342c,#2b2420 55%,#4a3a2f);border-radius:18px;padding:26px;position:relative;overflow:hidden;color:#f3ede4}
+  .cta-blob{position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(180,99,47,.4);filter:blur(64px);top:-50px;right:-40px;pointer-events:none}
+  .cta-blob2{position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(109,75,98,.5);filter:blur(60px);bottom:-50px;left:-30px;pointer-events:none}
+  .cta-title{font-size:1.3rem;font-weight:800;line-height:1.2;position:relative}
+  .cta-sub{font-size:.88rem;color:#c9c0b5;margin-top:6px;position:relative}
+  .cta-chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 16px;position:relative}
+  .chip3{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;font-weight:700;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.07);border-radius:999px;padding:5px 12px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+  .cta-box.go .chip3{opacity:1;transform:none}
+  .cta-box.go .chip3:nth-child(1){transition-delay:.1s}
+  .cta-box.go .chip3:nth-child(2){transition-delay:.25s}
+  .cta-box.go .chip3:nth-child(3){transition-delay:.4s}
+  .cta-float{position:absolute;top:16px;right:18px;font-size:.7rem;background:var(--amber);color:#fff;border-radius:999px;padding:4px 10px;font-family:'Segoe UI',Arial,sans-serif;font-weight:800;animation:fsFloat 5s ease-in-out infinite}
+
+  footer{margin-top:44px;color:var(--ink-mute);font-size:.8rem;font-family:'Segoe UI',Arial,sans-serif;text-align:center}
+  @media (max-width:760px){
+    .cmp{grid-template-columns:1fr}
+    .cmp-arrow{transform:rotate(90deg);align-self:center;text-align:center}
+    .steps{grid-template-columns:1fr}
+    .step-arrow{transform:rotate(90deg);align-self:center;text-align:center}
+    .pers{grid-template-columns:1fr}
+    .pc-tiers{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Bloom CRM · бенчмарк лендингов</div>
+    <h1>yoolip.ai — как продаёт аналитика</h1>
+    <div class="sub">Разбор топового лендинга и что из него взять в Bloom · <a href="https://yoolip.ai">yoolip.ai</a> · 2026-08-02</div>
+    <div class="rule"></div>
+  </header>
+
+  <section>
+    <h2><span>Обзор yoolip.ai</span><span class="tag">что это</span></h2>
+    <div class="card">
+      <p><b>Yoolip AI</b> — сервис аналитики продаж и рекламы для продавцов Ozon: дашборд, юнит-экономика, финансы и планирование поставок. Сила лендинга не в «вау-эффектах», а в <b>сценарии</b>: тёмный hero сразу продаёт результат «с одного экрана», дальше — честная боль, решение, сравнение «было/стало», и весь экран печатают живые цифры и скриншоты продукта вместо иллюстраций.</p>
+      <p>Главные приёмы:</p>
+      <ul>
+        <li><b>Соцдоказательство с первой строки</b> — «4395+ продавцов» + стек из пяти аватаров прямо в hero.</li>
+        <li><b>Скриншот продукта как герой</b> — большой «кадр» дашборда в толстой рамке, наезжает на следующую секцию.</li>
+        <li><b>Боль формулируется честно и коротко</b> (три абзаца), решение — одной жирной карточкой.</li>
+        <li><b>Сравнение «сейчас → станет»</b> чек-листом с зелёными галочками.</li>
+        <li><b>Живые цифры и счётчики</b> — аудитория, оборот, тарифы, которые считаются сами от оборота.</li>
+        <li><b>Плавающие карточки с разной скоростью</b> — фон «дышит», глубина без видео.</li>
+        <li><b>Всё под сценарий клиента</b>: шаги онбординга 1-2-3, персоны, тарифы от оборота.</li>
+        <li><b>FAQ-аккордеон и чанжелог</b> — закрывают возражения и доказывают «живость» сервиса.</li>
+        <li><b>Финальный CTA с чипами-гарантиями</b> — «бесплатно · без карты · 5 минут».</li>
+      </ul>
+      <div class="stackline">Технически: Next.js + Tailwind, шрифт Onest, акцент #00A154, анимации float/fade-in-up на CSS, аккордеон на Radix UI. Контраст «тёмный hero → светлые секции», стеклянные чипы навигации.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span>yoolip vs Bloom</span><span class="tag">сравнение</span></h2>
+    <table>
+      <tr><th>Приём / элемент</th><th>yoolip.ai</th><th>У нас в Bloom</th><th>Оценка</th><th>Куда внедрить</th></tr>
+      <tr><td><b>Живой счётчик аудитории + стек аватаров в hero</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill take">брать</span></td><td>offer.html · hero, index.html</td></tr>
+      <tr><td><b>«Кадр» продукта в толстой рамке, наезжает на секцию</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill take">брать</span></td><td>offer.html · hero, сразу под заголовок</td></tr>
+      <tr><td><b>Нарратив «боль → решение»</b></td><td class="has y">есть</td><td class="has p">частично («Честно про чаты»)</td><td><span class="pill rework">переработать</span></td><td>offer.html · первый экран после hero</td></tr>
+      <tr><td><b>Сравнение «сейчас → станет» чек-листом</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill take">брать</span></td><td>offer.html · «Что умеет кабинет»</td></tr>
+      <tr><td><b>Плавающие артефакты вокруг кадра</b></td><td class="has y">есть</td><td class="has p">частично (летящие лепестки)</td><td><span class="pill rework">переработать</span></td><td>offer.html · фон hero, index.html</td></tr>
+      <tr><td><b>Акцентное слово в заголовке</b></td><td class="has y">есть</td><td class="has y">есть (градиент)</td><td><span class="pill rework">переработать</span></td><td>index.html · hero — добавить смену слова</td></tr>
+      <tr><td><b>FAQ-аккордеон</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill take">брать</span></td><td>index.html · после таймлайна</td></tr>
+      <tr><td><b>Онбординг «за 5 минут» 1-2-3</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill take">брать</span></td><td>index.html · перед финальным CTA</td></tr>
+      <tr><td><b>Персоны «кому это нужно» 01/02/03</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill take">брать</span></td><td>offer.html · секция «Кому»</td></tr>
+      <tr><td><b>Тарифы, которые считаются сами от оборота</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill rework">переработать</span></td><td>offer.html · блок тарифов КП</td></tr>
+      <tr><td><b>Соцдоказательство: аватар-стена + цитата основателя</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill take">брать</span></td><td>offer.html · перед футером</td></tr>
+      <tr><td><b>Финальный CTA с чипами-гарантиями</b></td><td class="has y">есть</td><td class="has p">частично (cart-cta)</td><td><span class="pill rework">переработать</span></td><td>index.html + offer.html · финал</td></tr>
+      <tr><td><b>Тёмный hero-контраст</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill skip">не брать</span></td><td>— светлая конвенция Bloom</td></tr>
+      <tr><td><b>Чанжелог и блог-ресурсы в подвале</b></td><td class="has y">есть</td><td class="has n">нет</td><td><span class="pill skip">не брать</span></td><td>— на этапе демо лишнее</td></tr>
+    </table>
+    <div class="note"><b>Сильное у Bloom, которого нет у yoolip:</b> лента каналов-бегущая строка (index.html), таймлайн «12 недель» со скролл-сторителлингом, стеклянный топбар, летящие лепестки — цветочная «фактура», которой не нужно изобретать замену. Держим и прокачиваем сценарий «боль → решение» и соцдоказательства.</div>
+  </section>
+
+  <section>
+    <h2><span>Галерея приёмов</span><span class="tag sage">живые демо</span></h2>
+    <div class="b-desc" style="margin-bottom:14px">Каждый приём собран в палитре Bloom и работает: наведите, нажмите, потяните слайдер.</div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">01</span><h3>Живой счётчик аудитории</h3><span class="src">yoolip.ai · hero</span></div>
+      <div class="b-desc">Цифра сама «дотикает» до 4 395+ при появлении на экране, рядом — стек аватаров с белым кольцом. Мгновенно передаёт «нам доверяют», без единого слова.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo dark">
+        <div class="cd-line">
+          <div class="cd-avatars">
+            <span class="a1">А</span><span class="a2">С</span><span class="a3">М</span><span class="a4">К</span><span class="a5">Д</span>
+          </div>
+          <div class="cd-proof"><b class="cd-num" id="cdNum">0</b>+ салонов уже в системе</div>
+        </div>
+        <div class="cd-title">Вся ваша флористика — <span class="cd-accent">с одного экрана</span></div>
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn primary" onclick="cdRestart()">Начать бесплатно</button>
+          <button class="btn dg" onclick="cdRestart()">Смотреть демо</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">02</span><h3>Плавающие артефакты вокруг кадра</h3><span class="src">yoolip.ai · float-slow, 6–9с</span></div>
+      <div class="b-desc">Мини-карточки с данными парят вокруг главного кадра с разной скоростью и лёгким наклоном — фон «дышит», глубина без видео. В Bloom вместо чужих дашбордов — свои KPI: заказ, выручка, ДРР, сверка.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo ov">
+        <div class="fs-stage">
+          <div class="fs-main">
+            <div class="dmock">
+              <div class="dm-head"><span class="dm-title">Сегодня · кабинет</span><span class="dm-tag">онлайн</span></div>
+              <div class="dm-bars">
+                <i style="height:45%"></i><i style="height:70%"></i><i style="height:55%"></i><i style="height:85%"></i><i style="height:62%"></i><i style="height:92%"></i><i style="height:48%"></i>
+              </div>
+              <div class="dm-kpi">
+                <div><b>182 400 ₽</b><span>выручка</span></div>
+                <div><b>12,4%</b><span>ДРР</span></div>
+                <div><b>47</b><span>заказов</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="fs-float fs-1">Заказ №2845 · <b>собран</b></div>
+          <div class="fs-float fs-2">Выручка <b>+18%</b></div>
+          <div class="fs-float fs-3">Сверка · <b>ок</b></div>
+          <div class="fs-float fs-4">Пионы · <b>маржа 38%</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">03</span><h3>«Кадр» продукта с нахлёстом на секцию</h3><span class="src">yoolip.ai · hero-main, рамка 19px</span></div>
+      <div class="b-desc">Скриншот продукта — не иллюстрация, а главный герой: в толстой светлой рамке он «переезжает» границу между тёмным hero и светлой следующей секцией. Продукт видно сразу, секции связаны в единый кадр.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">средне</span></div>
+      <div class="demo" style="padding:0;overflow:hidden">
+        <div class="ov-dark"></div>
+        <div class="ov-shot">
+          <div class="dmock">
+            <div class="dm-head"><span class="dm-title">Заказы · точка на Тверской</span><span class="dm-tag">все 47 под контролем</span></div>
+            <div class="dm-kpi">
+              <div><b>14</b><span>в сборке</span></div>
+              <div><b>9</b><span>в доставке</span></div>
+              <div><b>3</b><span>срочных ⚡</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ov-light"></div>
+        <div class="ov-note">каждый заказ виден — от «принят» до «вручён»</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">04</span><h3>Нарратив «боль → решение»</h3><span class="src">yoolip.ai · половину картины</span></div>
+      <div class="b-desc">Три короткие и честные боли, потом одна жирная карточка-вывод. Так читатель сначала узнаёт себя, а решение считывается как спасение, а не как реклама.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="pn">
+          <div class="pn-line"><span class="x">✕</span><span>Клиент пишет в одном мессенджере, заказ — в другом, фото — в третьем.</span></div>
+          <div class="pn-line"><span class="x">✕</span><span>Отчёт по дню собирается вечером вручную — полчаса и ошибки.</span></div>
+          <div class="pn-line"><span class="x">✕</span><span>Кто и где собирает букеты — не видно до конца смены.</span></div>
+        </div>
+        <div style="margin-top:12px"><button class="btn primary" id="pnBtn" onclick="pnShow()">Показать решение</button></div>
+        <div class="pn-sol" id="pnSol">
+          <div class="sol-card"><b>Bloom</b> собирает заказы, чаты, фото и аналитику из одного API — в одном кабинете. Видите весь день в реальных цифрах и растёте на данных, а не на ощущениях.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">05</span><h3>Сравнение «сейчас → станет» чек-листом</h3><span class="src">yoolip.ai · Кабинет Ozon → Полная картина</span></div>
+      <div class="b-desc">Две колонки: «как сейчас» с крестиками и «с Bloom» с зелёными галочками. Галочки появляются по очереди — разница считывается за секунду, без длинных абзацев.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="cmp" id="cmpBox">
+          <div class="c now">
+            <h4>Сейчас</h4>
+            <ul>
+              <li><span class="ic">✕</span><span>Выручка — и на этом всё</span></li>
+              <li><span class="ic">✕</span><span>Прибыль по букету не посчитать</span></li>
+              <li><span class="ic">✕</span><span>Сводки по чатам вчерашние</span></li>
+            </ul>
+          </div>
+          <div class="cmp-arrow">→</div>
+          <div class="c bloom">
+            <h4>С Bloom</h4>
+            <ul>
+              <li class="ck" style="transition-delay:.05s"><span class="ic">✓</span><span>Заказы и чаты в одном окне</span></li>
+              <li class="ck" style="transition-delay:.2s"><span class="ic">✓</span><span>Прибыль и ДРР по каждому заказу</span></li>
+              <li class="ck" style="transition-delay:.35s"><span class="ic">✓</span><span>Фото и сверка — онлайн</span></li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:12px"><button class="btn ghost mini" onclick="cmpRun()">Запустить сравнение</button></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">06</span><h3>Акцентное слово в заголовке</h3><span class="src">yoolip.ai · зелёное «с одного экрана»</span></div>
+      <div class="b-desc">Ключевое обещание выделено цветом и само «переливается» между смыслами. У yoolip слово статичное — в Bloom можно пойти дальше и менять его, не трогая заголовок.</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="morph-h">Вся ваша флористика — <span class="morph-w" id="morphW">с одного экрана</span></div>
+        <div style="margin-top:12px"><button class="btn ghost mini" onclick="morphRun()">Сменить слово</button></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">07</span><h3>FAQ-аккордеон</h3><span class="src">yoolip.ai · частые вопросы</span></div>
+      <div class="b-desc">Короткие ответы на возражения клиента: цена, сложность, безопасность данных. Снимает страхи перед звонком и «оживляет» лендинг.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="faq-item">
+          <button class="faq-q"><span>Сколько времени займёт запуск?</span><span class="mark">+</span></button>
+          <div class="faq-a"><p>Настройка кабинета — 5 минут: регистрация, подключение магазина, и данные уже подтягиваются. Первые цифры видны в тот же день.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q"><span>Что с личными данными клиентов?</span><span class="mark">+</span></button>
+          <div class="faq-a"><p>Доступ только для чтения — система ничего не меняет в ваших заказах и чатах. Все данные хранятся внутри вашего же API-контура.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q"><span>Поможет ли кабинет флористам на точках?</span><span class="mark">+</span></button>
+          <div class="faq-a"><p>Да: флорист видит только свои заказы, фото-гейты и срочность — без лишних экранов и прав менеджера.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">08</span><h3>Онбординг «за 5 минут» 1-2-3</h3><span class="src">yoolip.ai · три шага до аналитики</span></div>
+      <div class="b-desc">Сложное «подключение» разбито на три понятных шага со стрелками. Страх «это долго и сложно» закрывается заголовком «за 5 минут». Шаги кликабельны — по нажатию раскрывается деталь.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="steps" id="stepsBox">
+          <div class="step open">
+            <span class="n">01 · Регистрация</span>
+            <h5>Только email и пароль</h5>
+            <p>30 секунд, без договоров.</p>
+            <div class="more">Ссылка на кабинет приходит сразу — пробовать можно в тот же момент.</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <span class="n">02 · Подключите магазин</span>
+            <h5>API-ключ из кабинета</h5>
+            <p>Только чтение — ничего не меняем.</p>
+            <div class="more">Ключ выдаётся за пару кликов, все права остаются у вас.</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <span class="n">03 · Данные готовы</span>
+            <h5>Полная картина дня</h5>
+            <p>Заказы, фото, аналитика — онлайн.</p>
+            <div class="more">Дальше всё обновляется каждый день автоматически.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">09</span><h3>Персоны «кому это нужно» 01/02/03</h3><span class="src">yoolip.ai · три типа продавцов</span></div>
+      <div class="b-desc">Три сегмента читателя с узнаваемыми ролями. Каждый находит себя — лендинг говорит «это про тебя». При наведении карточка раскрывает деталь.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="pers">
+          <div class="pcard">
+            <span class="pn">01 · Менеджер точки</span>
+            <h5>Держит день под контролем</h5>
+            <p>Заказы, срочные и фото — в одном списке.</p>
+            <div class="pmore">Не бегает между мессенджерами и не собирает отчёт руками.</div>
+          </div>
+          <div class="pcard">
+            <span class="pn">02 · Флорист в цеху</span>
+            <h5>Собирает без лишних экранов</h5>
+            <p>Только свои заказы и фото-гейты.</p>
+            <div class="pmore">Видит, что срочно, и не тонет в чужих задачах.</div>
+          </div>
+          <div class="pcard">
+            <span class="pn">03 · Владелец сети</span>
+            <h5>Видит прибыль, а не выручку</h5>
+            <p>Честные цифры по каждой точке.</p>
+            <div class="pmore">Понимает, где сеть зарабатывает, а где теряет — сегодня, не через неделю.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">10</span><h3>Цена сама от оборота</h3><span class="src">yoolip.ai · тарифы от 30-дневного оборота</span></div>
+      <div class="b-desc">Вместо таблицы тарифов — один слайдер: клиент двигает «свой» оборот и видит свою цену. Возражение «дорого» тает, когда цена честно следует за размером бизнеса.</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">средне</span></div>
+      <div class="demo">
+        <div class="pc">
+          <div class="row"><label for="turnSlider">Оборот за 30 дней</label><output id="turnVal">400 000 ₽</output></div>
+          <input type="range" id="turnSlider" min="0" max="500" step="10" value="400">
+          <div class="bar"><i id="turnFill"></i></div>
+        </div>
+        <div class="pc-result">Стоимость: <span id="pcPrice">от <b>3 990 ₽</b> / мес</span></div>
+        <div class="pc-tiers">
+          <div class="pc-tier"><span>до 100 000 ₽ оборота</span><b>0 ₽ — Старт</b></div>
+          <div class="pc-tier"><span>от 100 000 ₽</span><b>от 3 990 ₽ / мес</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">11</span><h3>Соцдоказательство: аватар-стена + цитата основателя</h3><span class="src">yoolip.ai · нам доверяют 4395+</span></div>
+      <div class="b-desc">Стена аватаров «эти люди уже с нами» и живая цитата основателя, который сам пользуется продуктом. Доверие через «свой человек», а не через звёздные логотипы.</div>
+      <div class="b-meta"><span class="pill take">брать</span><span class="pill lvl">легко</span></div>
+      <div class="demo">
+        <div class="aw">
+          <span class="a1">А</span><span class="a2">В</span><span class="a3">С</span><span class="a4">Д</span><span class="a5">Е</span><span class="a1">Ж</span><span class="a2">З</span><span class="a3">И</span><span class="a4">К</span><span class="a5">Л</span><span class="a1">М</span><span class="a2">Н</span><span class="a3">О</span><span class="a4">П</span><span class="a5">Р</span>
+          <span style="background:var(--terra);font-size:.6rem">+4 380</span>
+        </div>
+        <div class="quote">«Сам каждый день веду свои салоны в Bloom и салоны клиентов. Моя цель — чтобы вся сеть видела прибыль, а не только выручку. Именно этим инструментом я сам хотел пользоваться.»
+          <span class="who">— Дмитрий, основатель Bloom CRM</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="b-head"><span class="b-num">12</span><h3>Финальный CTA с чипами-гарантиями</h3><span class="src">yoolip.ai · хватит гадать</span></div>
+      <div class="b-desc">Последний экран не просит «купить», а снимает три последних страха тремя чипами: бесплатно · без карты · за 5 минут. Чипы появляются по очереди и ведут на одну большую кнопку.</div>
+      <div class="b-meta"><span class="pill rework">переработать</span><span class="pill lvl">легко</span></div>
+      <div class="demo" style="padding:0;background:transparent;border:none;overflow:visible">
+        <div class="cta-box" id="ctaBox">
+          <div class="cta-blob"></div>
+          <div class="cta-blob2"></div>
+          <div class="cta-float">35 минут до данных</div>
+          <div class="cta-title">Хватит собирать день вручную — начните видеть его целиком</div>
+          <div class="cta-sub">Подключите точку — и через 35 минут вся флористика под контролем.</div>
+          <div class="cta-chips">
+            <span class="chip3">Бесплатный пробный период</span>
+            <span class="chip3">Без привязки карты</span>
+            <span class="chip3">Настройка за 5 минут</span>
+          </div>
+          <button class="btn primary shine" onclick="ctaGo()">Подключить бесплатно</button>
+          <div style="margin-top:14px"><button class="btn mini dg" onclick="ctaGo()">Повторить появление чипов</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span>Что взять первым</span><span class="tag sage">топ-5</span></h2>
+    <div class="card">
+      <table>
+        <tr><th>#</th><th>Приём</th><th>Куда в Bloom</th><th>Почему первым</th></tr>
+        <tr><td><b>1</b></td><td>«Кадр» продукта в рамке с нахлёстом</td><td>offer.html · hero</td><td>Самый «дорогой» приём yoolip: продукт становится героем и связывает секции. У нас сейчас скриншоты «внутри» карточек — вынос одного кадра под заголовок сразу поднимет КП.</td></tr>
+        <tr><td><b>2</b></td><td>Живой счётчик + стек аватаров</td><td>offer.html + index.html · hero</td><td>«4 395+ салонов» и аватары продают надёжность без слов. Делается за вечер: счётчик на IntersectionObserver + пять кружков.</td></tr>
+        <tr><td><b>3</b></td><td>Нарратив «боль → решение» + сравнение чек-листом</td><td>offer.html · сразу после hero</td><td>Закрывает главный вопрос клиента «зачем мне это менять». У нас уже есть «Честно про» — оформляем как боль, добавляем колонку «С Bloom» с галочками.</td></tr>
+        <tr><td><b>4</b></td><td>Онбординг 1-2-3 + чипы-гарантии в финальном CTA</td><td>index.html + финал offer</td><td>Снимает возражения «сложно» и «страшно». Три шага и три чипа — минимум текста, максимум спокойствия клиенту.</td></tr>
+        <tr><td><b>5</b></td><td>FAQ-аккордеон</td><td>index.html · после таймлайна</td><td>Дешевле всего: вопросы уже есть в ТЗ и созвонах. Готовый аккордеон закрывает возражения и убирает «надо спросить менеджера».</td></tr>
+      </table>
+    </div>
+    <div class="note"><b>Итог:</b> ничего из отобранного не требует новых фреймворков — всё ложится в текущие HTML-файлы Bloom (инлайн CSS/JS). Топ-5 покрывает оба наших лендинга: offer.html получает «дорогой» hero и сценарий продажи, index.html — онбординг, FAQ и гарантии. Реалистичный объём первой итерации: 3–4 дня. При этом наша цветочная «фактура» (лепестки, марафон каналов, таймлайн 12 недель) — то, чего нет у yoolip: её бережём и не разбавляем чужим стилем.</div>
+  </section>
+
+  <footer>Bloom CRM · бенчмарк лендингов · источник: yoolip.ai · сравнение с docs/offer.html, docs/index.html, docs/landing.html</footer>
+</div>
+
+<script>
+(function(){
+  var cdEl=document.getElementById('cdNum');
+  var cdTarget=4395;
+  var cdRaf=null;
+  function fmt(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+  function cdRun(){
+    if(cdRaf)cancelAnimationFrame(cdRaf);
+    var t0=null;
+    function step(ts){
+      if(!t0)t0=ts;
+      var p=Math.min(1,(ts-t0)/2000);
+      var e=1-Math.pow(1-p,3);
+      cdEl.textContent=fmt(Math.round(cdTarget*e));
+      if(p<1){cdRaf=requestAnimationFrame(step);}else{cdEl.textContent=fmt(cdTarget);}
+    }
+    cdRaf=requestAnimationFrame(step);
+  }
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){cdRun();io.disconnect();}
+      });
+    },{threshold:.4});
+    io.observe(cdEl.closest('.demo'));
+  }else{cdRun();}
+  window.cdRestart=function(){cdRun();};
+
+  window.pnShow=function(){
+    document.getElementById('pnSol').classList.add('show');
+    document.getElementById('pnBtn').style.display='none';
+  };
+
+  window.cmpRun=function(){
+    var box=document.getElementById('cmpBox');
+    box.classList.remove('run');
+    void box.offsetWidth;
+    box.classList.add('run');
+  };
+
+  var morphWords=['с одного экрана','в одном кабинете','в одном окне','под контролем'];
+  var morphEl=document.getElementById('morphW');
+  var mi=0;
+  function morphRun(){
+    morphEl.classList.remove('go');
+    void morphEl.offsetWidth;
+    mi=(mi+1)%morphWords.length;
+    morphEl.textContent=morphWords[mi];
+    morphEl.classList.add('go');
+  }
+  window.morphRun=morphRun;
+  setInterval(morphRun,2400);
+
+  document.querySelectorAll('.faq-q').forEach(function(q){
+    q.addEventListener('click',function(){
+      var item=q.parentNode;
+      var was=item.classList.contains('open');
+      item.parentNode.querySelectorAll('.faq-item.open').forEach(function(o){o.classList.remove('open');});
+      if(!was)item.classList.add('open');
+    });
+  });
+
+  document.querySelectorAll('.step').forEach(function(s){
+    s.addEventListener('click',function(){
+      var was=s.classList.contains('open');
+      s.parentNode.querySelectorAll('.step').forEach(function(o){o.classList.remove('open');});
+      if(!was)s.classList.add('open');
+    });
+  });
+
+  var slider=document.getElementById('turnSlider');
+  var fill=document.getElementById('turnFill');
+  var val=document.getElementById('turnVal');
+  var price=document.getElementById('pcPrice');
+  function pcUp(){
+    var v=+slider.value;
+    fill.style.width=(v/slider.max*100)+'%';
+    val.textContent=(v*1000).toLocaleString('ru-RU')+' ₽';
+    price.innerHTML=v<100?'<b>0 ₽</b> · Старт':(v<300?'от <b>3 990 ₽</b> / мес':'от <b>6 990 ₽</b> / мес');
+  }
+  slider.addEventListener('input',pcUp);
+  pcUp();
+
+  function ctaGo(){
+    var box=document.getElementById('ctaBox');
+    box.classList.remove('go');
+    void box.offsetWidth;
+    box.classList.add('go');
+  }
+  window.ctaGo=ctaGo;
+  setTimeout(ctaGo,300);
+})();
+</script>
+</body>
+</html>
