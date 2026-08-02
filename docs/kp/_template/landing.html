@@ -290,6 +290,73 @@
 
   .hero-panels { display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; margin-top: 40px; }
 
+  /* ═════════════ HERO KPI · floating cards ═════════════ */
+  .hero-kpis { position: relative; }
+  .hero-kpis .panels-zone { position: relative; }
+  .kpi-float {
+    position: absolute; z-index: 3;
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid var(--border-2, #E9E2DA); border-radius: 12px;
+    padding: 8px 12px; box-shadow: 0 12px 30px rgba(43, 36, 32, 0.14);
+    font-family: var(--mono, 'JetBrains Mono'); font-size: 0.7rem; font-weight: 600;
+    color: var(--ink-dim); white-space: nowrap; pointer-events: none;
+    animation: kpiFloat 7s ease-in-out infinite;
+  }
+  .kpi-float .kfi { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .kpi-float .kfv { color: var(--terra); font-weight: 700; }
+  .kpi-float.k1 { top: -14px; right: -8px; animation-delay: 0s; }
+  .kpi-float.k2 { bottom: -14px; left: 4%; animation-delay: 1.4s; animation-duration: 8s; }
+  .kpi-float.k3 { bottom: -18px; right: 6%; animation-delay: 2.6s; animation-duration: 6.5s; }
+  @keyframes kpiFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-7px) rotate(1deg); }
+  }
+  @media (max-width: 880px) { .kpi-float { display: none; } }
+
+  /* ═════════════ EPILOGUE GUARANTEES ═════════════ */
+  .guar-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px; }
+  .g-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono, 'JetBrains Mono'); font-size: 0.7rem; font-weight: 600;
+    color: var(--ink-dim); background: var(--bg-2, #F6F2EC); border: 1px solid var(--border-2, #E9E2DA);
+    border-radius: 999px; padding: 5px 12px; opacity: 0; transform: translateY(8px);
+    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  }
+  .g-chip .gc { color: var(--sage); font-weight: 700; }
+  .g-chip.on { opacity: 1; transform: none; }
+
+  /* ═════════════ HERO BLOOM · floating petals ═════════════ */
+  .hero-block { position: relative; }
+  #hero > :not(.hero-bloom-bg) { position: relative; z-index: 1; }
+  .hero-bloom-bg {
+    position: absolute; inset: 0; z-index: 0;
+    pointer-events: none; overflow: hidden;
+  }
+  .hb-flower {
+    position: absolute; bottom: -60px;
+    width: var(--hb-s, 40px); height: var(--hb-s, 40px);
+    color: var(--hb-c, var(--terra));
+    pointer-events: none; will-change: transform, opacity;
+    animation: floatUp var(--hb-dur, 18s) var(--hb-delay, 0s) ease-in-out infinite;
+  }
+  .hb-flower svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  @keyframes floatUp {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+    10%  { opacity: var(--hb-o, 0.55); }
+    78%  { opacity: var(--hb-o, 0.55); }
+    100% { transform: translate3d(0, -80vh, 0) rotate(22deg); opacity: 0; }
+  }
+
+  /* ═════════════ HERO HEADLINE WAVE ═════════════ */
+  .wv {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.55em) rotate(4deg);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    transition-delay: var(--wv-delay, 0ms);
+  }
+  .wv.run { opacity: 1; transform: none; }
+
   /* Terminal */
   .term { font-family: var(--mono); font-size: 0.78rem; line-height: 1.75; }
   .term .t-line { display: flex; gap: 10px; padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
@@ -761,6 +828,8 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     .reveal { opacity: 1; transform: none; }
+    .hb-flower { animation: none; opacity: var(--hb-o, 0.5); }
+    .wv { opacity: 1; transform: none; transition: none !important; }
     html { scroll-behavior: auto; }
   }
 </style>
@@ -906,6 +975,37 @@
 
     <!-- ═════════════ 01 · HERO ═════════════ -->
     <section class="block hero-block reveal" id="hero">
+      <div class="hero-bloom-bg" aria-hidden="true">
+        <svg class="hb-defs" width="0" height="0" style="position:absolute">
+          <symbol id="hb-fl-a" viewBox="0 0 60 60">
+            <g fill="currentColor">
+              <ellipse cx="30" cy="15" rx="8" ry="13"/>
+              <ellipse cx="30" cy="15" rx="8" ry="13" transform="rotate(60 30 30)"/>
+              <ellipse cx="30" cy="15" rx="8" ry="13" transform="rotate(120 30 30)"/>
+              <ellipse cx="30" cy="15" rx="8" ry="13" transform="rotate(180 30 30)"/>
+              <ellipse cx="30" cy="15" rx="8" ry="13" transform="rotate(240 30 30)"/>
+              <ellipse cx="30" cy="15" rx="8" ry="13" transform="rotate(300 30 30)"/>
+            </g>
+            <circle cx="30" cy="30" r="6" fill="#F1E3CD"/>
+          </symbol>
+          <symbol id="hb-fl-b" viewBox="0 0 60 60">
+            <g fill="currentColor">
+              <ellipse cx="30" cy="17" rx="6.5" ry="11.5"/>
+              <ellipse cx="30" cy="17" rx="6.5" ry="11.5" transform="rotate(72 30 30)"/>
+              <ellipse cx="30" cy="17" rx="6.5" ry="11.5" transform="rotate(144 30 30)"/>
+              <ellipse cx="30" cy="17" rx="6.5" ry="11.5" transform="rotate(216 30 30)"/>
+              <ellipse cx="30" cy="17" rx="6.5" ry="11.5" transform="rotate(288 30 30)"/>
+            </g>
+            <circle cx="30" cy="30" r="5" fill="#F1E3CD"/>
+          </symbol>
+        </svg>
+        <span class="hb-flower" style="left:6%;--hb-s:34px;--hb-c:var(--terra);--hb-dur:16s;--hb-delay:0s;--hb-o:0.5"><svg viewBox="0 0 60 60"><use href="#hb-fl-a"/></svg></span>
+        <span class="hb-flower" style="left:18%;--hb-s:26px;--hb-c:var(--sage);--hb-dur:21s;--hb-delay:2.2s;--hb-o:0.55"><svg viewBox="0 0 60 60"><use href="#hb-fl-b"/></svg></span>
+        <span class="hb-flower" style="left:36%;--hb-s:42px;--hb-c:var(--plum);--hb-dur:19s;--hb-delay:1.2s;--hb-o:0.5"><svg viewBox="0 0 60 60"><use href="#hb-fl-a"/></svg></span>
+        <span class="hb-flower" style="left:55%;--hb-s:26px;--hb-c:var(--amber);--hb-dur:23s;--hb-delay:0.4s;--hb-o:0.6"><svg viewBox="0 0 60 60"><use href="#hb-fl-b"/></svg></span>
+        <span class="hb-flower" style="left:74%;--hb-s:36px;--hb-c:var(--terra);--hb-dur:18s;--hb-delay:3.2s;--hb-o:0.5"><svg viewBox="0 0 60 60"><use href="#hb-fl-b"/></svg></span>
+        <span class="hb-flower" style="left:90%;--hb-s:28px;--hb-c:var(--sage);--hb-dur:25s;--hb-delay:1.6s;--hb-o:0.55"><svg viewBox="0 0 60 60"><use href="#hb-fl-a"/></svg></span>
+      </div>
       <span class="hero-badge"><span class="dot"></span> система для цветочной сети · CRM для маркетплейса цветов</span>
       <h1 class="sec-h hero-h">Вся ваша флористика<br>в <span class="accent">одном кабинете</span></h1>
       <p class="hero-sub">Заказы с маркетплейса, заказы от постоянных клиентов и все переписки с покупателями — в одном окне, которое видно с любого устройства. Меньше рутины, больше времени на цветы. <b>Работает на телефоне и компьютере.</b></p>
@@ -925,7 +1025,8 @@
         <span class="cat c4"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#6B4865" stroke-width="1.8"><path d="M12 2v6M8 4l4 2 4-2M5 8h14l-1 13H6L5 8z"/></svg></span>Растения</span>
       </div>
 
-      <div class="hero-panels">
+      <div class="hero-kpis">
+        <div class="panels-zone hero-panels">
         <div class="panel reveal">
           <div class="panel-head">
             <div class="win-dots"><i></i><i></i><i></i></div>
@@ -954,6 +1055,10 @@
             <div class="st-row"><span class="st-name"><span class="dot warn"></span>Резервные номера</span><span class="st-val">план Б</span></div>
           </div>
         </div>
+        </div>
+        <span class="kpi-float k1"><span class="kfi" style="background:var(--sage)"></span>Заказ №2841 <span class="kfv">принят</span></span>
+        <span class="kpi-float k2"><span class="kfi" style="background:var(--terra)"></span>Выручка сегодня <span class="kfv">182 400 ₽</span></span>
+        <span class="kpi-float k3"><span class="kfi" style="background:var(--plum)"></span>Сверка с МП <span class="kfv">ок</span></span>
       </div>
     </section>
 
@@ -1329,23 +1434,24 @@
         </div>
       </div>
 
-      <div class="cost-total">Базовый сценарий — <b>от 5 000 ₽/мес</b>. Точная сумма — после ответов на вопросы об объёме и мессенджерах.</div>
+      <div class="cost-total">Базовый сценарий — <b>от 5 500 ₽/мес</b></div>
     </section>
 
     <!-- ═════════════ 10 · TIMELINE ═════════════ -->
     <section class="block reveal" id="timeline">
       <div class="sec-head"><span class="sec-num">10</span><span class="sec-tag">план работы</span></div>
       <h2 class="sec-h">Как мы <span class="accent">двигаемся</span></h2>
-      <p class="sec-lede">От согласования деталей — к работающей системе. Каждый этап <strong>виден и обсуждается</strong> с вами.</p>
+      <p class="sec-lede">От согласования — к работающей системе. <strong>Фазы</strong> — карта работ; <strong>12 недель</strong> раскрывают каждую фазу по шагам (см. подробный план на главной странице).</p>
 
       <div class="panel timeline">
-        <div class="tl-row"><div class="tl-key">Фаза 0</div><div class="tl-val">Решения и разведка<span class="tl-sub">Доступы к маркетплейсу, выбор способа чатов, объём данных</span></div></div>
-        <div class="tl-row"><div class="tl-key">Фаза 1</div><div class="tl-val">Основа системы<span class="tl-sub">Сервер, база, домен, защита данных</span></div></div>
-        <div class="tl-row"><div class="tl-key">Фаза 2</div><div class="tl-val">Каркас кабинета<span class="tl-sub">Вход, роли, заказы и клиенты, интерфейс</span></div></div>
-        <div class="tl-row"><div class="tl-key">Фаза 3–4</div><div class="tl-val">Заказы маркетплейса<span class="tl-sub">Приём заказов, статусы в обе стороны, карточка, история</span></div></div>
-        <div class="tl-row"><div class="tl-key">Фаза 5–7</div><div class="tl-val">Прямые продажи и чаты<span class="tl-sub">Ручные заказы, все чаты в одном окне, уведомления</span></div></div>
-        <div class="tl-row"><div class="tl-key">Фаза 8–10</div><div class="tl-val">Цифры и витрина<span class="tl-sub">Аналитика, управление ценами, контроль подключений</span></div></div>
-        <div class="tl-row"><div class="tl-key">Фаза 11–13</div><div class="tl-val">Финал и передача<span class="tl-sub">Бонусы, оплата, укрепление защиты, передача кода</span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 0</div><div class="tl-val">Решения и визуальный язык<span class="tl-sub">Разведка, доступы, объём · палитра и тон UI · <b>нед. 1</b></span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 1</div><div class="tl-val">Основа системы<span class="tl-sub">Сервер, база, домен, бэкапы · <b>нед. 2</b></span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 2</div><div class="tl-val">Каркас кабинета<span class="tl-sub">Вход, роли, точки, журнал · <b>нед. 2</b></span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 3</div><div class="tl-val">Заказы<span class="tl-sub">Площадка + прямые, статусы, доставка · <b>нед. 3</b></span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 4</div><div class="tl-val">Чаты и уведомления<span class="tl-sub">WhatsApp, Telegram, MAX · алерты · <b>нед. 4–5</b></span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 5</div><div class="tl-val">Витрина, данные и цифры<span class="tl-sub">Каталог, перенос базы, отчёты · <b>нед. 6–8</b></span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 6</div><div class="tl-val">Тестирование и переход<span class="tl-sub">Сценарии с командой, параллельный режим, приёмка · <b>нед. 9</b></span></div></div>
+        <div class="tl-row"><div class="tl-key">Фаза 7</div><div class="tl-val">Защита, запуск и поддержка<span class="tl-sub">Оплата, SLA, go-live, сопровождение · <b>нед. 10–12</b></span></div></div>
       </div>
     </section>
 
@@ -1362,6 +1468,12 @@
           <a class="cta" href="demo.html" style="text-decoration:none;margin-top:0;background:transparent;color:var(--ink-dim);border:1px solid var(--border-2)">
             Ознакомиться с демо
           </a>
+        </div>
+        <div class="guar-chips" style="margin-top:22px">
+          <span class="g-chip"><span class="gc">✓</span> бесплатная консультация по задаче</span>
+          <span class="g-chip"><span class="gc">✓</span> демо-кабинет на наших данных</span>
+          <span class="g-chip"><span class="gc">✓</span> поддержка ответит за 5 минут</span>
+          <span class="g-chip"><span class="gc">✓</span> SLA и поддержка после запуска</span>
         </div>
         <div class="signoff" style="margin-top:22px">bloom crm · commercial proposal · 2026</div>
       </div>
@@ -1475,6 +1587,21 @@
     });
   }, { threshold: 0.5 });
   counters.forEach(function (c) { countIO.observe(c); });
+
+  /* ── Guarantee chips stagger ── */
+  var guarIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var chips = e.target.querySelectorAll('.g-chip');
+      chips.forEach(function (c, i) {
+        if (reduceMotion) { c.classList.add('on'); return; }
+        setTimeout(function () { c.classList.add('on'); }, i * 120);
+      });
+      guarIO.unobserve(e.target);
+    });
+  }, { threshold: 0.4 });
+  var guarWrap = document.querySelector('.guar-chips');
+  if (guarWrap) guarIO.observe(guarWrap);
 
   /* ═════════════ QUESTION WIZARD (live form → questions.html) ═════════════ */
   var qForm = document.getElementById('qForm');
@@ -1668,6 +1795,43 @@
   render();
   showBlock(0);
   } // end live wizard
+
+  /* ── Hero headline wave (words rise one by one) ── */
+  var bloomHead = document.querySelector('#hero h1, section.hero h1');
+  if (bloomHead && !bloomHead.dataset.bloomWave) {
+    bloomHead.dataset.bloomWave = '1';
+    var wvWords = [];
+    (function wrap(n) {
+      var kids = Array.prototype.slice.call(n.childNodes);
+      kids.forEach(function (c) {
+        if (c.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          c.textContent.split(/(\s+)/).forEach(function (p) {
+            if (p === '') return;
+            if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
+            var s = document.createElement('span');
+            s.className = 'wv';
+            s.textContent = p;
+            wvWords.push(s);
+            frag.appendChild(s);
+          });
+          c.parentNode.replaceChild(frag, c);
+        } else if (c.nodeType === 1) {
+          var cs = getComputedStyle(c);
+          if (cs.backgroundClip === 'text' || cs.webkitBackgroundClip === 'text') {
+            c.classList.add('wv');
+            wvWords.push(c);
+          } else {
+            wrap(c);
+          }
+        }
+      });
+    })(bloomHead);
+    wvWords.forEach(function (w, i) { w.style.setProperty('--wv-delay', (i * 70) + 'ms'); });
+    setTimeout(function () {
+      wvWords.forEach(function (w) { w.classList.add('run'); });
+    }, 120);
+  }
 })();
 </script>
 </body>

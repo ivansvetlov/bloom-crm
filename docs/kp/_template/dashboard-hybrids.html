@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom CRM — 4 гибридных дашборда (заказы + деньги)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--terra:#B4632F;--terra2:#C76B47;
+--plum:#6D4B62;--plum2:#6B4865;
+--sage:#5C7A63;--sage2:#7C8B6F;
+--amber:#C7932A;--amber2:#D9A441;
+--cream:#FBF8F4;--ink:#2B2420;
+--ease:cubic-bezier(.16,1,.3,1)
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Georgia','Segoe UI',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;font-size:15px}
+.mono{font-family:'JetBrains Mono','Cascadia Mono','SF Mono',ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+::selection{background:var(--terra);color:#fff}
+header{position:sticky;top:0;z-index:60;background:rgba(251,248,244,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #E8E0D6}
+.h-top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 22px 10px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;font-size:15px}
+.brand-dot{width:14px;height:14px;border-radius:5px;background:linear-gradient(135deg,var(--terra),var(--terra2));box-shadow:0 3px 8px rgba(180,99,47,.35)}
+.brand-sub{font-size:11px;font-weight:600;color:#8A7B6C;letter-spacing:.02em;margin-left:2px}
+.h-nav{display:flex;align-items:center;gap:8px}
+.h-count{font-size:11px;color:#8A7B6C;min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
+.nav-btn{border:1px solid #E0D5C9;background:#fff;color:#6E5F52;font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:999px;cursor:pointer;transition:.2s}
+.nav-btn:hover{border-color:var(--terra);color:var(--terra)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 22px 12px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;border:1px solid #E4DBD0;background:#fff;color:#6E5F52;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer;transition:.18s}
+.tab:hover{border-color:var(--terra);color:var(--terra)}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#FBF8F4;box-shadow:0 4px 14px rgba(43,36,32,.2)}
+main{max-width:1120px;margin:0 auto;padding:30px 22px 60px}
+.vari{display:none}
+.vari.on{display:block}
+.v-head{display:grid;grid-template-columns:auto 1fr;gap:0 18px;margin-bottom:20px}
+.v-num{font-size:13px;font-weight:700;color:#fff;background:var(--terra);border-radius:10px;width:40px;height:40px;display:grid;place-items:center;box-shadow:0 6px 16px rgba(180,99,47,.28);grid-row:1/3}
+.v-title h2{font-size:clamp(1.5rem,2.6vw,1.9rem);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.v-src{font-size:12px;font-weight:600;color:var(--terra);margin-top:3px}
+.v-desc{grid-column:2;font-size:13px;color:#6E5F52;max-width:680px;margin-top:2px}
+.v-meta{display:inline-flex;gap:6px;margin-left:10px}
+.v-meta span{font-size:10px;font-weight:800;letter-spacing:.05em;color:#8A7B6C;background:#F0E9E0;border:1px solid #E7DED3;border-radius:6px;padding:3px 7px;text-transform:uppercase}
+.stage{position:relative;border-radius:22px;overflow:hidden;border:1px solid #E9E1D7;box-shadow:0 26px 60px rgba(43,36,32,.13);min-height:400px;background:#FBF8F4}
+.stage-in{position:relative;padding:24px}
+.up{opacity:0}
+.vari.on .up{opacity:1;animation:up .65s var(--ease) backwards;animation-delay:var(--d,0s)}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes growW{from{width:0}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.d-up{color:#5C7A63}.d-warn{color:#C7932A}
+.delt{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+.delt.up{background:#EDF3EA;color:#4F6B55}
+.delt.warn{background:#F7EFDC;color:#A07A20}
+.period{display:flex;gap:6px;background:#F2ECE4;padding:4px;border-radius:12px}
+.p-btn{border:0;background:transparent;font-family:inherit;font-size:12px;font-weight:700;color:#8A7B6C;padding:8px 14px;border-radius:9px;cursor:pointer;transition:.2s}
+.p-btn.on{background:#fff;color:#2B2420;box-shadow:0 2px 8px rgba(43,36,32,.1)}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px}
+.tag.wa{background:#EDF3EA;color:#5C7A63}.tag.tg{background:#F1E9F0;color:#6D4B62}.tag.max{background:#F7EFDC;color:#A07A20}.tag.mp{background:#FBE8E0;color:#B4632F}.tag.dir{background:#EEF1EA;color:#7C8B6F}
+.ph{font-size:11px;font-weight:700;color:#8A7B6C;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.bar{height:6px;border-radius:99px;background:#F2ECE4;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+
+/* ── СРАВНЕНИЕ ─────────────────────────────────── */
+.cmp-sec{margin-bottom:34px}
+.cmp-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.cmp-title{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.cmp-sub{font-size:12px;color:#8A7B6C;font-weight:600}
+.cmp-wrap{overflow-x:auto;border:1px solid #E9E1D7;border-radius:18px;background:#fff;box-shadow:0 18px 44px rgba(43,36,32,.09)}
+.cmp-tbl{width:100%;border-collapse:collapse;min-width:760px}
+.cmp-tbl th{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#8A7B6C;font-weight:800;text-align:left;padding:14px 18px;border-bottom:1px solid #E7DED3;background:#F7F2EB}
+.cmp-tbl td{padding:14px 18px;border-bottom:1px solid #F2EBE3;font-size:13px;vertical-align:top}
+.cmp-tbl tr:last-child td{border-bottom:0}
+.cmp-tbl td.hy{font-weight:800}
+.cmp-tbl td.hy small{display:block;font-weight:600;font-size:11px;color:#8A7B6C;margin-top:2px}
+.cmp-tbl tr:hover td{background:#FBF7F1}
+.dots{display:flex;gap:4px;align-items:center}
+.dots i{width:10px;height:10px;border-radius:50%}
+.dots i.on{background:var(--terra)}
+.dots i.half{background:linear-gradient(90deg,var(--terra) 0 50%,#E4DBD0 50% 100%)}
+.dots i.off{background:#E4DBD0}
+.cmp-note{margin-top:14px;font-size:12px;color:#6E5F52;line-height:1.6}
+.cmp-note b{color:var(--terra)}
+
+/* ── A · ОПЕРАЦИОННЫЙ ДЕНЬ ───────────────────────── */
+.a{background:#FBF6EF}
+.a-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.a-chip{font-size:11px;font-weight:700;color:#A07A20;background:#F7EFDC;border:1px solid #EFDDB2;padding:6px 12px;border-radius:999px;display:inline-flex;gap:7px;align-items:center}
+.a-chip i{width:6px;height:6px;border-radius:50%;background:#D9A441;animation:pulse 1.4s infinite}
+.a-time{font-size:11px;color:#9C8F80;font-weight:600}
+.a-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
+.a-panel{background:#fff;border:1px solid #EEE5DB;border-radius:16px;padding:16px}
+.a-prio-item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:11px 12px;border:1px solid #F0E7DD;border-radius:12px;margin-bottom:8px;transition:.15s;background:#fff}
+.a-prio-item:hover{border-color:#D9C9B8;box-shadow:0 8px 20px rgba(43,36,32,.08);transform:translateY(-1px)}
+.a-prio-item.urg{border-color:#EFDDB2;background:#FFFBF0}
+.a-num{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;background:#F2ECE4;color:#6E5F52}
+.a-prio-item.urg .a-num{background:#F7EFDC;color:#A07A20}
+.a-prio-item .nm{font-size:13px;font-weight:700;line-height:1.35}
+.a-prio-item .nm small{display:block;font-weight:600;color:#9C8F80;font-size:11px;margin-top:2px}
+.a-prio-item .pr{font-size:13px;font-weight:800;color:var(--terra);white-space:nowrap}
+.a-grp{padding:9px 12px;border-radius:11px;background:#F7F2EB;margin:12px 0 4px;font-size:11px;font-weight:800;letter-spacing:.05em;color:#6E5F52;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.a-grp .c{background:#fff;border:1px solid #E7DED3;border-radius:999px;padding:2px 9px;font-size:10px}
+.a-money-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:6px}
+.a-money-row .nm{font-weight:700;color:#5C5145}
+.a-money-row .vl{font-weight:700;color:#2B2420}
+.a-kpi{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.a-kpi .l{font-size:11px;font-weight:700;color:#8A7B6C;text-transform:uppercase;letter-spacing:.07em}
+.a-kpi .n{font-size:28px;font-weight:800;letter-spacing:-.02em;color:#1F1B17}
+.a-hint{font-size:11px;color:#9C8F80;margin-top:12px;line-height:1.6}
+.a-hint b{color:#A07A20}
+
+/* ── B · ДЕНЬГИ ЧЕРЕЗ ЗАКАЗЫ ─────────────────────── */
+.b{background:linear-gradient(135deg,#F8F2EA,#FBF8F4 45%,#F4EDE3)}
+.b-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.b-title{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.b-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.b-kpi{background:rgba(255,255,255,.55);border:1px solid #F0E7DD;border-radius:16px;padding:16px 16px 14px;box-shadow:0 10px 26px rgba(92,80,68,.06);transition:.2s}
+.b-kpi:hover{box-shadow:0 18px 40px rgba(92,80,68,.12);transform:translateY(-2px)}
+.b-kpi .l{font-size:10px;font-weight:700;color:#8A7B6C;text-transform:uppercase;letter-spacing:.08em}
+.b-kpi .n{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:8px;color:#1F1B17}
+.b-kpi .d{font-size:11px;font-weight:600;margin-top:6px}
+.b-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.b-card{background:rgba(255,255,255,.55);border:1px solid #F0E7DD;border-radius:16px;padding:16px;box-shadow:0 10px 26px rgba(92,80,68,.06)}
+.b-card .t{font-size:13px;font-weight:800;margin-bottom:12px}
+.b-status{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.b-status .lb{width:104px;font-size:12px;font-weight:600;color:#5C5145;display:flex;align-items:center;gap:7px}
+.b-status .lb i{width:8px;height:8px;border-radius:3px;display:inline-block}
+.b-status .bar{flex:1}
+.b-status .n{width:24px;text-align:right;font-weight:800;font-size:12px}
+.b-ch{display:grid;grid-template-columns:90px 1fr 76px 1fr 62px;gap:10px;align-items:center;font-size:12px;margin-bottom:11px}
+.b-ch .nm{font-weight:700;color:#5C5145}
+.b-ch .bar{height:8px}
+.b-ch .bar i{animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+.b-ch .cnt{text-align:right;font-weight:800}
+.b-ch .rev{text-align:right;font-weight:800;color:var(--terra);white-space:nowrap}
+.b-ch-head{display:grid;grid-template-columns:90px 1fr 76px 1fr 62px;gap:10px;align-items:center;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9C8F80;margin-bottom:10px}
+.b-ch-head span:nth-child(n+2){text-align:right}
+.b-foot{margin-top:14px;font-size:11px;color:#9C8F80}
+.b-foot b{color:#5C7A63}
+
+/* ── C · КОМАНДА И НАГРУЗКА ──────────────────────── */
+.c{background:#FBF8F4}
+.c-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.c-panel{background:#fff;border:1px solid #EEE5DB;border-radius:16px;padding:16px}
+.c-person{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:11px 12px;border:1px solid #F0E7DD;border-radius:12px;margin-bottom:8px;transition:.15s;background:#fff}
+.c-person:hover{border-color:#D9C9B8;box-shadow:0 8px 20px rgba(43,36,32,.08);transform:translateY(-1px)}
+.c-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;font-size:13px}
+.c-person .who{font-size:13px;font-weight:700}
+.c-person .who small{display:block;font-weight:600;color:#9C8F80;font-size:11px;margin-top:1px}
+.c-load{display:flex;gap:10px;align-items:center}
+.c-load .cell{text-align:center}
+.c-load .cell b{display:block;font-size:16px;font-weight:800}
+.c-load .cell span{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9C8F80}
+.c-load .cell.hot b{color:#A07A20}
+.c-load .cell.ok b{color:#5C7A63}
+.c-sep{margin:14px 0 4px;padding-top:12px;border-top:1px solid #F0E9DF;font-size:11px;font-weight:800;letter-spacing:.05em;color:#6E5F52;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.c-sep .c{background:#F2ECE4;border-radius:999px;padding:2px 9px;font-size:10px}
+.c-point{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid #F0E7DD;border-radius:12px;margin-bottom:8px;transition:.15s;background:#fff}
+.c-point:hover{border-color:#D9C9B8;box-shadow:0 8px 20px rgba(43,36,32,.08);transform:translateY(-1px)}
+.c-point .nm{font-size:13px;font-weight:700}
+.c-point .nm small{display:block;font-weight:600;color:#9C8F80;font-size:11px;margin-top:2px}
+.c-point .barw{width:120px;height:6px;background:#F2ECE4;border-radius:99px;overflow:hidden}
+.c-point .barw i{display:block;height:100%;border-radius:99px;animation:growW 1s var(--ease) backwards;animation-delay:var(--d,0s)}
+.c-point .rev{text-align:right;font-weight:800;color:var(--terra)}
+.c-note{margin-top:14px;font-size:11px;color:#9C8F80;line-height:1.6}
+
+/* ── D · ПУЛЬС СЕТИ ──────────────────────────────── */
+.d{background:#FBF6EF}
+.d-alerts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.d-alert{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;padding:9px 14px;border-radius:999px;border:1px solid #EFDDB2;background:#FFFBF0;color:#A07A20}
+.d-alert i{width:6px;height:6px;border-radius:50%;background:#D9A441;animation:pulse 1.4s infinite}
+.d-alert.plum{border-color:#E6D8E2;background:#FAF4F8;color:#6D4B62}
+.d-alert.plum i{background:#6D4B62;animation:none}
+.d-alert.sage{border-color:#DFE8DC;background:#F3F7F1;color:#5C7A63}
+.d-alert.sage i{background:#5C7A63;animation:none}
+.d-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.d-panel{background:#fff;border:1px solid #EEE5DB;border-radius:16px;padding:16px}
+.d-panel .t{font-size:13px;font-weight:800;margin-bottom:10px}
+.d-chart .spark{display:block;width:100%;height:150px}
+.d-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:11px;color:#6E5F52;font-weight:600}
+.d-leg i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:5px}
+.d-ranks{display:flex;flex-direction:column;gap:8px}
+.d-rank{display:grid;grid-template-columns:20px 1fr auto;gap:10px;align-items:center;padding:9px 11px;border:1px solid #F0E7DD;border-radius:11px;font-size:12px;transition:.15s;background:#fff}
+.d-rank:hover{border-color:#D9C9B8;box-shadow:0 6px 16px rgba(43,36,32,.07);transform:translateY(-1px)}
+.d-rank .rk{font-weight:800;color:#9C8F80}
+.d-rank .nm{font-weight:700}
+.d-rank .vl{font-weight:800}
+.d-rank .vl .u{font-size:10px;color:#8A7B6C;font-weight:600}
+.d-stack .ph{margin:14px 0 8px}
+.d-stack .d-rank:first-of-type{margin-top:0}
+.d-foot{margin-top:14px;font-size:11px;color:#9C8F80;line-height:1.6}
+.d-foot b{color:#6D4B62}
+
+/* ── РЕКОМЕНДАЦИЯ ────────────────────────────────── */
+.rec-sec{margin-top:40px;border-top:1px solid #E8E0D6;padding-top:28px}
+.rec-head{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:12px}
+.rec-card{background:#fff;border:1px solid #E9E1D7;border-left:4px solid var(--terra);border-radius:16px;padding:20px 22px;box-shadow:0 14px 34px rgba(43,36,32,.08)}
+.rec-card p{font-size:13.5px;color:#4A423A;line-height:1.7;margin-bottom:10px}
+.rec-card p:last-child{margin-bottom:0}
+.rec-card b{color:var(--ink)}
+.rec-card .pick{color:var(--terra)}
+.rec-list{list-style:none;margin:6px 0 4px}
+.rec-list li{display:flex;gap:10px;font-size:13px;color:#4A423A;line-height:1.6;margin-bottom:7px}
+.rec-list li::before{content:'✓';flex-shrink:0;font-weight:800;color:var(--sage)}
+.rec-sign{margin-top:16px;font-size:11px;color:#9C8F80;font-weight:600}
+
+footer{max-width:1120px;margin:0 auto;padding:0 22px 40px;font-size:12px;color:#9C8F80}
+@media(max-width:900px){
+.a-grid,.c-grid,.d-grid{grid-template-columns:1fr}
+.b-kpis{grid-template-columns:repeat(2,1fr)}
+.b-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+.b-kpis{grid-template-columns:1fr 1fr}
+.v-desc{grid-column:1/3}
+}
+@media (prefers-reduced-motion: reduce){
+*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-top">
+    <div class="brand"><span class="brand-dot"></span>Bloom <span class="brand-sub">4 гибридных дашборда · заказы + деньги</span></div>
+    <div class="h-nav">
+      <button class="nav-btn" id="prevBtn">← Назад</button>
+      <span class="h-count mono" id="hCount">A · 1 / 4</span>
+      <button class="nav-btn" id="nextBtn">Вперёд →</button>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-sec="a">A · Операционный день</button>
+    <button class="tab" data-sec="b">B · Деньги через заказы</button>
+    <button class="tab" data-sec="c">C · Команда и нагрузка</button>
+    <button class="tab" data-sec="d">D · Пульс сети</button>
+  </nav>
+</header>
+
+<main>
+
+<section class="cmp-sec">
+  <div class="cmp-head">
+    <div class="cmp-title">Что даёт каждый гибрид</div>
+    <div class="cmp-sub">все варианты соединяют заказы и деньги · без канбан-колонок статусов</div>
+  </div>
+  <div class="cmp-wrap">
+    <table class="cmp-tbl">
+      <thead>
+        <tr>
+          <th>Гибрид</th>
+          <th>Операционка <span style="font-weight:600">· что делать сейчас</span></th>
+          <th>Финансы <span style="font-weight:600">· деньги</span></th>
+          <th>Команда <span style="font-weight:600">· нагрузка</span></th>
+          <th>Пульс <span style="font-weight:600">· тренды</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="hy">A · Операционный день <small>«сначала делаем, потом считаем»</small></td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></span> очередь приоритетов</td>
+          <td><span class="dots"><i class="on"></i><i class="off"></i><i class="off"></i></span> выручка + каналы вторично</td>
+          <td><span class="dots"><i class="off"></i><i class="off"></i><i class="off"></i></span> —</td>
+          <td><span class="dots"><i class="off"></i><i class="off"></i><i class="off"></i></span> —</td>
+        </tr>
+        <tr>
+          <td class="hy">B · Деньги через заказы <small>«каждый статус и канал — в деньгах»</small></td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="off"></i></span> статусы заказов</td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></span> KPI + каналы в ₽</td>
+          <td><span class="dots"><i class="off"></i><i class="off"></i><i class="off"></i></span> —</td>
+          <td><span class="dots"><i class="off"></i><i class="off"></i><i class="off"></i></span> —</td>
+        </tr>
+        <tr>
+          <td class="hy">C · Команда и нагрузка <small>«кто что делает и сколько это даёт»</small></td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="off"></i></span> в сборке / сдано</td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="off"></i></span> деньги по точкам</td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></span> флористы + менеджеры</td>
+          <td><span class="dots"><i class="off"></i><i class="off"></i><i class="off"></i></span> —</td>
+        </tr>
+        <tr>
+          <td class="hy">D · Пульс сети <small>«взгляд с высоты за 30 секунд»</small></td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="off"></i></span> алерты сверху</td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="off"></i></span> выручка на графике</td>
+          <td><span class="dots"><i class="off"></i><i class="off"></i><i class="off"></i></span> —</td>
+          <td><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></span> заказы + деньги, 14 дней</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cmp-note"><b>Главное:</b> канбан-инвариант убран. Каждый вариант держит деньги и заказы рядом — разница только в том, что вынесено на первый план.</p>
+</section>
+
+<section class="vari on" id="a">
+  <div class="v-head">
+    <span class="v-num">A</span>
+    <div class="v-title">
+      <h2>Операционный день</h2>
+      <p class="v-src">подход: «что делать сейчас»</p>
+      <span class="v-meta"><span>операционка</span><span>финансы</span></span>
+    </div>
+    <p class="v-desc">Главный экран — очередь приоритетов: срочные, не принятые и заказы в слоте. Деньги показаны вторично, чтобы не отвлекать от работы. Утренний экран менеджера.</p>
+  </div>
+  <div class="stage a">
+    <div class="stage-in">
+      <div class="a-top up" style="--d:.02s">
+        <div class="a-chip"><i></i>5 срочных · 3 чата ждут ответа</div>
+        <div class="a-time mono">обновлено 12:40 · сегодня</div>
+      </div>
+      <div class="a-grid">
+        <div class="a-panel up" style="--d:.1s">
+          <div class="ph">Очередь · что делать сейчас</div>
+          <div class="a-grp">Срочные <span class="c mono">5</span></div>
+          <div class="a-prio-item urg" data-hover="1"><span class="a-num mono">13:00</span><span class="nm">Ромашки · букет<small>Ленина 3 · клиент ждёт</small></span><span class="pr mono">2 400 ₽</span></div>
+          <div class="a-prio-item urg" data-hover="2"><span class="a-num mono">14:00</span><span class="nm">Букет «Нежность»<small>Мира 14 · курьер уже на точке</small></span><span class="pr mono">4 700 ₽</span></div>
+          <div class="a-prio-item urg" data-hover="3"><span class="a-num mono">15:00</span><span class="nm">Пионы · 5 веток<small>Мира 14 · к назначенному времени</small></span><span class="pr mono">3 900 ₽</span></div>
+          <div class="a-grp">Не принятые <span class="c mono">6</span></div>
+          <div class="a-prio-item" data-hover="4"><span class="a-num mono">FW-45</span><span class="nm">Марсель · 5 роз<small>Арбат 23 · ждёт подтверждения</small></span><span class="pr mono">2 600 ₽</span></div>
+          <div class="a-prio-item" data-hover="5"><span class="a-num mono">FW-46</span><span class="nm">Воздушный · 7 роз<small>Баумана 18 · слот вечерний</small></span><span class="pr mono">3 700 ₽</span></div>
+          <div class="a-grp">В слоте сегодня <span class="c mono">8</span></div>
+          <div class="a-prio-item" data-hover="6"><span class="a-num mono">16:00</span><span class="nm">Герберы · корзинка<small>Невский 128 · оплачено</small></span><span class="pr mono">3 200 ₽</span></div>
+          <div class="a-prio-item" data-hover="7"><span class="a-num mono">18:00</span><span class="nm">Марсель · 5 роз<small>Арбат 23 · доставка</small></span><span class="pr mono">2 600 ₽</span></div>
+        </div>
+        <div class="a-panel up" style="--d:.18s">
+          <div class="ph">Деньги · вторично</div>
+          <div class="a-kpi"><span class="l">Выручка сегодня</span><span class="n mono" data-count="182400" data-suf=" ₽">0 ₽</span></div>
+          <div class="a-money-row"><span class="nm">WhatsApp</span><span class="vl mono">62 400 ₽</span></div>
+          <div class="bar"><i style="width:78%;background:#5C7A63;--d:.3s"></i></div>
+          <div class="a-money-row"><span class="nm">Telegram</span><span class="vl mono">48 200 ₽</span></div>
+          <div class="bar"><i style="width:60%;background:#6D4B62;--d:.4s"></i></div>
+          <div class="a-money-row"><span class="nm">MAX</span><span class="vl mono">36 900 ₽</span></div>
+          <div class="bar"><i style="width:46%;background:#C7932A;--d:.5s"></i></div>
+          <div class="a-money-row"><span class="nm">Маркетплейс</span><span class="vl mono">24 300 ₽</span></div>
+          <div class="bar"><i style="width:30%;background:#C76B47;--d:.6s"></i></div>
+          <div class="a-money-row"><span class="nm">Прямой</span><span class="vl mono">10 600 ₽</span></div>
+          <div class="bar"><i style="width:13%;background:#7C8B6F;--d:.7s"></i></div>
+          <div class="a-hint"><b>Итого заказов 47</b> · средний чек 3 880 ₽ · новых клиентов 12. Сначала — очередь, цифры подождут.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="b">
+  <div class="v-head">
+    <span class="v-num">B</span>
+    <div class="v-title">
+      <h2>Деньги через заказы</h2>
+      <p class="v-src">подход: «финансы + статусы в одной канве»</p>
+      <span class="v-meta"><span>финансы</span><span>операционка</span></span>
+    </div>
+    <p class="v-desc">KPI с анимацией цифр, прогресс-бары статусов заказов и каналы, где заказы и выручка рядом. Сразу видно: сколько взяли и в каком статусе лежат эти деньги.</p>
+  </div>
+  <div class="stage b">
+    <div class="stage-in">
+      <div class="b-top up" style="--d:.02s">
+        <div class="b-title">Итоги периода · сеть, все точки</div>
+        <div class="period">
+          <button class="p-btn on" data-key="today">Сегодня</button>
+          <button class="p-btn" data-key="7d">7 дней</button>
+          <button class="p-btn" data-key="30d">30 дней</button>
+        </div>
+      </div>
+      <div class="b-kpis">
+        <div class="b-kpi up" style="--d:.08s"><div class="l">Выручка</div><div class="n mono" data-count="182400" data-k="rev" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 9% к вчера</div></div>
+        <div class="b-kpi up" style="--d:.14s"><div class="l">Заказы</div><div class="n mono" data-count="47" data-k="ord">0</div><div class="d d-up">▲ 12%</div></div>
+        <div class="b-kpi up" style="--d:.2s"><div class="l">Средний чек</div><div class="n mono" data-count="3880" data-k="aov" data-suf=" ₽">0 ₽</div><div class="d d-up">▲ 4%</div></div>
+        <div class="b-kpi up" style="--d:.26s"><div class="l">Новые клиенты</div><div class="n mono" data-count="12" data-k="newc">0</div><div class="d d-up">▲ 18%</div></div>
+      </div>
+      <div class="b-grid">
+        <div class="b-card up" style="--d:.34s">
+          <div class="t">Статусы заказов · где деньги застряли</div>
+          <div class="b-status"><span class="lb"><i style="background:#C76B47"></i>Новые</span><div class="bar"><i style="width:13%;background:#C76B47;--d:.36s"></i></div><span class="n mono">6</span></div>
+          <div class="b-status"><span class="lb"><i style="background:#B4632F"></i>Принят</span><div class="bar"><i style="width:15%;background:#B4632F;--d:.42s"></i></div><span class="n mono">7</span></div>
+          <div class="b-status"><span class="lb"><i style="background:#C7932A"></i>Собран</span><div class="bar"><i style="width:6%;background:#C7932A;--d:.48s"></i></div><span class="n mono">3</span></div>
+          <div class="b-status"><span class="lb"><i style="background:#6D4B62"></i>В доставке</span><div class="bar"><i style="width:2%;background:#6D4B62;--d:.54s"></i></div><span class="n mono">1</span></div>
+          <div class="b-status"><span class="lb"><i style="background:#5C7A63"></i>Выполнено</span><div class="bar"><i style="width:4%;background:#5C7A63;--d:.6s"></i></div><span class="n mono">2</span></div>
+          <div class="b-foot">Из <b class="mono">47</b> заказов сегодня <b>5 срочных</b> · <b class="mono">8</b> уже в слоте · 3 чата ждут ответа. Статусы показаны долей текущего окна заказов.</div>
+        </div>
+        <div class="b-card up" style="--d:.4s">
+          <div class="t">Каналы · заказы и выручка вместе</div>
+          <div class="b-ch-head"><span>Канал</span><span>Доля</span><span>Заказы</span><span>Доля</span><span>Выручка</span></div>
+          <div class="b-ch"><span class="nm">WhatsApp</span><div class="bar"><i style="width:78%;background:#5C7A63;--d:.42s"></i></div><span class="cnt mono">18</span><div class="bar"><i style="width:78%;background:#5C7A63;--d:.48s"></i></div><span class="rev mono">62 400 ₽</span></div>
+          <div class="b-ch"><span class="nm">Telegram</span><div class="bar"><i style="width:52%;background:#6D4B62;--d:.54s"></i></div><span class="cnt mono">12</span><div class="bar"><i style="width:52%;background:#6D4B62;--d:.6s"></i></div><span class="rev mono">48 200 ₽</span></div>
+          <div class="b-ch"><span class="nm">MAX</span><div class="bar"><i style="width:39%;background:#C7932A;--d:.66s"></i></div><span class="cnt mono">9</span><div class="bar"><i style="width:39%;background:#C7932A;--d:.72s"></i></div><span class="rev mono">36 900 ₽</span></div>
+          <div class="b-ch"><span class="nm">Маркетплейс</span><div class="bar"><i style="width:22%;background:#C76B47;--d:.78s"></i></div><span class="cnt mono">5</span><div class="bar"><i style="width:22%;background:#C76B47;--d:.84s"></i></div><span class="rev mono">24 300 ₽</span></div>
+          <div class="b-ch"><span class="nm">Прямой</span><div class="bar"><i style="width:13%;background:#7C8B6F;--d:.9s"></i></div><span class="cnt mono">3</span><div class="bar"><i style="width:13%;background:#7C8B6F;--d:.96s"></i></div><span class="rev mono">10 600 ₽</span></div>
+          <div class="b-foot">WhatsApp ведёт и по заказам, и по деньгам · средний чек выше у Маркетплейс.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="c">
+  <div class="v-head">
+    <span class="v-num">C</span>
+    <div class="v-title">
+      <h2>Команда и нагрузка</h2>
+      <p class="v-src">подход: «распределение работы + результат в деньгах»</p>
+      <span class="v-meta"><span>команда</span><span>финансы</span></span>
+    </div>
+    <p class="v-desc">Слева — кто что делает: флористы в сборке и сдаче, менеджеры с заказами и чатами. Справа — те же усилия в деньгах по точкам. Видно и загрузку, и результат.</p>
+  </div>
+  <div class="stage c">
+    <div class="stage-in">
+      <div class="c-grid">
+        <div class="c-panel up" style="--d:.08s">
+          <div class="ph">Кто что делает · сейчас</div>
+          <div class="c-sep">Флористы · сборка <span class="c mono">3 в сборке</span></div>
+          <div class="c-person" data-hover="1"><span class="c-av" style="background:#C76B47">О</span><span class="who">Оля<small>Мира 14</small></span><span class="c-load"><span class="cell hot"><b class="mono">2</b><span>в сборке</span></span><span class="cell ok"><b class="mono">3</b><span>сдано</span></span></span></div>
+          <div class="c-person" data-hover="2"><span class="c-av" style="background:#6D4B62">М</span><span class="who">Марина<small>Невский 128</small></span><span class="c-load"><span class="cell hot"><b class="mono">1</b><span>в сборке</span></span><span class="cell ok"><b class="mono">2</b><span>сдано</span></span></span></div>
+          <div class="c-person" data-hover="3"><span class="c-av" style="background:#5C7A63">Н</span><span class="who">Настя<small>Арбат 23</small></span><span class="c-load"><span class="cell"><b class="mono">0</b><span>в сборке</span></span><span class="cell ok"><b class="mono">1</b><span>сдано</span></span></span></div>
+          <div class="c-sep">Менеджеры · заказы и чаты <span class="c mono">12 заказов в работе</span></div>
+          <div class="c-person" data-hover="4"><span class="c-av" style="background:#B4632F">И</span><span class="who">Ирина<small>Невский 128</small></span><span class="c-load"><span class="cell hot"><b class="mono">6</b><span>заказы</span></span><span class="cell ok"><b class="mono">5</b><span>чаты</span></span></span></div>
+          <div class="c-person" data-hover="5"><span class="c-av" style="background:#C7932A">К</span><span class="who">Катя<small>Арбат 23</small></span><span class="c-load"><span class="cell"><b class="mono">4</b><span>заказы</span></span><span class="cell ok"><b class="mono">3</b><span>чаты</span></span></span></div>
+          <div class="c-person" data-hover="6"><span class="c-av" style="background:#7C8B6F">Д</span><span class="who">Дима<small>Баумана 18</small></span><span class="c-load"><span class="cell"><b class="mono">2</b><span>заказы</span></span><span class="cell"><b class="mono">1</b><span>чаты</span></span></span></div>
+          <div class="c-note">Оля и Ирина — самая загруженная пара. В пик (8 Марта) переключатель нагрузки покажет, кого разгружать первым.</div>
+        </div>
+        <div class="c-panel up" style="--d:.16s">
+          <div class="ph">Результат · деньги по точкам</div>
+          <div class="c-point" data-hover="7"><span class="nm">Невский 128<small>флагман · 21 заказ</small></span><div class="barw"><i style="width:100%;background:#C76B47;--d:.2s"></i></div><span class="rev mono" data-count="84300" data-suf=" ₽">0 ₽</span></div>
+          <div class="c-point" data-hover="8"><span class="nm">Арбат 23<small>центр · 15 заказов</small></span><div class="barw"><i style="width:74%;background:#6D4B62;--d:.3s"></i></div><span class="rev mono" data-count="62400" data-suf=" ₽">0 ₽</span></div>
+          <div class="c-point" data-hover="9"><span class="nm">Баумана 18<small>район · 11 заказов</small></span><div class="barw"><i style="width:42%;background:#5C7A63;--d:.4s"></i></div><span class="rev mono" data-count="35700" data-suf=" ₽">0 ₽</span></div>
+          <div class="c-note">Невский 128 приносит почти половину выручки сети. Если точка перегружена — перераспределение видно сразу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vari" id="d">
+  <div class="v-head">
+    <span class="v-num">D</span>
+    <div class="v-title">
+      <h2>Пульс сети</h2>
+      <p class="v-src">подход: «минимум текста, максимум тренда»</p>
+      <span class="v-meta"><span>пульс</span><span>финансы</span></span>
+    </div>
+    <p class="v-desc">Заказы и выручка за период на одной шкале, алерты сверху, топ точек и товаров. Дашборд владельца — за 30 секунд понятно, как идут дела.</p>
+  </div>
+  <div class="stage d">
+    <div class="stage-in">
+      <div class="d-alerts up" style="--d:.02s">
+        <span class="d-alert"><i></i>5 срочных</span>
+        <span class="d-alert plum">6 не принятых</span>
+        <span class="d-alert sage">3 чата ждут ответа</span>
+        <div class="period" style="margin-left:auto">
+          <button class="p-btn on" data-key="7d" data-series="7d">7 дней</button>
+          <button class="p-btn" data-key="14d" data-series="14d">14 дней</button>
+          <button class="p-btn" data-key="30d" data-series="30d">30 дней</button>
+        </div>
+      </div>
+      <div class="d-grid">
+        <div class="d-panel up" style="--d:.08s">
+          <div class="d-chart">
+            <div class="t">Динамика · заказы и выручка на одной шкале</div>
+            <svg class="spark" id="dPulse" data-key="7d"></svg>
+            <div class="d-leg">
+              <span><i style="background:#B4632F"></i>Выручка · нормировано</span>
+              <span><i style="background:#5C7A63"></i>Заказы · нормировано</span>
+              <span><i style="background:#C7932A"></i>Средний чек</span>
+            </div>
+          </div>
+        </div>
+        <div class="d-panel up" style="--d:.16s">
+          <div class="d-stack">
+            <div class="ph">Топ точек</div>
+            <div class="d-rank" data-hover="1"><span class="rk mono">01</span><span class="nm">Невский 128</span><span class="vl mono">84 300 <span class="u">₽</span></span></div>
+            <div class="d-rank" data-hover="2"><span class="rk mono">02</span><span class="nm">Арбат 23</span><span class="vl mono">62 400 <span class="u">₽</span></span></div>
+            <div class="d-rank" data-hover="3"><span class="rk mono">03</span><span class="nm">Баумана 18</span><span class="vl mono">35 700 <span class="u">₽</span></span></div>
+            <div class="ph" style="margin-top:16px">Топ товаров</div>
+            <div class="d-rank" data-hover="4"><span class="rk mono">01</span><span class="nm">Букет «Нежность»</span><span class="vl mono">42 300 <span class="u">₽</span></span></div>
+            <div class="d-rank" data-hover="5"><span class="rk mono">02</span><span class="nm">Пионы</span><span class="vl mono">27 900 <span class="u">₽</span></span></div>
+            <div class="d-rank" data-hover="6"><span class="rk mono">03</span><span class="nm">Ромашки</span><span class="vl mono">14 400 <span class="u">₽</span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="d-foot"><b>Одна шкала:</b> выручка и заказы нормированы к 0–100% своей динамики, поэтому форма трендов сравнивается напрямую. За 14 дней сеть стабильно растёт и по заказам, и по деньгам.</div>
+    </div>
+  </div>
+</section>
+
+<section class="rec-sec">
+  <div class="rec-head">Что выбрать для Bloom</div>
+  <div class="rec-card">
+    <p><b>Основной гибрид — <span class="pick">B · «Деньги через заказы»</span>.</b> Владелец сети смотрит на выручку, а менеджеры — на статусы заказов; B держит обе картины на одном экране и прямо показывает, где застряли деньги (6 новых, 7 принятых, 5 срочных). Прогресс-бары статусов заменяют канбан без канбан-структуры — операционка сохранена, но подчинена финансам.</p>
+    <ul class="rec-list">
+      <li><b>A · «Операционный день»</b> — утренний экран менеджера: очередь «что делать сейчас» без аналитики. Использовать как первый экран рабочего дня, B — как сводку для владельца.</li>
+      <li><b>C · «Команда и нагрузка»</b> — включать в пиковые дни (8 Марта, Новый год), когда нужно балансировать флористов и точки.</li>
+      <li><b>D · «Пульс сети»</b> — еженедельный взгляд владельца: тренды 14 дней и топы без лишних цифр.</li>
+    </ul>
+    <p>Итого: для <b>повседневного экрана — B</b> (деньги через заказы), A — как операционная надстройка над ним. C и D — ролевые варианты для пиков и отчётов.</p>
+    <div class="rec-sign">Bloom · 4 гибрида · заказы + деньги · палитра terra / plum / sage / amber · Georgia + JetBrains Mono</div>
+  </div>
+</section>
+
+</main>
+
+<footer>Bloom CRM · гибридные дашборды для фин. и операционной части · без канбан-колонок · интерактив: период, num-roll, hover</footer>
+<script>
+(function(){
+function fmt(n){return Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g,' ');}
+function roll(el,target,prefix,suffix,dur){
+  prefix=prefix||'';suffix=suffix||'';dur=dur||900;
+  var t0=null;
+  function step(ts){
+    if(!t0)t0=ts;
+    var p=Math.min(1,(ts-t0)/dur);
+    var e=1-Math.pow(1-p,3);
+    if(p<1){el.textContent=prefix+fmt(target*e)+suffix;requestAnimationFrame(step);}
+    else el.textContent=prefix+fmt(target)+suffix;
+  }
+  requestAnimationFrame(step);
+}
+function expand(arr,n){
+  var out=[];var m=arr.length;
+  for(var i=0;i<n;i++){var f=i*(m-1)/(n-1);var a=Math.floor(f),b=Math.min(m-1,a+1),t=f-a;out.push(arr[a]+(arr[b]-arr[a])*t);}
+  return out;
+}
+var REV=[118400,131800,120900,145200,138600,156300,148200,162500,154800,171900,166400,175200,168700,182400];
+var ORD=[31,34,30,37,35,40,38,42,39,44,41,46,43,47];
+var AOV=[3410,3520,3480,3620,3550,3700,3760,3710,3880,3730,3910,3810,3920,3880];
+var SERIES={
+  '7d':{rev:REV.slice(-7),ord:ORD.slice(-7),aov:AOV.slice(-7)},
+  '14d':{rev:REV.slice(),ord:ORD.slice(),aov:AOV.slice()},
+  '30d':{rev:expand(REV,28),ord:expand(ORD,28),aov:expand(AOV,28)}
+};
+var DATA={today:{rev:182400,ord:47,aov:3880,newc:12},'7d':{rev:1181900,ord:302,aov:3914,newc:64},'30d':{rev:4710000,ord:1205,aov:3909,newc:251}};
+var NS='http://www.w3.org/2000/svg';
+function drawPulse(svg,key){
+  var s=SERIES[key]||SERIES['14d'];
+  var w=520,h=150,pad=8;
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  function line(arr,color,fill){
+    var min=Math.min.apply(null,arr),max=Math.max.apply(null,arr);
+    var rng=(max-min)||1;
+    var pts=arr.map(function(v,i){return [pad+i*(w-2*pad)/(arr.length-1),h-pad-(v-min)/rng*(h-2*pad)];});
+    if(fill){
+      var poly=pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ');
+      poly=poly+' '+w+','+h+' 0,'+h;
+      var ap=document.createElementNS(NS,'polygon');
+      ap.setAttribute('points',poly);
+      ap.setAttribute('fill',color);
+      ap.setAttribute('opacity','0.12');
+      svg.appendChild(ap);
+    }
+    var pl=document.createElementNS(NS,'polyline');
+    pl.setAttribute('points',pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' '));
+    pl.setAttribute('fill','none');
+    pl.setAttribute('stroke',color);
+    pl.setAttribute('stroke-width','2.4');
+    pl.setAttribute('stroke-linecap','round');
+    pl.setAttribute('stroke-linejoin','round');
+    svg.appendChild(pl);
+    var c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',pts[pts.length-1][0].toFixed(1));
+    c.setAttribute('cy',pts[pts.length-1][1].toFixed(1));
+    c.setAttribute('r','3.2');
+    c.setAttribute('fill',color);
+    c.setAttribute('stroke','#fff');
+    c.setAttribute('stroke-width','2');
+    svg.appendChild(c);
+  }
+  line(s.rev,'#B4632F',true);
+  line(s.ord,'#5C7A63',false);
+  line(s.aov,'#C7932A',false);
+  svg.setAttribute('viewBox','0 0 '+w+' '+h);
+  svg.setAttribute('preserveAspectRatio','none');
+}
+function slice(x){return [].slice.call(x);}
+function runCounters(root){
+  if(!root)return;
+  slice(root.querySelectorAll('[data-count]')).forEach(function(el){
+    roll(el,parseFloat(el.getAttribute('data-count')),el.getAttribute('data-pre')||'',el.getAttribute('data-suf')||'');
+  });
+}
+function renderPeriod(b,root){
+  if(!b||!root)return;
+  var key=b.getAttribute('data-key');
+  var d=DATA[key]||DATA.today;
+  slice(root.querySelectorAll('[data-k]')).forEach(function(el){
+    var k=el.getAttribute('data-k');
+    if(d[k]!=null)roll(el,d[k],el.getAttribute('data-pre')||'',el.getAttribute('data-suf')||'');
+  });
+}
+var pulse=document.getElementById('dPulse');
+slice(document.querySelectorAll('.period .p-btn')).forEach(function(b){
+  b.addEventListener('click',function(){
+    var grp=b.parentNode;
+    slice(grp.querySelectorAll('.p-btn')).forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    var root=b.closest('.vari');
+    if(b.hasAttribute('data-series')){
+      if(pulse)drawPulse(pulse,b.getAttribute('data-series'));
+      return;
+    }
+    renderPeriod(b,root);
+  });
+});
+var order=['a','b','c','d'];
+var cur=0;
+var hCount=document.getElementById('hCount');
+function show(id){
+  cur=order.indexOf(id);
+  slice(document.querySelectorAll('.vari')).forEach(function(s){s.classList.toggle('on',s.id===id);});
+  slice(document.querySelectorAll('.tab')).forEach(function(t){t.classList.toggle('on',t.getAttribute('data-sec')===id);});
+  var sec=document.getElementById(id);
+  runCounters(sec);
+  if(sec){
+    renderPeriod(sec.querySelector('.period .p-btn.on'),sec);
+    if(id==='d'&&pulse){
+      var act=sec.querySelector('.period .p-btn.on');
+      drawPulse(pulse,act?act.getAttribute('data-series')||'14d':'14d');
+    }
+  }
+  hCount.textContent=order[cur].toUpperCase()+' · '+(cur+1)+' / 4';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+slice(document.querySelectorAll('.tab')).forEach(function(t){
+  t.addEventListener('click',function(){show(t.getAttribute('data-sec'));});
+});
+document.getElementById('prevBtn').addEventListener('click',function(){cur=(cur-1+order.length)%order.length;show(order[cur]);});
+document.getElementById('nextBtn').addEventListener('click',function(){cur=(cur+1)%order.length;show(order[cur]);});
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'){cur=(cur+1)%order.length;show(order[cur]);}
+  if(e.key==='ArrowLeft'){cur=(cur-1+order.length)%order.length;show(order[cur]);}
+});
+show('a');
+})();
+</script>
+</body>
+</html>
